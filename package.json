@@ -1,0 +1,26 @@
+{
+  "name": "beneficio-za-web",
+  "version": "1.0.0",
+  "description": "Sistema Web de Captura y Control Operacional - Planta Beneficio ZA",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "migrate": "node migrate_september.js",
+    "test": "node test_system.js"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "keywords": [
+    "mining",
+    "operations",
+    "crm",
+    "plant-control"
+  ],
+  "author": "Beneficio ZA",
+  "license": "ISC",
+  "dependencies": {
+    "exceljs": "^4.4.0",
+    "express": "^5.2.1"
+  }
+}

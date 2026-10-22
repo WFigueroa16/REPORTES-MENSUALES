@@ -1,0 +1,76 @@
+/* Beneficio ZA - Custom App Styles */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+:root {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+}
+
+.font-mono {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.bg-slate-850 {
+  background-color: #172033;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+/* Tab buttons styling */
+.tab-btn {
+  color: #94a3b8;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+.tab-btn:hover {
+  color: #f8fafc;
+  background-color: #1e293b;
+}
+.tab-btn.active {
+  color: #f59e0b;
+  background-color: #1e293b;
+  border-color: #334155;
+  font-weight: 700;
+}
+
+/* Tab contents display */
+.tab-content {
+  display: none;
+}
+.tab-content.active {
+  display: block;
+  animation: fadeIn 0.15s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(3px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Numeric input highlight */
+input[type="number"]:focus {
+  background-color: #0b1120;
+}
+
+/* Toast styling */
+.toast {
+  animation: slideIn 0.25s ease-out forwards;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}

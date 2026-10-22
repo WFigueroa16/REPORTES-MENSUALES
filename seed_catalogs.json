@@ -1,0 +1,3576 @@
+﻿{
+    "equipos":  [
+                    {
+                        "codigo":  "020-110",
+                        "area":  "Trituración",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45942"
+                    },
+                    {
+                        "codigo":  "020-124",
+                        "area":  "Trituración",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46021"
+                    },
+                    {
+                        "codigo":  "021-012",
+                        "area":  "Trituración",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46085"
+                    },
+                    {
+                        "codigo":  "021-014",
+                        "area":  "Trituración",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46094"
+                    },
+                    {
+                        "codigo":  "021-022",
+                        "area":  "Trituración",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "2",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46046"
+                    },
+                    {
+                        "codigo":  "021-031",
+                        "area":  "Trituración",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45942"
+                    },
+                    {
+                        "codigo":  "021-033",
+                        "area":  "Trituración",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "3",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46084"
+                    },
+                    {
+                        "codigo":  "021-036",
+                        "area":  "Trituración",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45986"
+                    },
+                    {
+                        "codigo":  "021-037",
+                        "area":  "Trituración",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46057"
+                    },
+                    {
+                        "codigo":  "021-040",
+                        "area":  "Trituración",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46087"
+                    },
+                    {
+                        "codigo":  "021-045",
+                        "area":  "Trituración",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "2",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46078"
+                    },
+                    {
+                        "codigo":  "021-047",
+                        "area":  "Trituración",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "4",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46104"
+                    },
+                    {
+                        "codigo":  "021-055",
+                        "area":  "Trituración",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45942"
+                    },
+                    {
+                        "codigo":  "021-057",
+                        "area":  "Trituración",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "2",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45985"
+                    },
+                    {
+                        "codigo":  "021-059",
+                        "area":  "Trituración",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "2",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46051"
+                    },
+                    {
+                        "codigo":  "021-061",
+                        "area":  "Trituración",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46059"
+                    },
+                    {
+                        "codigo":  "021-063",
+                        "area":  "Trituración",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "3",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46083"
+                    },
+                    {
+                        "codigo":  "021-066",
+                        "area":  "Trituración",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "2",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46036"
+                    },
+                    {
+                        "codigo":  "021-116",
+                        "area":  "Trituración",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45982"
+                    },
+                    {
+                        "codigo":  "021-119",
+                        "area":  "Trituración",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46049"
+                    },
+                    {
+                        "codigo":  "021-132",
+                        "area":  "Trituración",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46003"
+                    },
+                    {
+                        "codigo":  "021-134",
+                        "area":  "Trituración",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45983"
+                    },
+                    {
+                        "codigo":  "021-134 A 021-061",
+                        "area":  "Trituración",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46030"
+                    },
+                    {
+                        "codigo":  "021-509",
+                        "area":  "Trituración",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46044"
+                    },
+                    {
+                        "codigo":  "021-510 a 021-625",
+                        "area":  "Trituración",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46029"
+                    },
+                    {
+                        "codigo":  "021-616",
+                        "area":  "Trituración",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46027"
+                    },
+                    {
+                        "codigo":  "021-629",
+                        "area":  "Trituración",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46044"
+                    },
+                    {
+                        "codigo":  "021-631",
+                        "area":  "Trituración",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46056"
+                    },
+                    {
+                        "codigo":  "021-632",
+                        "area":  "Trituración",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "2",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46123"
+                    },
+                    {
+                        "codigo":  "021-633",
+                        "area":  "Trituración",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46048"
+                    },
+                    {
+                        "codigo":  "022-021",
+                        "area":  "Trituración",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46008"
+                    },
+                    {
+                        "codigo":  "022-042",
+                        "area":  "Trituración",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "2",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46014"
+                    },
+                    {
+                        "codigo":  "022-128",
+                        "area":  "Trituración",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46013"
+                    },
+                    {
+                        "codigo":  "022-130",
+                        "area":  "Trituración",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46020"
+                    },
+                    {
+                        "codigo":  "029-070",
+                        "area":  "Trituración",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "4",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46072"
+                    },
+                    {
+                        "codigo":  "029-115",
+                        "area":  "Trituración",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45982"
+                    },
+                    {
+                        "codigo":  "210-402",
+                        "area":  "Trituración",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46024"
+                    },
+                    {
+                        "codigo":  "211-018",
+                        "area":  "Trituración",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46029"
+                    },
+                    {
+                        "codigo":  "211-024",
+                        "area":  "Trituración",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "6",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46042"
+                    },
+                    {
+                        "codigo":  "211-025",
+                        "area":  "Trituración",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46026"
+                    },
+                    {
+                        "codigo":  "211-049",
+                        "area":  "Trituración",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "2",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46052"
+                    },
+                    {
+                        "codigo":  "211-050",
+                        "area":  "Trituración",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "2",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46030"
+                    },
+                    {
+                        "codigo":  "211-051",
+                        "area":  "Trituración",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "4",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46150"
+                    },
+                    {
+                        "codigo":  "211-124",
+                        "area":  "Trituración",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46151"
+                    },
+                    {
+                        "codigo":  "211-126",
+                        "area":  "Trituración",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46034"
+                    },
+                    {
+                        "codigo":  "211-127",
+                        "area":  "Trituración",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "2",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46060"
+                    },
+                    {
+                        "codigo":  "211-140",
+                        "area":  "Trituración",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46019"
+                    },
+                    {
+                        "codigo":  "275-032",
+                        "area":  "Trituración",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46025"
+                    },
+                    {
+                        "codigo":  "tolva a separadores 210-400/401/402",
+                        "area":  "Trituración",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46029"
+                    },
+                    {
+                        "codigo":  "030-056",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "031-061",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45976"
+                    },
+                    {
+                        "codigo":  "031-062",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "1",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "031-066",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "032-081",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "6",
+                        "pendientes":  "6",
+                        "parado":  "3",
+                        "ultimo_aviso":  "46035"
+                    },
+                    {
+                        "codigo":  "032-082",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "6",
+                        "pendientes":  "6",
+                        "parado":  "0",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "032-083",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "2",
+                        "pendientes":  "2",
+                        "parado":  "1",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "032-084",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "3",
+                        "pendientes":  "3",
+                        "parado":  "0",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "032-084/085/086",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45976"
+                    },
+                    {
+                        "codigo":  "032-085",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "3",
+                        "pendientes":  "3",
+                        "parado":  "2",
+                        "ultimo_aviso":  "46051"
+                    },
+                    {
+                        "codigo":  "032-086",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "4",
+                        "pendientes":  "4",
+                        "parado":  "2",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "032-087",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "032-088",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "2",
+                        "pendientes":  "2",
+                        "parado":  "2",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "032-089",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "2",
+                        "pendientes":  "2",
+                        "parado":  "1",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "032-201",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "032-202",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "7",
+                        "pendientes":  "6",
+                        "parado":  "1",
+                        "ultimo_aviso":  "46022"
+                    },
+                    {
+                        "codigo":  "032-203",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "032-204",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "032-205",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "2",
+                        "pendientes":  "2",
+                        "parado":  "0",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "032-206",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "4",
+                        "pendientes":  "4",
+                        "parado":  "1",
+                        "ultimo_aviso":  "46045"
+                    },
+                    {
+                        "codigo":  "032-207",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "5",
+                        "pendientes":  "5",
+                        "parado":  "1",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "032-208",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "3",
+                        "pendientes":  "3",
+                        "parado":  "0",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "032-209",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "4",
+                        "pendientes":  "4",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45981"
+                    },
+                    {
+                        "codigo":  "032-210",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "039-237",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "2",
+                        "pendientes":  "2",
+                        "parado":  "1",
+                        "ultimo_aviso":  "46043"
+                    },
+                    {
+                        "codigo":  "039-270",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "039-270/271",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "1",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "039-271A",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46357"
+                    },
+                    {
+                        "codigo":  "039-272",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "2",
+                        "pendientes":  "2",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45981"
+                    },
+                    {
+                        "codigo":  "039-274",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "3",
+                        "pendientes":  "3",
+                        "parado":  "2",
+                        "ultimo_aviso":  "46015"
+                    },
+                    {
+                        "codigo":  "039-274/275",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45983"
+                    },
+                    {
+                        "codigo":  "039-275",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "4",
+                        "pendientes":  "4",
+                        "parado":  "1",
+                        "ultimo_aviso":  "45996"
+                    },
+                    {
+                        "codigo":  "039-280",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "039-280 B",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45982"
+                    },
+                    {
+                        "codigo":  "039-281",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "4",
+                        "pendientes":  "4",
+                        "parado":  "1",
+                        "ultimo_aviso":  "46066"
+                    },
+                    {
+                        "codigo":  "039-282",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45981"
+                    },
+                    {
+                        "codigo":  "039-283C",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "039-284",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "4",
+                        "pendientes":  "4",
+                        "parado":  "1",
+                        "ultimo_aviso":  "46053"
+                    },
+                    {
+                        "codigo":  "039-284C",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "2",
+                        "pendientes":  "2",
+                        "parado":  "1",
+                        "ultimo_aviso":  "46296"
+                    },
+                    {
+                        "codigo":  "039-285",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "1",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "039-288",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "1",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "039-288/289",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "039-289",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "4",
+                        "pendientes":  "4",
+                        "parado":  "2",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "039-290",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45985"
+                    },
+                    {
+                        "codigo":  "039-291",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "039-292",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "1",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "039-488",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "1",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "20-097/098",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "210-097",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "1",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "210-098",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "210-099",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "2",
+                        "pendientes":  "2",
+                        "parado":  "1",
+                        "ultimo_aviso":  "46007"
+                    },
+                    {
+                        "codigo":  "210-104",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "2",
+                        "pendientes":  "2",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46328"
+                    },
+                    {
+                        "codigo":  "210-105",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "210-106",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "1",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "210-107/108",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45980"
+                    },
+                    {
+                        "codigo":  "210-108",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46046"
+                    },
+                    {
+                        "codigo":  "210-114/115",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45976"
+                    },
+                    {
+                        "codigo":  "210-268",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "3",
+                        "pendientes":  "3",
+                        "parado":  "2",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "210-269",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "1",
+                        "ultimo_aviso":  "45997"
+                    },
+                    {
+                        "codigo":  "210-270",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "3",
+                        "pendientes":  "3",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45981"
+                    },
+                    {
+                        "codigo":  "210-278",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45981"
+                    },
+                    {
+                        "codigo":  "210-279",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "4",
+                        "pendientes":  "4",
+                        "parado":  "2",
+                        "ultimo_aviso":  "46266"
+                    },
+                    {
+                        "codigo":  "210-279 B",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "1",
+                        "ultimo_aviso":  "46003"
+                    },
+                    {
+                        "codigo":  "210-280A",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "1",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "210-285",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "1",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "210-285/286",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "210-289b",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "210-290a",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "210-291",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "2",
+                        "pendientes":  "2",
+                        "parado":  "2",
+                        "ultimo_aviso":  "46055"
+                    },
+                    {
+                        "codigo":  "210-291A",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "210-292B",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "1",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "210-295",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "210-297",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "1",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "210-311",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45982"
+                    },
+                    {
+                        "codigo":  "210-313",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "210-317",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "4",
+                        "pendientes":  "4",
+                        "parado":  "4",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "210-318",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "1",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "210-319",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45983"
+                    },
+                    {
+                        "codigo":  "210-320",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "1",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "212-150",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46050"
+                    },
+                    {
+                        "codigo":  "212-155",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "213-002",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "213-105",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "2",
+                        "pendientes":  "2",
+                        "parado":  "1",
+                        "ultimo_aviso":  "45981"
+                    },
+                    {
+                        "codigo":  "213-106",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "1",
+                        "ultimo_aviso":  "46048"
+                    },
+                    {
+                        "codigo":  "213-107",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "213-108",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "1",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "213-108/404",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "1",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "213-111",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "1",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "213-113",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "1",
+                        "ultimo_aviso":  "46001"
+                    },
+                    {
+                        "codigo":  "213-114",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "2",
+                        "pendientes":  "2",
+                        "parado":  "0",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "213-121",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "1",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "213-122",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "1",
+                        "ultimo_aviso":  "46008"
+                    },
+                    {
+                        "codigo":  "213-123",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "2",
+                        "pendientes":  "2",
+                        "parado":  "1",
+                        "ultimo_aviso":  "45982"
+                    },
+                    {
+                        "codigo":  "213-211",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "3",
+                        "pendientes":  "3",
+                        "parado":  "3",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "213-213",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45981"
+                    },
+                    {
+                        "codigo":  "213-214",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "4",
+                        "pendientes":  "4",
+                        "parado":  "2",
+                        "ultimo_aviso":  "46002"
+                    },
+                    {
+                        "codigo":  "213-218",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "2",
+                        "pendientes":  "2",
+                        "parado":  "0",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "213-221",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "2",
+                        "pendientes":  "2",
+                        "parado":  "1",
+                        "ultimo_aviso":  "46014"
+                    },
+                    {
+                        "codigo":  "213-231",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "8",
+                        "pendientes":  "8",
+                        "parado":  "5",
+                        "ultimo_aviso":  "46039"
+                    },
+                    {
+                        "codigo":  "213-233",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "2",
+                        "pendientes":  "2",
+                        "parado":  "1",
+                        "ultimo_aviso":  "45983"
+                    },
+                    {
+                        "codigo":  "213-241",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "2",
+                        "pendientes":  "2",
+                        "parado":  "2",
+                        "ultimo_aviso":  "46044"
+                    },
+                    {
+                        "codigo":  "213-242",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "6",
+                        "pendientes":  "6",
+                        "parado":  "2",
+                        "ultimo_aviso":  "46358"
+                    },
+                    {
+                        "codigo":  "213-243",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "3",
+                        "pendientes":  "3",
+                        "parado":  "2",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "213-312",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "3",
+                        "pendientes":  "3",
+                        "parado":  "2",
+                        "ultimo_aviso":  "45981"
+                    },
+                    {
+                        "codigo":  "213-431",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "4",
+                        "pendientes":  "4",
+                        "parado":  "1",
+                        "ultimo_aviso":  "46114"
+                    },
+                    {
+                        "codigo":  "213-477",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "2",
+                        "pendientes":  "2",
+                        "parado":  "1",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "213-478",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "5",
+                        "pendientes":  "5",
+                        "parado":  "2",
+                        "ultimo_aviso":  "46011"
+                    },
+                    {
+                        "codigo":  "213-479",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "6",
+                        "pendientes":  "6",
+                        "parado":  "4",
+                        "ultimo_aviso":  "46038"
+                    },
+                    {
+                        "codigo":  "213-480",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "6",
+                        "pendientes":  "6",
+                        "parado":  "4",
+                        "ultimo_aviso":  "46052"
+                    },
+                    {
+                        "codigo":  "213-653",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "1",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "213-654",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "3",
+                        "pendientes":  "3",
+                        "parado":  "3",
+                        "ultimo_aviso":  "46036"
+                    },
+                    {
+                        "codigo":  "213-682",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "1",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "213-688",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "5",
+                        "pendientes":  "5",
+                        "parado":  "3",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "213-800",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "3",
+                        "pendientes":  "3",
+                        "parado":  "3",
+                        "ultimo_aviso":  "45993"
+                    },
+                    {
+                        "codigo":  "213-802",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "213-804",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "1",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "213-804/805",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45985"
+                    },
+                    {
+                        "codigo":  "213-808",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "4",
+                        "pendientes":  "4",
+                        "parado":  "1",
+                        "ultimo_aviso":  "46297"
+                    },
+                    {
+                        "codigo":  "213-809",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "2",
+                        "pendientes":  "2",
+                        "parado":  "2",
+                        "ultimo_aviso":  "46021"
+                    },
+                    {
+                        "codigo":  "213-811",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "3",
+                        "pendientes":  "3",
+                        "parado":  "3",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "213-813",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "4",
+                        "pendientes":  "4",
+                        "parado":  "4",
+                        "ultimo_aviso":  "46006"
+                    },
+                    {
+                        "codigo":  "213-817",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "7",
+                        "pendientes":  "7",
+                        "parado":  "4",
+                        "ultimo_aviso":  "45981"
+                    },
+                    {
+                        "codigo":  "213-817/817",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "1",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "213-818",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "5",
+                        "pendientes":  "5",
+                        "parado":  "2",
+                        "ultimo_aviso":  "46017"
+                    },
+                    {
+                        "codigo":  "213-822",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45940"
+                    },
+                    {
+                        "codigo":  "23-805",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "1",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "231-154",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "302-081",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "1",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "400-001",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "LINEA 4",
+                        "area":  "Magnética",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  ""
+                    },
+                    {
+                        "codigo":  "051-150",
+                        "area":  "Filtros",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45880"
+                    },
+                    {
+                        "codigo":  "051-151",
+                        "area":  "Filtros",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45880"
+                    },
+                    {
+                        "codigo":  "051-152",
+                        "area":  "Filtros",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45880"
+                    },
+                    {
+                        "codigo":  "051-153",
+                        "area":  "Filtros",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45880"
+                    },
+                    {
+                        "codigo":  "051-171",
+                        "area":  "Filtros",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45967"
+                    },
+                    {
+                        "codigo":  "051-428",
+                        "area":  "Filtros",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46011"
+                    },
+                    {
+                        "codigo":  "053-020",
+                        "area":  "Filtros",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46108"
+                    },
+                    {
+                        "codigo":  "053-023",
+                        "area":  "Filtros",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46009"
+                    },
+                    {
+                        "codigo":  "053-036",
+                        "area":  "Filtros",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46132"
+                    },
+                    {
+                        "codigo":  "071-717",
+                        "area":  "Filtros",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45880"
+                    },
+                    {
+                        "codigo":  "213-110",
+                        "area":  "Filtros",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45595"
+                    },
+                    {
+                        "codigo":  "213-401",
+                        "area":  "Filtros",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45953"
+                    },
+                    {
+                        "codigo":  "213-847",
+                        "area":  "Filtros",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "2",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46171"
+                    },
+                    {
+                        "codigo":  "400-084",
+                        "area":  "Filtros",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45939"
+                    },
+                    {
+                        "codigo":  "400-091",
+                        "area":  "Filtros",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46156"
+                    },
+                    {
+                        "codigo":  "457-351",
+                        "area":  "Filtros",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "2",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46034"
+                    },
+                    {
+                        "codigo":  "457-354",
+                        "area":  "Filtros",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "2",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46097"
+                    },
+                    {
+                        "codigo":  "457-360",
+                        "area":  "Filtros",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46182"
+                    },
+                    {
+                        "codigo":  "457-899",
+                        "area":  "Filtros",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46082"
+                    },
+                    {
+                        "codigo":  "458-066",
+                        "area":  "Filtros",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45985"
+                    },
+                    {
+                        "codigo":  "458-077",
+                        "area":  "Filtros",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "2",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46009"
+                    },
+                    {
+                        "codigo":  "053-004",
+                        "area":  "Relaves",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45975"
+                    },
+                    {
+                        "codigo":  "053-009",
+                        "area":  "Relaves",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "3",
+                        "pendientes":  "2",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45979"
+                    },
+                    {
+                        "codigo":  "213-044",
+                        "area":  "Relaves",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45979"
+                    },
+                    {
+                        "codigo":  "213-250",
+                        "area":  "Relaves",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46018"
+                    },
+                    {
+                        "codigo":  "213-253",
+                        "area":  "Relaves",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45931"
+                    },
+                    {
+                        "codigo":  "213-257",
+                        "area":  "Relaves",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45931"
+                    },
+                    {
+                        "codigo":  "213-260",
+                        "area":  "Relaves",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46018"
+                    },
+                    {
+                        "codigo":  "213-262",
+                        "area":  "Relaves",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45985"
+                    },
+                    {
+                        "codigo":  "213-264",
+                        "area":  "Relaves",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45978"
+                    },
+                    {
+                        "codigo":  "213-267",
+                        "area":  "Relaves",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45934"
+                    },
+                    {
+                        "codigo":  "213-269",
+                        "area":  "Relaves",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45993"
+                    },
+                    {
+                        "codigo":  "213-270",
+                        "area":  "Relaves",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45993"
+                    },
+                    {
+                        "codigo":  "213-272",
+                        "area":  "Relaves",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45971"
+                    },
+                    {
+                        "codigo":  "213-280",
+                        "area":  "Relaves",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "2",
+                        "pendientes":  "2",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45931"
+                    },
+                    {
+                        "codigo":  "213-281",
+                        "area":  "Relaves",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45931"
+                    },
+                    {
+                        "codigo":  "213-282",
+                        "area":  "Relaves",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45993"
+                    },
+                    {
+                        "codigo":  "213-293",
+                        "area":  "Relaves",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45931"
+                    },
+                    {
+                        "codigo":  "213-294",
+                        "area":  "Relaves",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46011"
+                    },
+                    {
+                        "codigo":  "213-364",
+                        "area":  "Relaves",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45976"
+                    },
+                    {
+                        "codigo":  "213-655",
+                        "area":  "Relaves",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45974"
+                    },
+                    {
+                        "codigo":  "213-656",
+                        "area":  "Relaves",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45931"
+                    },
+                    {
+                        "codigo":  "213-849",
+                        "area":  "Relaves",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45982"
+                    },
+                    {
+                        "codigo":  "213-850",
+                        "area":  "Relaves",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45958"
+                    },
+                    {
+                        "codigo":  "213-873",
+                        "area":  "Relaves",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45973"
+                    },
+                    {
+                        "codigo":  "213-881",
+                        "area":  "Relaves",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45977"
+                    },
+                    {
+                        "codigo":  "213-889",
+                        "area":  "Relaves",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "2",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45993"
+                    },
+                    {
+                        "codigo":  "313-362",
+                        "area":  "Relaves",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "3",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46006"
+                    },
+                    {
+                        "codigo":  "400-250",
+                        "area":  "Relaves",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45871"
+                    },
+                    {
+                        "codigo":  "513-655",
+                        "area":  "Relaves",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "0",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46043"
+                    },
+                    {
+                        "codigo":  "014-029",
+                        "area":  "Embarque",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "4",
+                        "pendientes":  "4",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46144"
+                    },
+                    {
+                        "codigo":  "014-030",
+                        "area":  "Embarque",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "4",
+                        "pendientes":  "4",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45956"
+                    },
+                    {
+                        "codigo":  "014-031",
+                        "area":  "Embarque",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "6",
+                        "pendientes":  "6",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46068"
+                    },
+                    {
+                        "codigo":  "071-019",
+                        "area":  "Embarque",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "2",
+                        "pendientes":  "2",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45938"
+                    },
+                    {
+                        "codigo":  "071-081",
+                        "area":  "Embarque",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "4",
+                        "pendientes":  "3",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46357"
+                    },
+                    {
+                        "codigo":  "071-241",
+                        "area":  "Embarque",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45973"
+                    },
+                    {
+                        "codigo":  "071-706",
+                        "area":  "Embarque",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "7",
+                        "pendientes":  "7",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46297"
+                    },
+                    {
+                        "codigo":  "071-710",
+                        "area":  "Embarque",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "4",
+                        "pendientes":  "3",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46047"
+                    },
+                    {
+                        "codigo":  "071-712",
+                        "area":  "Embarque",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "8",
+                        "pendientes":  "8",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46357"
+                    },
+                    {
+                        "codigo":  "071-714",
+                        "area":  "Embarque",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "4",
+                        "pendientes":  "4",
+                        "parado":  "0",
+                        "ultimo_aviso":  "56658"
+                    },
+                    {
+                        "codigo":  "071-716",
+                        "area":  "Embarque",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "7",
+                        "pendientes":  "5",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46358"
+                    },
+                    {
+                        "codigo":  "071-801",
+                        "area":  "Embarque",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "1",
+                        "pendientes":  "1",
+                        "parado":  "0",
+                        "ultimo_aviso":  "45973"
+                    },
+                    {
+                        "codigo":  "GANTRY",
+                        "area":  "Embarque",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "8",
+                        "pendientes":  "8",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46068"
+                    },
+                    {
+                        "codigo":  "ROTOPALA",
+                        "area":  "Embarque",
+                        "descripcion":  null,
+                        "criticidad":  null,
+                        "num_avisos":  "15",
+                        "pendientes":  "15",
+                        "parado":  "0",
+                        "ultimo_aviso":  "46357"
+                    }
+                ],
+    "catControles":  [
+                         {
+                             "modulo":  "FILTROS H2O",
+                             "item":  "Filtro # 1",
+                             "ubicacion":  null,
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "FILTROS H2O",
+                             "item":  "Filtro # 2",
+                             "ubicacion":  null,
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "FILTROS H2O",
+                             "item":  "Filtro # 3",
+                             "ubicacion":  null,
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "FILTROS H2O",
+                             "item":  "Filtro # 4",
+                             "ubicacion":  null,
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "FILTROS H2O",
+                             "item":  "Filtro # 5",
+                             "ubicacion":  null,
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "FILTROS H2O",
+                             "item":  "Filtro Linea # 5",
+                             "ubicacion":  null,
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "FILTROS H2O",
+                             "item":  "Filtro Linea # 6",
+                             "ubicacion":  null,
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "FILTROS H2O",
+                             "item":  "Filtro Linea # 7",
+                             "ubicacion":  null,
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "FILTROS H2O",
+                             "item":  "Filtro Linea # 8",
+                             "ubicacion":  null,
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "FILTROS H2O",
+                             "item":  "Filtro Linea # 9 (01)",
+                             "ubicacion":  null,
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "FILTROS H2O",
+                             "item":  "Filtro Linea # 9 (02)",
+                             "ubicacion":  null,
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "PURGA TKS AIRE",
+                             "item":  "TK-MG-S. ROTULO",
+                             "ubicacion":  "Linea 1",
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  "I.- TK PRINCIPAL",
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "PURGA TKS AIRE",
+                             "item":  "TK-MG-001",
+                             "ubicacion":  "Linea 5",
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  "I.- TK PRINCIPAL",
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "PURGA TKS AIRE",
+                             "item":  "TK-MG-002",
+                             "ubicacion":  "Linea 8",
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  "I.- TK PRINCIPAL",
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "PURGA TKS AIRE",
+                             "item":  "TK-MG-003",
+                             "ubicacion":  "Linea 10",
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  "I.- TK PRINCIPAL",
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "PURGA TKS AIRE",
+                             "item":  "TK-MG-005",
+                             "ubicacion":  "Linea 7",
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  "I.- TK PRINCIPAL",
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "PURGA TKS AIRE",
+                             "item":  "TK-MG-006",
+                             "ubicacion":  "Linea 8",
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  "I.- TK PRINCIPAL",
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "PURGA TKS AIRE",
+                             "item":  "TK-MG-007",
+                             "ubicacion":  "MB-1",
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  "II.- TK AUXILIARES",
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "PURGA TKS AIRE",
+                             "item":  "TK-MG-004",
+                             "ubicacion":  "MB-4",
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  "II.- TK AUXILIARES",
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "PURGA TKS AIRE",
+                             "item":  "TK-MG-008",
+                             "ubicacion":  "MB-5",
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  "II.- TK AUXILIARES",
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "PURGA TKS AIRE",
+                             "item":  "TK-MG-009",
+                             "ubicacion":  "MB-6",
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  "II.- TK AUXILIARES",
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "PURGA TKS AIRE",
+                             "item":  "TK-MG-010",
+                             "ubicacion":  "MB-7",
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  "II.- TK AUXILIARES",
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "PURGA TKS AIRE",
+                             "item":  "TK-MG-011",
+                             "ubicacion":  "MB-8",
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  "II.- TK AUXILIARES",
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "PURGA TKS AIRE",
+                             "item":  "TK-MG-012",
+                             "ubicacion":  "MB-9",
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  "II.- TK AUXILIARES",
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "PURGA TKS AIRE",
+                             "item":  "TK-MG-013",
+                             "ubicacion":  "RM-9",
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  "II.- TK AUXILIARES",
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "PURGA TKS AIRE",
+                             "item":  "TK-MG-014",
+                             "ubicacion":  "MB-10",
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  "II.- TK AUXILIARES",
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "LIMPIEZA CANALETAS",
+                             "item":  "P2-T1",
+                             "ubicacion":  "Transversal · BM 032-201 / 202-202",
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "LIMPIEZA CANALETAS",
+                             "item":  "P2-H1",
+                             "ubicacion":  "Horizontal · 213-394 / 032-202",
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "LIMPIEZA CANALETAS",
+                             "item":  "P2-H2",
+                             "ubicacion":  "Horizontal · 213-233 / 032-203",
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "LIMPIEZA CANALETAS",
+                             "item":  "P2-H3",
+                             "ubicacion":  "Horizontal · 213-104 / 032-204",
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "LIMPIEZA CANALETAS",
+                             "item":  "P2-H4",
+                             "ubicacion":  "Horizontal · 213-311 / 032-205",
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "LIMPIEZA CANALETAS",
+                             "item":  "P2-H5",
+                             "ubicacion":  "Horizontal · 032-206",
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "LIMPIEZA CANALETAS",
+                             "item":  "P2-H6",
+                             "ubicacion":  "Horizontal · 032-207",
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "LIMPIEZA CANALETAS",
+                             "item":  "P2-H7",
+                             "ubicacion":  "Horizontal · 032-208",
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "LIMPIEZA CANALETAS",
+                             "item":  "P2-H8",
+                             "ubicacion":  "Horizontal · 032-209-210",
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "LIMPIEZA CANALETAS",
+                             "item":  "P2-T2",
+                             "ubicacion":  "Transversal · Colector BM",
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "LIMPIEZA CANALETAS",
+                             "item":  "P2-T3",
+                             "ubicacion":  "Transversal · Transferencia BM",
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "LIMPIEZA CANALETAS",
+                             "item":  "P2-T4",
+                             "ubicacion":  "Transversal · Descarga BM",
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "LIMPIEZA CANALETAS",
+                             "item":  "P2-T5",
+                             "ubicacion":  "Transversal · Canal principal",
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "LIMPIEZA CANALETAS",
+                             "item":  "P3-T6",
+                             "ubicacion":  "Transversal · 213-800 / 231",
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "LIMPIEZA CANALETAS",
+                             "item":  "P3-T7",
+                             "ubicacion":  "Transversal · 213-653 / 654",
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "LIMPIEZA CANALETAS",
+                             "item":  "P3-T8",
+                             "ubicacion":  "Transversal · 213-477-480",
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "LIMPIEZA CANALETAS",
+                             "item":  "P3-H9",
+                             "ubicacion":  "Horizontal · 213-243 / 242",
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "LIMPIEZA CANALETAS",
+                             "item":  "P3-CANAL C",
+                             "ubicacion":  "Transversal · Canal general",
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "LIMPIEZA CANALETAS",
+                             "item":  "P3-T9",
+                             "ubicacion":  "Transversal · 213-818 / 817",
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "LIMPIEZA SEP.MAG. COBBER",
+                             "item":  "210-097",
+                             "ubicacion":  null,
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "LIMPIEZA SEP.MAG. COBBER",
+                             "item":  "210-098",
+                             "ubicacion":  null,
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "LIMPIEZA SEP.MAG. COBBER",
+                             "item":  "210-099",
+                             "ubicacion":  null,
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "LIMPIEZA SEP.MAG. COBBER",
+                             "item":  "210-100",
+                             "ubicacion":  null,
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "LIMPIEZA SEP.MAG. COBBER",
+                             "item":  "210-114",
+                             "ubicacion":  null,
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "LIMPIEZA SEP.MAG. COBBER",
+                             "item":  "210-115",
+                             "ubicacion":  null,
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "LIMPIEZA SEP.MAG. COBBER",
+                             "item":  "210-101",
+                             "ubicacion":  null,
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "LIMPIEZA SEP.MAG. COBBER",
+                             "item":  "210-102",
+                             "ubicacion":  null,
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "LIMPIEZA SEP.MAG. COBBER",
+                             "item":  "210-103",
+                             "ubicacion":  null,
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "LIMPIEZA SEP.MAG. COBBER",
+                             "item":  "210-104",
+                             "ubicacion":  null,
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "LIMPIEZA SEP.MAG. COBBER",
+                             "item":  "210-105",
+                             "ubicacion":  null,
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "LIMPIEZA SEP.MAG. COBBER",
+                             "item":  "210-106",
+                             "ubicacion":  null,
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "LIMPIEZA SEP.MAG. COBBER",
+                             "item":  "210-107",
+                             "ubicacion":  null,
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "LIMPIEZA SEP.MAG. COBBER",
+                             "item":  "210-108",
+                             "ubicacion":  null,
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "LIMPIEZA SEP.MAG. COBBER",
+                             "item":  "210-268",
+                             "ubicacion":  null,
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "LIMPIEZA SEP.MAG. COBBER",
+                             "item":  "210-269",
+                             "ubicacion":  null,
+                             "unidad":  null,
+                             "min":  null,
+                             "max":  null,
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "REACTIVOS",
+                             "item":  "Ácido oxálico",
+                             "ubicacion":  "Consumo por turno de 12 h",
+                             "unidad":  "kg",
+                             "min":  "0",
+                             "max":  "40000",
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "REACTIVOS",
+                             "item":  "Xantato",
+                             "ubicacion":  "Concentración al 7 %, consumo por turno de 12 h",
+                             "unidad":  "kg",
+                             "min":  "0",
+                             "max":  "10000",
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "REACTIVOS",
+                             "item":  "Espumante",
+                             "ubicacion":  "Consumo del día completo",
+                             "unidad":  "kg",
+                             "min":  "0",
+                             "max":  "10000",
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "TONELADAS X TURNO",
+                             "item":  "Molino barras 1",
+                             "ubicacion":  null,
+                             "unidad":  "TMS",
+                             "min":  "0",
+                             "max":  "3000",
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "TONELADAS X TURNO",
+                             "item":  "Molino barras 2",
+                             "ubicacion":  null,
+                             "unidad":  "TMS",
+                             "min":  "0",
+                             "max":  "3000",
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "TONELADAS X TURNO",
+                             "item":  "Molino barras 3",
+                             "ubicacion":  null,
+                             "unidad":  "TMS",
+                             "min":  "0",
+                             "max":  "3000",
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "TONELADAS X TURNO",
+                             "item":  "Molino barras 4",
+                             "ubicacion":  null,
+                             "unidad":  "TMS",
+                             "min":  "0",
+                             "max":  "3000",
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "TONELADAS X TURNO",
+                             "item":  "Molino barras 5",
+                             "ubicacion":  null,
+                             "unidad":  "TMS",
+                             "min":  "0",
+                             "max":  "3000",
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "TONELADAS X TURNO",
+                             "item":  "Molino barras 6",
+                             "ubicacion":  null,
+                             "unidad":  "TMS",
+                             "min":  "0",
+                             "max":  "3000",
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "TONELADAS X TURNO",
+                             "item":  "Molino barras 7",
+                             "ubicacion":  null,
+                             "unidad":  "TMS",
+                             "min":  "0",
+                             "max":  "3000",
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "TONELADAS X TURNO",
+                             "item":  "Molino barras 8",
+                             "ubicacion":  null,
+                             "unidad":  "TMS",
+                             "min":  "0",
+                             "max":  "3000",
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "TONELADAS X TURNO",
+                             "item":  "Molino barras 9",
+                             "ubicacion":  null,
+                             "unidad":  "TMS",
+                             "min":  "0",
+                             "max":  "3000",
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "AGREGADO MEDIOS",
+                             "item":  "BARRAS RM1",
+                             "ubicacion":  "Barras en unidades (1-8: 241 kg, 9: 236 kg)",
+                             "unidad":  "unid",
+                             "min":  "0",
+                             "max":  "200",
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "AGREGADO MEDIOS",
+                             "item":  "BARRAS RM2",
+                             "ubicacion":  "Barras en unidades (1-8: 241 kg, 9: 236 kg)",
+                             "unidad":  "unid",
+                             "min":  "0",
+                             "max":  "200",
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "AGREGADO MEDIOS",
+                             "item":  "BARRAS RM3",
+                             "ubicacion":  "Barras en unidades (1-8: 241 kg, 9: 236 kg)",
+                             "unidad":  "unid",
+                             "min":  "0",
+                             "max":  "200",
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "AGREGADO MEDIOS",
+                             "item":  "BARRAS RM4",
+                             "ubicacion":  "Barras en unidades (1-8: 241 kg, 9: 236 kg)",
+                             "unidad":  "unid",
+                             "min":  "0",
+                             "max":  "200",
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "AGREGADO MEDIOS",
+                             "item":  "BARRAS RM5",
+                             "ubicacion":  "Barras en unidades (1-8: 241 kg, 9: 236 kg)",
+                             "unidad":  "unid",
+                             "min":  "0",
+                             "max":  "200",
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "AGREGADO MEDIOS",
+                             "item":  "BARRAS RM6",
+                             "ubicacion":  "Barras en unidades (1-8: 241 kg, 9: 236 kg)",
+                             "unidad":  "unid",
+                             "min":  "0",
+                             "max":  "200",
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "AGREGADO MEDIOS",
+                             "item":  "BARRAS RM7",
+                             "ubicacion":  "Barras en unidades (1-8: 241 kg, 9: 236 kg)",
+                             "unidad":  "unid",
+                             "min":  "0",
+                             "max":  "200",
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "AGREGADO MEDIOS",
+                             "item":  "BARRAS RM8",
+                             "ubicacion":  "Barras en unidades (1-8: 241 kg, 9: 236 kg)",
+                             "unidad":  "unid",
+                             "min":  "0",
+                             "max":  "200",
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "AGREGADO MEDIOS",
+                             "item":  "BARRAS 9 RM9",
+                             "ubicacion":  "Barras en unidades (1-8: 241 kg, 9: 236 kg)",
+                             "unidad":  "unid",
+                             "min":  "0",
+                             "max":  "200",
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "AGREGADO MEDIOS",
+                             "item":  "CONOS 40X50 BM1",
+                             "ubicacion":  "Conos y bolas en toneladas",
+                             "unidad":  "TM",
+                             "min":  "0",
+                             "max":  "100",
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "AGREGADO MEDIOS",
+                             "item":  "CONOS 40X50 BM2",
+                             "ubicacion":  "Conos y bolas en toneladas",
+                             "unidad":  "TM",
+                             "min":  "0",
+                             "max":  "100",
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "AGREGADO MEDIOS",
+                             "item":  "CONOS 40X50 BM3",
+                             "ubicacion":  "Conos y bolas en toneladas",
+                             "unidad":  "TM",
+                             "min":  "0",
+                             "max":  "100",
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "AGREGADO MEDIOS",
+                             "item":  "CONOS 40X50 BM4",
+                             "ubicacion":  "Conos y bolas en toneladas",
+                             "unidad":  "TM",
+                             "min":  "0",
+                             "max":  "100",
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "AGREGADO MEDIOS",
+                             "item":  "CONOS 30X35 BM5",
+                             "ubicacion":  "Conos y bolas en toneladas",
+                             "unidad":  "TM",
+                             "min":  "0",
+                             "max":  "100",
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "AGREGADO MEDIOS",
+                             "item":  "CONOS 40X50 BM6",
+                             "ubicacion":  "Conos y bolas en toneladas",
+                             "unidad":  "TM",
+                             "min":  "0",
+                             "max":  "100",
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "AGREGADO MEDIOS",
+                             "item":  "CONOS 40X50 BM7",
+                             "ubicacion":  "Conos y bolas en toneladas",
+                             "unidad":  "TM",
+                             "min":  "0",
+                             "max":  "100",
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "AGREGADO MEDIOS",
+                             "item":  "CONOS 40X50",
+                             "ubicacion":  "Conos y bolas en toneladas",
+                             "unidad":  "TM",
+                             "min":  "0",
+                             "max":  "100",
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "AGREGADO MEDIOS",
+                             "item":  "CONOS 30X35",
+                             "ubicacion":  "Conos y bolas en toneladas",
+                             "unidad":  "TM",
+                             "min":  "0",
+                             "max":  "100",
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "AGREGADO MEDIOS",
+                             "item":  "BOLAS BM8",
+                             "ubicacion":  "Conos y bolas en toneladas",
+                             "unidad":  "TM",
+                             "min":  "0",
+                             "max":  "100",
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "AGREGADO MEDIOS",
+                             "item":  "BOLAS BM9",
+                             "ubicacion":  "Conos y bolas en toneladas",
+                             "unidad":  "TM",
+                             "min":  "0",
+                             "max":  "100",
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "AGREGADO MEDIOS",
+                             "item":  "BOLAS BM10",
+                             "ubicacion":  "Conos y bolas en toneladas",
+                             "unidad":  "TM",
+                             "min":  "0",
+                             "max":  "100",
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "AGREGADO MEDIOS",
+                             "item":  "BOLAS ALTO CROM",
+                             "ubicacion":  "Conos y bolas en toneladas",
+                             "unidad":  "TM",
+                             "min":  "0",
+                             "max":  "100",
+                             "referencia":  null,
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "CARGA MOLINOS",
+                             "item":  "RM - 1",
+                             "ubicacion":  "Carga nominal según STD",
+                             "unidad":  "%",
+                             "min":  "0",
+                             "max":  "100",
+                             "referencia":  "92",
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "CARGA MOLINOS",
+                             "item":  "RM - 2",
+                             "ubicacion":  "Carga nominal según STD",
+                             "unidad":  "%",
+                             "min":  "0",
+                             "max":  "100",
+                             "referencia":  "90",
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "CARGA MOLINOS",
+                             "item":  "RM - 3",
+                             "ubicacion":  "Carga nominal según STD",
+                             "unidad":  "%",
+                             "min":  "0",
+                             "max":  "100",
+                             "referencia":  "90",
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "CARGA MOLINOS",
+                             "item":  "RM - 4",
+                             "ubicacion":  "Carga nominal según STD",
+                             "unidad":  "%",
+                             "min":  "0",
+                             "max":  "100",
+                             "referencia":  "90",
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "CARGA MOLINOS",
+                             "item":  "RM - 5",
+                             "ubicacion":  "Carga nominal según STD",
+                             "unidad":  "%",
+                             "min":  "0",
+                             "max":  "100",
+                             "referencia":  "92",
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "CARGA MOLINOS",
+                             "item":  "RM - 6",
+                             "ubicacion":  "Carga nominal según STD",
+                             "unidad":  "%",
+                             "min":  "0",
+                             "max":  "100",
+                             "referencia":  "92",
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "CARGA MOLINOS",
+                             "item":  "RM - 7",
+                             "ubicacion":  "Carga nominal según STD",
+                             "unidad":  "%",
+                             "min":  "0",
+                             "max":  "100",
+                             "referencia":  "92",
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "CARGA MOLINOS",
+                             "item":  "RM - 8",
+                             "ubicacion":  "Carga nominal según STD",
+                             "unidad":  "%",
+                             "min":  "0",
+                             "max":  "100",
+                             "referencia":  "92",
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "CARGA MOLINOS",
+                             "item":  "RM - 9",
+                             "ubicacion":  "Carga nominal según STD",
+                             "unidad":  "%",
+                             "min":  "0",
+                             "max":  "100",
+                             "referencia":  "65",
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "CARGA MOLINOS",
+                             "item":  "BM - 1",
+                             "ubicacion":  "Carga nominal según STD",
+                             "unidad":  "%",
+                             "min":  "0",
+                             "max":  "100",
+                             "referencia":  "92",
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "CARGA MOLINOS",
+                             "item":  "BM - 2",
+                             "ubicacion":  "Carga nominal según STD",
+                             "unidad":  "%",
+                             "min":  "0",
+                             "max":  "100",
+                             "referencia":  "90",
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "CARGA MOLINOS",
+                             "item":  "BM - 3",
+                             "ubicacion":  "Carga nominal según STD",
+                             "unidad":  "%",
+                             "min":  "0",
+                             "max":  "100",
+                             "referencia":  "90",
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "CARGA MOLINOS",
+                             "item":  "BM - 4",
+                             "ubicacion":  "Carga nominal según STD",
+                             "unidad":  "%",
+                             "min":  "0",
+                             "max":  "100",
+                             "referencia":  "90",
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "CARGA MOLINOS",
+                             "item":  "BM - 5",
+                             "ubicacion":  "Carga nominal según STD",
+                             "unidad":  "%",
+                             "min":  "0",
+                             "max":  "100",
+                             "referencia":  "92",
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "CARGA MOLINOS",
+                             "item":  "BM - 6",
+                             "ubicacion":  "Carga nominal según STD",
+                             "unidad":  "%",
+                             "min":  "0",
+                             "max":  "100",
+                             "referencia":  "92",
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "CARGA MOLINOS",
+                             "item":  "BM - 7",
+                             "ubicacion":  "Carga nominal según STD",
+                             "unidad":  "%",
+                             "min":  "0",
+                             "max":  "100",
+                             "referencia":  "92",
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "CARGA MOLINOS",
+                             "item":  "BM - 8",
+                             "ubicacion":  "Carga nominal según STD",
+                             "unidad":  "%",
+                             "min":  "0",
+                             "max":  "100",
+                             "referencia":  "89",
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "CARGA MOLINOS",
+                             "item":  "BM - 9",
+                             "ubicacion":  "Carga nominal según STD",
+                             "unidad":  "%",
+                             "min":  "0",
+                             "max":  "100",
+                             "referencia":  "79",
+                             "activo":  "Sí"
+                         },
+                         {
+                             "modulo":  "CARGA MOLINOS",
+                             "item":  "BM - 10",
+                             "ubicacion":  "Carga nominal según STD",
+                             "unidad":  "%",
+                             "min":  "0",
+                             "max":  "100",
+                             "referencia":  "88",
+                             "activo":  "Sí"
+                         }
+                     ]
+}
