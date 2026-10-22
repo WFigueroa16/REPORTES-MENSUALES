@@ -1,26 +1,117 @@
-// Beneficio ZA - Advanced Operator UI & Client Logic
+// Beneficio ZA - Matriz Multi-Turno Client Application Logic
 
 const state = {
   token: localStorage.getItem('za_token') || null,
   user: null,
   currentTab: 'tab-dashboard',
   date: null,
-  guardia: 'A',
-  rdoViewMode: 'focus', // 'focus' (Mi Guardia) or 'all' (3 Guardias A-B-C)
-  concFilter: 'ALL',     // 'ALL', 'GA', 'GB', 'GC'
-  equipos: [],
-  catControles: []
+  equipos: []
 };
+
+// Parameter catalog with aggregation types ('sum', 'avg', 'text')
+const RDO_SECTIONS = [
+  {
+    title: '1. TRITURACIÓN & SILOS DE FINO',
+    area: 'TRITURACION',
+    icon: 'ph-hammer',
+    color: 'text-amber-400',
+    params: [
+      { name: 'Envío de mina', type: 'text', placeholder: 'ej. C2 / NO HAY ENVIO' },
+      { name: 'Chute', type: 'text', placeholder: 'ej. 12 al 14' },
+      { name: 'Transferido (TMH)', type: 'sum', unit: 'TMH', placeholder: '0.00' },
+      { name: 'Silo 1', type: 'num', unit: 'm', placeholder: '0.0' },
+      { name: 'Silo 2', type: 'num', unit: 'm', placeholder: '0.0' },
+      { name: 'Silo 3', type: 'num', unit: 'm', placeholder: '0.0' },
+      { name: 'Silo 4', type: 'num', unit: 'm', placeholder: '0.0' },
+      { name: 'Silo 5', type: 'num', unit: 'm', placeholder: '0.0' },
+      { name: 'Silo 6', type: 'num', unit: 'm', placeholder: '0.0' },
+      { name: 'Silo 7', type: 'num', unit: 'm', placeholder: '0.0' },
+      { name: 'Silo 8', type: 'num', unit: 'm', placeholder: '0.0' },
+      { name: 'Silo 9', type: 'num', unit: 'm', placeholder: '0.0' },
+      { name: 'Linea 1 (chancadoras)', type: 'text', placeholder: 'ej. 3 C2 / 3 C7' },
+      { name: 'Linea 2 (chancadoras)', type: 'text', placeholder: 'ej. Operando chancadoras C2' }
+    ]
+  },
+  {
+    title: '2. FILTROS, DESALADORA & CALIDAD',
+    area: 'FILTROS',
+    icon: 'ph-funnel',
+    color: 'text-blue-400',
+    params: [
+      { name: '053-050 (%)', type: 'num', unit: '%', placeholder: '0.0' },
+      { name: '053-008 (%)', type: 'num', unit: '%', placeholder: '0.4' },
+      { name: '053-007 (%)', type: 'num', unit: '%', placeholder: '0.5' },
+      { name: '% Humedad (%)', type: 'avg', unit: '%', placeholder: '8.4' },
+      { name: 'Malla -325', type: 'avg', unit: '%', placeholder: '65.0' },
+      { name: '%S', type: 'avg', unit: '%', placeholder: '0.00' },
+      { name: 'TMS', type: 'sum', unit: 'TMS', placeholder: '0.00' },
+      { name: 'Bbas de captación', type: 'text', placeholder: 'ej. 3,4' },
+      { name: 'Unidades de SF', type: 'text', placeholder: 'ej. 11' },
+      { name: 'Unidades de UF', type: 'text', placeholder: 'ej. 12' },
+      { name: 'Unidades de RO', type: 'text', placeholder: 'ej. 16' },
+      { name: 'Nivel de TK - Pq 7 (m)', type: 'num', unit: 'm', placeholder: '7.8' },
+      { name: 'Flujo a Pq 7 (m3/h)', type: 'num', unit: 'm3/h', placeholder: '670' },
+      { name: 'TK de filtros (mt)', type: 'num', unit: 'mt', placeholder: '4.5' },
+      { name: 'Flujo a Filtros (m3/h)', type: 'num', unit: 'm3/h', placeholder: '360' },
+      { name: 'Conductividad Us/cm', type: 'num', unit: 'Us/cm', placeholder: '980' }
+    ]
+  },
+  {
+    title: '3. PLANTA MAGNÉTICA & MOLIENDA',
+    area: 'PLANTA MAGNETICA',
+    icon: 'ph-magnet',
+    color: 'text-amber-400',
+    params: [
+      { name: 'Tratamiento (Ton)', type: 'sum', unit: 'Ton', placeholder: '0.00' },
+      { name: 'Molinos de barras', type: 'text', placeholder: 'ej. 1,2,3,5,6,7,8,9' },
+      { name: 'Molinos de bolas', type: 'text', placeholder: 'ej. 1,2,3,4,5,6,8,9,10' },
+      { name: 'Separadores Magneticos', type: 'text', placeholder: 'ej. Operando 16 unidades' },
+      { name: 'Celdas de flotación', type: 'text', placeholder: 'ej. Normal' }
+    ]
+  },
+  {
+    title: '4. ÁREA RELAVES & BOMBEO',
+    area: 'RELAVES',
+    icon: 'ph-waves',
+    color: 'text-cyan-400',
+    params: [
+      { name: 'CB1 - Linea', type: 'text', placeholder: 'ej. AX3' },
+      { name: 'CB1 - Presión (PSI)', type: 'num', unit: 'PSI', placeholder: '110' },
+      { name: 'CB1 - Flujo (GPM)', type: 'num', unit: 'GPM', placeholder: '2800' },
+      { name: 'CB1 - BOMBAS DE RECUPERACION', type: 'text', placeholder: '1H/1V' },
+      { name: 'CB1 - NIVEL DE POZA', type: 'text', placeholder: '1.7' },
+      { name: 'R2 - Linea', type: 'text', placeholder: 'ej. L1' },
+      { name: 'R2 - Presión (PSI)', type: 'num', unit: 'PSI', placeholder: '114' },
+      { name: 'R2 - Flujo (GPM)', type: 'num', unit: 'GPM', placeholder: '2710' },
+      { name: 'R2 - BOMBAS DE RECUPERACION', type: 'text', placeholder: '4h' },
+      { name: 'CB2 - Linea', type: 'text', placeholder: 'ej. AX1' },
+      { name: 'CB2 - Presión (PSI)', type: 'num', unit: 'PSI', placeholder: '47' },
+      { name: 'CB2 - Enviado a:', type: 'text', placeholder: 'Shouxin / Choclón' }
+    ]
+  },
+  {
+    title: '5. EMBARQUE & DESPACHO',
+    area: 'EMBARQUE',
+    icon: 'ph-boat',
+    color: 'text-emerald-400',
+    params: [
+      { name: 'Nave', type: 'text', placeholder: 'ej. M/V NEW FUTURE' },
+      { name: 'Material', type: 'text', placeholder: 'FKPS' },
+      { name: 'Embarcado  (TMH)', type: 'sum', unit: 'TMH', placeholder: '0.00' },
+      { name: 'Fecha de inicio', type: 'text', placeholder: 'dd/mm/aaaa hh:mm' },
+      { name: 'Fecha de Término', type: 'text', placeholder: 'dd/mm/aaaa hh:mm' }
+    ]
+  }
+];
 
 // ==========================================
 // INITIALIZATION
 // ==========================================
 
 document.addEventListener('DOMContentLoaded', async () => {
-  setupInitialDateAndGuardia();
+  setupInitialDate();
   setupTabNavigation();
   setupEventListeners();
-  renderSilosVisual();
 
   if (state.token) {
     await checkSession();
@@ -29,66 +120,31 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
-// Setup default date & shift according to plant schedule (09:00 official start)
-function setupInitialDateAndGuardia() {
+function setupInitialDate() {
   const now = new Date();
-  const currentHour = now.getHours();
-
-  // If before 09:00, operational plant date is yesterday
-  const opDate = new Date();
-  if (currentHour < 9) {
-    opDate.setDate(opDate.getDate() - 1);
+  if (now.getHours() < 9) {
+    now.setDate(now.getDate() - 1);
   }
-  state.date = opDate.toISOString().split('T')[0];
-
-  // Determine standard shift:
-  // Guardia A: 07:00 - 15:00
-  // Guardia B: 15:00 - 23:00
-  // Guardia C: 23:00 - 07:00
-  if (currentHour >= 7 && currentHour < 15) {
-    state.guardia = 'A';
-  } else if (currentHour >= 15 && currentHour < 23) {
-    state.guardia = 'B';
-  } else {
-    state.guardia = 'C';
-  }
-
-  updateHeaderControls();
+  state.date = now.toISOString().split('T')[0];
+  updateDateDisplays();
 }
 
-function updateHeaderControls() {
-  const dateInput = document.getElementById('global-date');
-  if (dateInput) dateInput.value = state.date;
-
-  const dashDateLabel = document.getElementById('dash-date-label');
-  if (dashDateLabel) dashDateLabel.textContent = state.date;
-
-  const focusTag = document.getElementById('focus-guardia-tag');
-  if (focusTag) focusTag.textContent = state.guardia;
-
-  // Update Guardia pills
-  document.querySelectorAll('.guardia-pill-btn').forEach(btn => {
-    if (btn.dataset.guardia === state.guardia) {
-      btn.classList.add('active');
-    } else {
-      btn.classList.remove('active');
-    }
-  });
-
+function updateDateDisplays() {
+  const inp = document.getElementById('global-date');
+  if (inp) inp.value = state.date;
+  const dashBadge = document.getElementById('dash-date-badge');
+  if (dashBadge) dashBadge.textContent = state.date;
   const paradaFecha = document.getElementById('parada-fecha');
   if (paradaFecha) paradaFecha.value = state.date;
 }
 
-// Global Event Listeners
 function setupEventListeners() {
-  // Global Date change
   document.getElementById('global-date')?.addEventListener('change', (e) => {
     state.date = e.target.value;
-    updateHeaderControls();
+    updateDateDisplays();
     loadActiveTabData();
   });
 
-  // Prev / Next day buttons
   document.getElementById('btn-prev-day')?.addEventListener('click', () => {
     changeDateOffset(-1);
   });
@@ -96,61 +152,14 @@ function setupEventListeners() {
     changeDateOffset(1);
   });
 
-  // Guardia pill buttons
-  document.querySelectorAll('.guardia-pill-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      state.guardia = btn.dataset.guardia;
-      updateHeaderControls();
-      if (state.currentTab === 'tab-rdo') loadRDO();
-    });
-  });
-
-  // RDO Mode Toggle (Focus vs 3 Guardias)
-  document.getElementById('btn-mode-focus')?.addEventListener('click', () => {
-    state.rdoViewMode = 'focus';
-    document.getElementById('btn-mode-focus').classList.add('active', 'bg-amber-500', 'text-slate-950');
-    document.getElementById('btn-mode-focus').classList.remove('text-slate-400');
-    document.getElementById('btn-mode-all').classList.remove('active', 'bg-amber-500', 'text-slate-950');
-    document.getElementById('btn-mode-all').classList.add('text-slate-400');
-    loadRDO();
-  });
-
-  document.getElementById('btn-mode-all')?.addEventListener('click', () => {
-    state.rdoViewMode = 'all';
-    document.getElementById('btn-mode-all').classList.add('active', 'bg-amber-500', 'text-slate-950');
-    document.getElementById('btn-mode-all').classList.remove('text-slate-400');
-    document.getElementById('btn-mode-focus').classList.remove('active', 'bg-amber-500', 'text-slate-950');
-    document.getElementById('btn-mode-focus').classList.add('text-slate-400');
-    loadRDO();
-  });
-
-  // Copy previous shift
-  document.getElementById('btn-copy-prev-shift')?.addEventListener('click', handleCopyPrevShift);
-
-  // Concentrado shift filter
-  document.querySelectorAll('.conc-filter-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.conc-filter-btn').forEach(b => {
-        b.classList.remove('active', 'bg-amber-500', 'text-slate-950');
-        b.classList.add('text-slate-400');
-      });
-      btn.classList.add('active', 'bg-amber-500', 'text-slate-950');
-      btn.classList.remove('text-slate-400');
-
-      state.concFilter = btn.dataset.concFilter;
-      filterConcentradoRows();
-    });
-  });
-
-  // Forms and saves
   document.getElementById('login-form')?.addEventListener('submit', handleLogin);
   document.getElementById('btn-logout')?.addEventListener('click', handleLogout);
-  document.getElementById('btn-save-rdo')?.addEventListener('click', saveRDO);
+
+  document.getElementById('btn-save-rdo-matrix')?.addEventListener('click', saveRdoMatrix);
   document.getElementById('btn-save-concentrado')?.addEventListener('click', saveConcentrado);
   document.getElementById('btn-save-controles')?.addEventListener('click', saveControles);
   document.getElementById('form-parada')?.addEventListener('submit', handleCreateParada);
 
-  // User modal
   document.getElementById('btn-new-user')?.addEventListener('click', () => {
     document.getElementById('user-modal')?.classList.remove('hidden');
   });
@@ -159,23 +168,6 @@ function setupEventListeners() {
   });
   document.getElementById('form-create-user')?.addEventListener('submit', handleCreateUser);
 
-  // Subtabs Controles
-  document.querySelectorAll('.subtab-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.subtab-btn').forEach(b => {
-        b.classList.remove('active', 'bg-amber-500', 'text-slate-950');
-        b.classList.add('text-slate-400');
-      });
-      btn.classList.add('active', 'bg-amber-500', 'text-slate-950');
-      btn.classList.remove('text-slate-400');
-
-      const target = btn.dataset.subtab;
-      document.querySelectorAll('.subtab-content').forEach(c => c.classList.add('hidden'));
-      document.getElementById(target)?.classList.remove('hidden');
-    });
-  });
-
-  // Refresh
   document.getElementById('btn-refresh-kpi')?.addEventListener('click', loadDashboardKPIs);
   document.getElementById('btn-refresh-auditoria')?.addEventListener('click', loadAuditoria);
 }
@@ -185,39 +177,23 @@ function changeDateOffset(delta) {
   const cur = new Date(Date.UTC(y, m - 1, d));
   cur.setUTCDate(cur.getUTCDate() + delta);
   state.date = cur.toISOString().split('T')[0];
-  updateHeaderControls();
+  updateDateDisplays();
   loadActiveTabData();
 }
 
-// Navigation Tabs
 function setupTabNavigation() {
-  const tabBtns = document.querySelectorAll('.tab-btn');
-  tabBtns.forEach(btn => {
+  document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      switchTab(btn.dataset.tab);
+      state.currentTab = btn.dataset.tab;
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.getElementById(state.currentTab)?.classList.add('active');
+
+      loadActiveTabData();
     });
   });
-}
-
-function switchTab(tabId) {
-  state.currentTab = tabId;
-  document.querySelectorAll('.tab-btn').forEach(b => {
-    if (b.dataset.tab === tabId) {
-      b.classList.add('active');
-    } else {
-      b.classList.remove('active');
-    }
-  });
-
-  document.querySelectorAll('.tab-content').forEach(c => {
-    if (c.id === tabId) {
-      c.classList.add('active');
-    } else {
-      c.classList.remove('active');
-    }
-  });
-
-  loadActiveTabData();
 }
 
 function loadActiveTabData() {
@@ -225,13 +201,13 @@ function loadActiveTabData() {
     case 'tab-dashboard':
       loadDashboardKPIs();
       break;
-    case 'tab-rdo':
-      loadRDO();
+    case 'tab-rdo-matrix':
+      loadRdoMatrix();
       break;
-    case 'tab-concentrado':
+    case 'tab-concentrado-24h':
       loadConcentrado();
       break;
-    case 'tab-controles':
+    case 'tab-controles-turnos':
       loadControles();
       break;
     case 'tab-paradas':
@@ -270,9 +246,7 @@ async function api(endpoint, options = {}) {
   }
 
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) {
-    throw new Error(data.error || 'Error en la solicitud');
-  }
+  if (!res.ok) throw new Error(data.error || 'Error en la solicitud');
   return data;
 }
 
@@ -282,16 +256,8 @@ function connectSSE() {
     try {
       const data = JSON.parse(e.data);
       if (data.type === 'CONNECTED') return;
-
-      showToast(`Actualización en vivo: ${data.type}`, 'info');
-      if (
-        (data.type === 'RDO_UPDATE' && state.currentTab === 'tab-rdo') ||
-        (data.type === 'CONCENTRADO_UPDATE' && state.currentTab === 'tab-concentrado') ||
-        (data.type === 'PARADAS_UPDATE' && state.currentTab === 'tab-paradas')
-      ) {
-        loadActiveTabData();
-      }
-      if (state.currentTab === 'tab-dashboard') loadDashboardKPIs();
+      showToast(`Actualización en tiempo real recibida`, 'info');
+      loadActiveTabData();
     } catch {}
   };
 }
@@ -415,7 +381,6 @@ async function loadDashboardKPIs() {
     document.getElementById('kpi-horas-perdidas').textContent = Number(par.total_horas_perdidas || 0).toFixed(2);
     document.getElementById('kpi-paradas-count').textContent = par.total_paradas || 0;
 
-    // Load Guardias Quick Comparison Cards on Dashboard
     const rdoData = await api(`/api/rdo?fecha=${state.date}&guardia=ALL`);
     renderGuardiasSummaryGrid(rdoData.entries || []);
   } catch (err) {
@@ -427,38 +392,46 @@ function renderGuardiasSummaryGrid(entries) {
   const container = document.getElementById('guardias-summary-grid');
   if (!container) return;
 
-  const guardias = ['A', 'B', 'C'];
+  const guardias = [
+    { key: 'A', name: 'Guardia A', hours: '07:00 - 15:00', border: 'border-blue-900/40', badge: 'bg-blue-500 text-slate-950' },
+    { key: 'B', name: 'Guardia B', hours: '15:00 - 23:00', border: 'border-amber-900/40', badge: 'bg-amber-500 text-slate-950' },
+    { key: 'C', name: 'Guardia C', hours: '23:00 - 07:00', border: 'border-purple-900/40', badge: 'bg-purple-500 text-slate-950' }
+  ];
+
   container.innerHTML = guardias.map(g => {
-    const gEntries = entries.filter(e => e.guardia === g);
+    const gEntries = entries.filter(e => e.guardia === g.key);
     const transferido = gEntries.find(e => e.parametro === 'Transferido (TMH)')?.valor || '0';
     const envioMina = gEntries.find(e => e.parametro === 'Envío de mina')?.valor || '-';
     const humedad = gEntries.find(e => e.parametro === '% Humedad (%)')?.valor || '-';
     const tratamiento = gEntries.find(e => e.parametro === 'Tratamiento (Ton)')?.valor || '-';
 
     return `
-      <div class="bg-slate-950/70 border border-slate-800 p-4 rounded-2xl space-y-3">
-        <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+      <div class="bg-slate-950 p-4 rounded-2xl border ${g.border} space-y-3 shadow-lg">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
           <div class="flex items-center gap-2">
-            <span class="w-6 h-6 rounded-lg bg-amber-500 text-slate-950 font-black text-xs flex items-center justify-center">${g}</span>
-            <span class="font-bold text-white text-xs">Guardia ${g}</span>
+            <span class="w-6 h-6 rounded-lg ${g.badge} font-black text-xs flex items-center justify-center">${g.key}</span>
+            <div>
+              <span class="font-bold text-white text-xs block">${g.name}</span>
+              <span class="text-[10px] text-slate-500 font-mono">${g.hours}</span>
+            </div>
           </div>
-          <span class="text-[11px] text-slate-500 font-mono">${gEntries.length} params</span>
+          <span class="text-[11px] text-slate-400 font-mono bg-slate-900 px-2 py-0.5 rounded">${gEntries.length} items</span>
         </div>
         <div class="grid grid-cols-2 gap-2 text-[11px]">
           <div>
-            <span class="text-slate-500 block text-[10px]">Envío Mina:</span>
+            <span class="text-slate-500 block text-[10px] font-bold">Envío Mina:</span>
             <span class="font-mono font-bold text-slate-200 truncate block">${envioMina}</span>
           </div>
           <div>
-            <span class="text-slate-500 block text-[10px]">Transferido Sinter:</span>
+            <span class="text-slate-500 block text-[10px] font-bold">Transferido Sinter:</span>
             <span class="font-mono font-bold text-amber-400 block">${transferido} TMH</span>
           </div>
           <div>
-            <span class="text-slate-500 block text-[10px]">% Humedad:</span>
+            <span class="text-slate-500 block text-[10px] font-bold">% Humedad:</span>
             <span class="font-mono font-bold text-blue-400 block">${humedad}%</span>
           </div>
           <div>
-            <span class="text-slate-500 block text-[10px]">Tratamiento Magnética:</span>
+            <span class="text-slate-500 block text-[10px] font-bold">Tratamiento Magnética:</span>
             <span class="font-mono font-bold text-emerald-400 block">${tratamiento} Ton</span>
           </div>
         </div>
@@ -468,157 +441,256 @@ function renderGuardiasSummaryGrid(entries) {
 }
 
 // ==========================================
-// TAB 2: CAPTURA RDO
+// TAB 2: MATRIZ RDO 3 GUARDIAS (LADO A LADO)
 // ==========================================
 
-// Render 9 visual interactive silo level meters
-function renderSilosVisual() {
-  const container = document.getElementById('silos-visual-container');
+async function loadRdoMatrix() {
+  try {
+    const data = await api(`/api/rdo?fecha=${state.date}&guardia=ALL`);
+    const entries = data.entries || [];
+    const bitacora = data.bitacora || [];
+
+    // Map: key = `${area}_${parametro}_${guardia}`
+    const map = {};
+    entries.forEach(e => {
+      map[`${e.area}_${e.parametro}_${e.guardia}`] = e.valor;
+    });
+
+    renderRdoMatrixTable(map);
+    renderMatrixSilos(map);
+    renderBitacorasThreeShifts(bitacora);
+  } catch (err) {
+    showToast('Error cargando Matriz RDO: ' + err.message, 'error');
+  }
+}
+
+function renderRdoMatrixTable(map) {
+  const tbody = document.getElementById('tbody-rdo-matrix');
+  if (!tbody) return;
+
+  let html = '';
+
+  RDO_SECTIONS.forEach(sec => {
+    // Section Header Row
+    html += `
+      <tr class="bg-slate-950/90 border-y border-slate-700">
+        <td colspan="5" class="py-2.5 px-4 font-black text-xs ${sec.color} uppercase tracking-wider flex items-center gap-2">
+          <i class="ph-bold ${sec.icon} text-base"></i>
+          <span>${sec.title}</span>
+        </td>
+      </tr>
+    `;
+
+    sec.params.forEach(p => {
+      const valA = map[`${sec.area}_${p.name}_A`] || '';
+      const valB = map[`${sec.area}_${p.name}_B`] || '';
+      const valC = map[`${sec.area}_${p.name}_C`] || '';
+
+      const isNumeric = p.type === 'sum' || p.type === 'avg' || p.type === 'num';
+
+      html += `
+        <tr class="hover:bg-slate-800/40 transition-colors rdo-matrix-row" data-area="${sec.area}" data-param="${p.name}" data-calc="${p.type}">
+          <!-- Param Name -->
+          <td class="py-2 px-4 font-bold text-slate-200">
+            ${p.name} ${p.unit ? `<span class="text-slate-500 font-normal text-[10px]">(${p.unit})</span>` : ''}
+          </td>
+
+          <!-- Guardia A Cell -->
+          <td class="py-1.5 px-2 bg-blue-950/10 border-x border-slate-800/60">
+            <input type="${isNumeric ? 'number' : 'text'}" ${isNumeric ? 'step="any"' : ''}
+              value="${valA}"
+              data-guardia="A"
+              class="rdo-cell w-full bg-slate-950 border border-slate-700/80 rounded-lg px-2.5 py-1 text-xs text-white font-mono focus:border-blue-400"
+              placeholder="${p.placeholder || ''}">
+          </td>
+
+          <!-- Guardia B Cell -->
+          <td class="py-1.5 px-2 bg-amber-950/10 border-r border-slate-800/60">
+            <input type="${isNumeric ? 'number' : 'text'}" ${isNumeric ? 'step="any"' : ''}
+              value="${valB}"
+              data-guardia="B"
+              class="rdo-cell w-full bg-slate-950 border border-slate-700/80 rounded-lg px-2.5 py-1 text-xs text-white font-mono focus:border-amber-400"
+              placeholder="${p.placeholder || ''}">
+          </td>
+
+          <!-- Guardia C Cell -->
+          <td class="py-1.5 px-2 bg-purple-950/10 border-r border-slate-800/60">
+            <input type="${isNumeric ? 'number' : 'text'}" ${isNumeric ? 'step="any"' : ''}
+              value="${valC}"
+              data-guardia="C"
+              class="rdo-cell w-full bg-slate-950 border border-slate-700/80 rounded-lg px-2.5 py-1 text-xs text-white font-mono focus:border-purple-400"
+              placeholder="${p.placeholder || ''}">
+          </td>
+
+          <!-- Calculated Total/Average Day Cell -->
+          <td class="py-2 px-3 text-right font-mono font-bold text-amber-400 rdo-cell-summary">
+            -
+          </td>
+        </tr>
+      `;
+    });
+  });
+
+  tbody.innerHTML = html;
+
+  // Attach live calculation to row cells
+  tbody.querySelectorAll('.rdo-matrix-row').forEach(row => {
+    calculateMatrixRowSummary(row);
+    row.addEventListener('input', () => calculateMatrixRowSummary(row));
+  });
+}
+
+function calculateMatrixRowSummary(row) {
+  const calcType = row.dataset.calc;
+  const summaryCell = row.querySelector('.rdo-cell-summary');
+  if (!summaryCell) return;
+
+  if (calcType === 'text') {
+    summaryCell.textContent = '-';
+    return;
+  }
+
+  const vA = parseFloat(row.querySelector('input[data-guardia="A"]')?.value);
+  const vB = parseFloat(row.querySelector('input[data-guardia="B"]')?.value);
+  const vC = parseFloat(row.querySelector('input[data-guardia="C"]')?.value);
+
+  const nums = [vA, vB, vC].filter(n => !isNaN(n));
+  if (nums.length === 0) {
+    summaryCell.textContent = '-';
+    return;
+  }
+
+  if (calcType === 'sum') {
+    const total = nums.reduce((a, b) => a + b, 0);
+    summaryCell.textContent = total.toLocaleString('es-PE', { maximumFractionDigits: 2 });
+  } else if (calcType === 'avg') {
+    const avg = nums.reduce((a, b) => a + b, 0) / nums.length;
+    summaryCell.textContent = avg.toFixed(2) + ' (prom)';
+  } else {
+    // num or gauge: display last recorded value
+    const last = nums[nums.length - 1];
+    summaryCell.textContent = last.toFixed(1);
+  }
+}
+
+// Render Silos with live levels across Guardias
+function renderMatrixSilos(map) {
+  const container = document.getElementById('matrix-silos-container');
   if (!container) return;
 
   container.innerHTML = Array.from({ length: 9 }, (_, i) => {
-    const siloNum = i + 1;
+    const sNum = i + 1;
+    // Get latest non-empty level among C, B, A
+    const valC = parseFloat(map[`TRITURACION_Silo ${sNum}_C`]);
+    const valB = parseFloat(map[`TRITURACION_Silo ${sNum}_B`]);
+    const valA = parseFloat(map[`TRITURACION_Silo ${sNum}_A`]);
+
+    const activeVal = !isNaN(valC) ? valC : (!isNaN(valB) ? valB : (!isNaN(valA) ? valA : 3));
+    const pct = Math.min(100, Math.max(0, (activeVal / 5) * 100));
+
+    let barColor = 'bg-emerald-500';
+    if (activeVal < 2) barColor = 'bg-red-500';
+    else if (activeVal < 3.5) barColor = 'bg-amber-500';
+
     return `
-      <div class="silo-card bg-slate-900 border border-slate-800 p-2.5 rounded-xl flex flex-col items-center space-y-2">
-        <span class="font-mono font-black text-[11px] text-amber-400">Silo ${siloNum}</span>
+      <div class="bg-slate-900 border border-slate-800 p-2.5 rounded-xl flex flex-col items-center space-y-2">
+        <span class="font-mono font-black text-xs text-amber-400">Silo ${sNum}</span>
         
-        <!-- Vertical Bar Gauge -->
-        <div class="w-7 h-20 bg-slate-950 rounded-lg p-0.5 border border-slate-800 relative flex flex-col justify-end overflow-hidden">
-          <div id="silo-bar-${siloNum}" class="silo-bar w-full rounded-md bg-emerald-500" style="height: 60%;"></div>
+        <div class="w-8 h-20 bg-slate-950 rounded-lg p-0.5 border border-slate-800 relative flex flex-col justify-end overflow-hidden">
+          <div class="w-full rounded-md ${barColor}" style="height: ${pct}%;"></div>
         </div>
 
-        <!-- Level Number Input (Scale 0 to 5 meters) -->
-        <div class="w-full">
-          <input type="number" step="0.5" min="0" max="5" value="3"
-            data-silo-id="${siloNum}"
-            data-rdo-param="Silo ${siloNum}"
-            data-rdo-area="TRITURACION"
-            class="silo-input rdo-field w-full bg-slate-950 border border-slate-700 rounded-lg py-1 text-center font-mono font-bold text-white text-xs focus:border-amber-400"
-            placeholder="m">
+        <div class="text-[11px] font-mono text-slate-300 font-bold">
+          ${activeVal.toFixed(1)} m
         </div>
       </div>
     `;
   }).join('');
+}
 
-  // Attach live visual updates to silo inputs
-  container.querySelectorAll('.silo-input').forEach(inp => {
-    inp.addEventListener('input', () => updateSiloBarVisual(inp));
+// Render 3 separate bitacora textareas and historical logs
+function renderBitacorasThreeShifts(bitacora) {
+  ['A', 'B', 'C'].forEach(g => {
+    const histEl = document.getElementById(`bitacora-history-${g}`);
+    if (!histEl) return;
+
+    const gNotes = bitacora.filter(b => b.guardia === g);
+    if (gNotes.length === 0) {
+      histEl.innerHTML = '<span class="text-slate-600 italic">Sin notas guardadas para este turno.</span>';
+    } else {
+      histEl.innerHTML = gNotes.map(n => `
+        <div class="bg-slate-950 p-2 rounded border border-slate-800 text-[11px] mt-1">
+          <div class="text-[10px] text-slate-500 mb-0.5">${n.registrado_por} • ${n.fecha_registro}</div>
+          <p class="text-slate-300">${n.detalle}</p>
+        </div>
+      `).join('');
+    }
   });
 }
 
-function updateSiloBarVisual(input) {
-  const siloId = input.dataset.siloId;
-  const val = parseFloat(input.value) || 0;
-  const pct = Math.min(100, Math.max(0, (val / 5) * 100));
-  const bar = document.getElementById(`silo-bar-${siloId}`);
-  if (!bar) return;
+async function saveRdoMatrix() {
+  const btn = document.getElementById('btn-save-rdo-matrix');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="ph-bold ph-spinner animate-spin"></i> Guardando Matriz...';
 
-  bar.style.height = `${pct}%`;
-  if (val >= 3.5) {
-    bar.className = 'silo-bar w-full rounded-md bg-emerald-500';
-  } else if (val >= 2) {
-    bar.className = 'silo-bar w-full rounded-md bg-amber-500';
-  } else {
-    bar.className = 'silo-bar w-full rounded-md bg-red-500';
-  }
-}
-
-async function loadRDO() {
   try {
-    // Clear fields
-    document.querySelectorAll('.rdo-field').forEach(f => f.value = '');
+    const rows = document.querySelectorAll('.rdo-matrix-row');
 
-    const data = await api(`/api/rdo?fecha=${state.date}&guardia=${state.guardia}`);
+    // Group entries by Guardia and Area
+    const payloadByGuardiaArea = {
+      'A': {},
+      'B': {},
+      'C': {}
+    };
 
-    // Populate values
-    (data.entries || []).forEach(e => {
-      const field = document.querySelector(`.rdo-field[data-rdo-area="${e.area}"][data-rdo-param="${e.parametro}"]`);
-      if (field) {
-        field.value = e.valor || '';
-        if (field.classList.contains('silo-input')) {
-          updateSiloBarVisual(field);
-        }
-      }
+    rows.forEach(r => {
+      const area = r.dataset.area;
+      const param = r.dataset.param;
+
+      ['A', 'B', 'C'].forEach(g => {
+        if (!payloadByGuardiaArea[g][area]) payloadByGuardiaArea[g][area] = {};
+        const val = r.querySelector(`input[data-guardia="${g}"]`)?.value || '';
+        payloadByGuardiaArea[g][area][param] = val;
+      });
     });
 
-    // Populate Bitácora
-    const hist = document.getElementById('rdo-bitacora-history');
-    if (hist) {
-      if ((data.bitacora || []).length === 0) {
-        hist.innerHTML = '<div class="text-slate-500 text-xs italic">Sin novedades registradas para este turno.</div>';
-      } else {
-        hist.innerHTML = data.bitacora.map(b => `
-          <div class="bg-slate-900 border border-slate-800 p-2.5 rounded-xl text-xs">
-            <div class="flex items-center justify-between text-[11px] text-slate-400 mb-1">
-              <span class="font-bold text-amber-400">${b.area}</span>
-              <span>${b.registrado_por} • ${b.fecha_registro}</span>
-            </div>
-            <p class="text-slate-200">${b.detalle}</p>
-          </div>
-        `).join('');
+    // Save for each Guardia and Area
+    for (const g of ['A', 'B', 'C']) {
+      const bitacoraText = document.getElementById(`bitacora-input-${g}`)?.value || '';
+      let isFirstArea = true;
+
+      for (const [area, entries] of Object.entries(payloadByGuardiaArea[g])) {
+        await api('/api/rdo', {
+          method: 'POST',
+          body: JSON.stringify({
+            fecha: state.date,
+            guardia: g,
+            area,
+            entries,
+            bitacoraDetalle: isFirstArea && bitacoraText.trim() ? bitacoraText.trim() : null
+          })
+        });
+        isFirstArea = false;
+      }
+      if (bitacoraText.trim()) {
+        const inp = document.getElementById(`bitacora-input-${g}`);
+        if (inp) inp.value = '';
       }
     }
-  } catch (err) {
-    showToast('Error cargando RDO: ' + err.message, 'error');
-  }
-}
 
-async function saveRDO() {
-  const btn = document.getElementById('btn-save-rdo');
-  btn.disabled = true;
-  btn.innerHTML = '<i class="ph-bold ph-spinner animate-spin"></i> Guardando...';
-
-  try {
-    const areas = ['TRITURACION', 'FILTROS', 'PLANTA MAGNETICA', 'RELAVES'];
-    const bitacora = document.getElementById('rdo-bitacora-input').value;
-
-    for (const area of areas) {
-      const entries = {};
-      document.querySelectorAll(`.rdo-field[data-rdo-area="${area}"]`).forEach(inp => {
-        entries[inp.dataset.rdoParam] = inp.value;
-      });
-
-      await api('/api/rdo', {
-        method: 'POST',
-        body: JSON.stringify({
-          fecha: state.date,
-          guardia: state.guardia,
-          area,
-          entries,
-          bitacoraDetalle: area === 'TRITURACION' ? bitacora : null
-        })
-      });
-    }
-
-    document.getElementById('rdo-bitacora-input').value = '';
-    showToast('Reporte RDO guardado y sincronizado con éxito', 'success');
-    loadRDO();
+    showToast('Matriz RDO de las 3 Guardias guardada y sincronizada exitosamente', 'success');
+    loadRdoMatrix();
     loadDashboardKPIs();
   } catch (err) {
-    showToast('Error guardando RDO: ' + err.message, 'error');
+    showToast('Error guardando matriz: ' + err.message, 'error');
   } finally {
     btn.disabled = false;
-    btn.innerHTML = '<i class="ph-bold ph-floppy-disk text-base"></i> Guardar RDO';
-  }
-}
-
-async function handleCopyPrevShift() {
-  if (!confirm(`¿Copiar estados y líneas de la guardia anterior hacia Guardia ${state.guardia}?`)) return;
-
-  try {
-    const res = await api('/api/rdo/copy-previous', {
-      method: 'POST',
-      body: JSON.stringify({ fecha: state.date, targetGuardia: state.guardia })
-    });
-    showToast(res.message, 'success');
-    loadRDO();
-  } catch (err) {
-    showToast(err.message, 'error');
+    btn.innerHTML = '<i class="ph-bold ph-floppy-disk text-base"></i> Guardar Matriz Completa';
   }
 }
 
 // ==========================================
-// TAB 3: PRODUCCIÓN HORARIA
+// TAB 3: PRODUCCIÓN 24H CON SUB-TOTALES POR TURNO
 // ==========================================
 
 async function loadConcentrado() {
@@ -627,130 +699,173 @@ async function loadConcentrado() {
     const tbody = document.getElementById('tbody-concentrado');
     if (!tbody) return;
 
-    tbody.innerHTML = rows.map((r, i) => {
-      // Determine shift tag for each hour
-      // Hours 1-8: Guardia A (09:00 - 17:00)
-      // Hours 9-16: Guardia B (17:00 - 01:00)
-      // Hours 17-24: Guardia C (01:00 - 09:00)
-      let shiftTag = 'GA';
-      let shiftBadge = '<span class="text-[9px] px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-400 font-bold ml-1">G-A</span>';
-      if (r.num_hora >= 9 && r.num_hora <= 16) {
-        shiftTag = 'GB';
-        shiftBadge = '<span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 font-bold ml-1">G-B</span>';
-      } else if (r.num_hora >= 17) {
-        shiftTag = 'GC';
-        shiftBadge = '<span class="text-[9px] px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-400 font-bold ml-1">G-C</span>';
-      }
+    let html = '';
 
-      return `
-        <tr class="hover:bg-slate-800/60 transition-colors conc-row" data-hora-idx="${r.num_hora}" data-shift="${shiftTag}">
-          <td class="py-2.5 px-3 font-mono font-bold text-slate-300 whitespace-nowrap">
-            ${r.hora} ${shiftBadge}
-          </td>
-          <td class="py-2 px-2 text-right">
-            <input type="number" step="any" value="${r.mineral_tms || ''}" class="conc-mineral w-24 bg-slate-950 border border-slate-700/80 rounded-lg px-2.5 py-1.5 text-right text-white font-mono focus:border-amber-400">
-          </td>
-          <td class="py-2 px-2 text-right">
-            <input type="number" step="any" value="${r.concentrado_tms || ''}" class="conc-prod w-24 bg-slate-950 border border-slate-700/80 rounded-lg px-2.5 py-1.5 text-right text-amber-300 font-mono font-bold focus:border-amber-400">
-          </td>
-          <td class="py-2 px-2 text-right">
-            <input type="number" step="any" value="${r.s_pct || ''}" class="conc-s w-20 bg-slate-950 border border-slate-700/80 rounded-lg px-2 py-1.5 text-right text-white font-mono focus:border-amber-400">
-          </td>
-          <td class="py-2 px-2 text-right">
-            <input type="number" step="any" value="${r.esp_n_fe_sol || ''}" class="conc-fesol w-20 bg-slate-950 border border-slate-700/80 rounded-lg px-2 py-1.5 text-right text-white font-mono focus:border-amber-400">
-          </td>
-          <td class="py-2 px-2 text-right">
-            <input type="number" step="any" value="${r.esp_n_feo || ''}" class="conc-feo w-20 bg-slate-950 border border-slate-700/80 rounded-lg px-2 py-1.5 text-right text-white font-mono focus:border-amber-400">
-          </td>
-          <td class="py-2 px-2 text-right">
-            <input type="number" step="any" value="${r.h2o_pct || ''}" class="conc-h2o w-20 bg-slate-950 border border-slate-700/80 rounded-lg px-2 py-1.5 text-right text-white font-mono focus:border-amber-400">
-          </td>
-          <td class="py-2.5 px-3 text-right font-mono font-black text-emerald-400 calc-recup">
-            ${r.recup_pct ? r.recup_pct + '%' : '-'}
-          </td>
-          <td class="py-2.5 px-3 text-right font-mono font-black text-purple-400 calc-ratio">
-            ${r.ratio ? r.ratio : '-'}
-          </td>
-          <td class="py-2 px-2">
-            <input type="text" value="${r.obs_magnetica || ''}" placeholder="Obs..." class="conc-obs w-full min-w-[130px] bg-slate-950 border border-slate-700/80 rounded-lg px-2.5 py-1.5 text-slate-300">
+    // Split 24 hours into 3 shifts
+    const shiftRanges = [
+      { name: 'GUARDIA A (09:00 - 17:00)', key: 'A', start: 1, end: 8, badge: 'bg-blue-500 text-slate-950', border: 'border-blue-900/50' },
+      { name: 'GUARDIA B (17:00 - 01:00)', key: 'B', start: 9, end: 16, badge: 'bg-amber-500 text-slate-950', border: 'border-amber-900/50' },
+      { name: 'GUARDIA C (01:00 - 09:00)', key: 'C', start: 17, end: 24, badge: 'bg-purple-500 text-slate-950', border: 'border-purple-900/50' }
+    ];
+
+    shiftRanges.forEach(shift => {
+      // Shift Header Row
+      html += `
+        <tr class="bg-slate-950/80 border-y border-slate-700">
+          <td colspan="10" class="py-2.5 px-4 font-black text-xs text-white uppercase tracking-wider flex items-center justify-between">
+            <span class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded ${shift.badge} font-black">${shift.key}</span>
+              <span>${shift.name}</span>
+            </span>
+            <span class="text-[11px] text-slate-400 font-mono font-normal">8 Horas de Operación</span>
           </td>
         </tr>
       `;
-    }).join('');
 
-    tbody.querySelectorAll('tr').forEach(tr => {
+      // 8 Hour rows for this shift
+      const shiftRows = rows.filter(r => r.num_hora >= shift.start && r.num_hora <= shift.end);
+      shiftRows.forEach(r => {
+        html += `
+          <tr class="hover:bg-slate-800/40 transition-colors conc-row" data-hora-idx="${r.num_hora}" data-shift="${shift.key}">
+            <td class="py-2 px-3 font-mono font-bold text-slate-300 whitespace-nowrap">
+              ${r.hora}
+            </td>
+            <td class="py-1.5 px-2 text-right">
+              <input type="number" step="any" value="${r.mineral_tms || ''}" class="conc-mineral w-24 bg-slate-950 border border-slate-700 rounded-lg px-2 py-1 text-right text-white font-mono focus:border-amber-400">
+            </td>
+            <td class="py-1.5 px-2 text-right">
+              <input type="number" step="any" value="${r.concentrado_tms || ''}" class="conc-prod w-24 bg-slate-950 border border-slate-700 rounded-lg px-2 py-1 text-right text-amber-300 font-mono font-bold focus:border-amber-400">
+            </td>
+            <td class="py-1.5 px-2 text-right">
+              <input type="number" step="any" value="${r.s_pct || ''}" class="conc-s w-20 bg-slate-950 border border-slate-700 rounded-lg px-2 py-1 text-right text-white font-mono focus:border-amber-400">
+            </td>
+            <td class="py-1.5 px-2 text-right">
+              <input type="number" step="any" value="${r.esp_n_fe_sol || ''}" class="conc-fesol w-20 bg-slate-950 border border-slate-700 rounded-lg px-2 py-1 text-right text-white font-mono focus:border-amber-400">
+            </td>
+            <td class="py-1.5 px-2 text-right">
+              <input type="number" step="any" value="${r.esp_n_feo || ''}" class="conc-feo w-20 bg-slate-950 border border-slate-700 rounded-lg px-2 py-1 text-right text-white font-mono focus:border-amber-400">
+            </td>
+            <td class="py-1.5 px-2 text-right">
+              <input type="number" step="any" value="${r.h2o_pct || ''}" class="conc-h2o w-20 bg-slate-950 border border-slate-700 rounded-lg px-2 py-1 text-right text-white font-mono focus:border-amber-400">
+            </td>
+            <td class="py-2 px-3 text-right font-mono font-black text-emerald-400 calc-recup">
+              ${r.recup_pct ? r.recup_pct + '%' : '-'}
+            </td>
+            <td class="py-2 px-3 text-right font-mono font-black text-purple-400 calc-ratio">
+              ${r.ratio ? r.ratio : '-'}
+            </td>
+            <td class="py-1.5 px-2">
+              <input type="text" value="${r.obs_magnetica || ''}" placeholder="Obs..." class="conc-obs w-full min-w-[130px] bg-slate-950 border border-slate-700 rounded-lg px-2 py-1 text-slate-300">
+            </td>
+          </tr>
+        `;
+      });
+
+      // Shift Subtotal Row
+      html += `
+        <tr class="bg-slate-900 border-b-2 border-slate-700 font-bold text-xs" id="subtotal-row-${shift.key}">
+          <td class="py-2.5 px-3 uppercase text-amber-400">SUBTOTAL ${shift.name.split(' ')[0]} ${shift.name.split(' ')[1]}</td>
+          <td class="py-2.5 px-2 text-right font-mono text-white sub-mineral">0.00</td>
+          <td class="py-2.5 px-2 text-right font-mono text-amber-400 sub-conc">0.00</td>
+          <td colspan="4" class="py-2.5 px-2 text-right text-slate-400 text-[11px]">Ley Prom: <span class="font-mono text-white sub-ley">0.0%</span></td>
+          <td class="py-2.5 px-3 text-right font-mono text-emerald-400 sub-recup">0.0%</td>
+          <td class="py-2.5 px-3 text-right font-mono text-purple-400 sub-ratio">0.00</td>
+          <td></td>
+        </tr>
+      `;
+    });
+
+    tbody.innerHTML = html;
+
+    // Attach listener
+    tbody.querySelectorAll('.conc-row').forEach(tr => {
       tr.addEventListener('input', () => {
         calculateConcentradoRow(tr);
-        updateConcentradoSummaryStrip();
+        update24hTotalsAndSubtotals();
       });
     });
 
-    filterConcentradoRows();
-    updateConcentradoSummaryStrip();
+    update24hTotalsAndSubtotals();
   } catch (err) {
-    showToast('Error cargando Producción: ' + err.message, 'error');
+    showToast('Error cargando Producción 24h: ' + err.message, 'error');
   }
 }
 
-function filterConcentradoRows() {
-  document.querySelectorAll('.conc-row').forEach(tr => {
-    if (state.concFilter === 'ALL' || tr.dataset.shift === state.concFilter) {
-      tr.style.display = '';
-    } else {
-      tr.style.display = 'none';
-    }
-  });
-  updateConcentradoSummaryStrip();
-}
-
 function calculateConcentradoRow(tr) {
-  const mineral = parseFloat(tr.querySelector('.conc-mineral')?.value) || 0;
+  const min = parseFloat(tr.querySelector('.conc-mineral')?.value) || 0;
   const conc = parseFloat(tr.querySelector('.conc-prod')?.value) || 0;
   const feSol = parseFloat(tr.querySelector('.conc-fesol')?.value) || 0;
 
   const recupCell = tr.querySelector('.calc-recup');
   const ratioCell = tr.querySelector('.calc-ratio');
 
-  if (mineral > 0 && conc > 0 && feSol > 0) {
-    const recup = (conc * 68) / (mineral * feSol) * 100;
-    const ratio = mineral / conc;
-    recupCell.textContent = recup.toFixed(2) + '%';
-    ratioCell.textContent = ratio.toFixed(2);
+  if (min > 0 && conc > 0 && feSol > 0) {
+    recupCell.textContent = ((conc * 68) / (min * feSol) * 100).toFixed(2) + '%';
+    ratioCell.textContent = (min / conc).toFixed(2);
   } else {
     recupCell.textContent = '-';
     ratioCell.textContent = '-';
   }
 }
 
-function updateConcentradoSummaryStrip() {
-  let totalMineral = 0;
-  let totalConc = 0;
-  let sumFeSol = 0;
-  let countFeSol = 0;
+function update24hTotalsAndSubtotals() {
+  let totalMineralDay = 0;
+  let totalConcDay = 0;
+  let sumFeSolDay = 0;
+  let countFeSolDay = 0;
 
-  document.querySelectorAll('.conc-row').forEach(tr => {
-    if (tr.style.display === 'none') return;
-    const min = parseFloat(tr.querySelector('.conc-mineral')?.value) || 0;
-    const conc = parseFloat(tr.querySelector('.conc-prod')?.value) || 0;
-    const feSol = parseFloat(tr.querySelector('.conc-fesol')?.value) || 0;
+  ['A', 'B', 'C'].forEach(g => {
+    let subMin = 0;
+    let subConc = 0;
+    let sumFeSol = 0;
+    let countFeSol = 0;
 
-    totalMineral += min;
-    totalConc += conc;
-    if (feSol > 0) {
-      sumFeSol += feSol;
-      countFeSol++;
+    document.querySelectorAll(`.conc-row[data-shift="${g}"]`).forEach(tr => {
+      const min = parseFloat(tr.querySelector('.conc-mineral')?.value) || 0;
+      const conc = parseFloat(tr.querySelector('.conc-prod')?.value) || 0;
+      const feSol = parseFloat(tr.querySelector('.conc-fesol')?.value) || 0;
+
+      subMin += min;
+      subConc += conc;
+      if (feSol > 0) {
+        sumFeSol += feSol;
+        countFeSol++;
+      }
+    });
+
+    totalMineralDay += subMin;
+    totalConcDay += subConc;
+    sumFeSolDay += sumFeSol;
+    countFeSolDay += countFeSol;
+
+    const avgFe = countFeSol > 0 ? (sumFeSol / countFeSol) : 0;
+    const recup = (subMin > 0 && subConc > 0 && avgFe > 0) ? ((subConc * 68) / (subMin * avgFe) * 100) : 0;
+    const ratio = subConc > 0 ? (subMin / subConc) : 0;
+
+    // Subtotal table row
+    const subRow = document.getElementById(`subtotal-row-${g}`);
+    if (subRow) {
+      subRow.querySelector('.sub-mineral').textContent = subMin.toFixed(2);
+      subRow.querySelector('.sub-conc').textContent = subConc.toFixed(2);
+      subRow.querySelector('.sub-ley').textContent = avgFe.toFixed(2) + '%';
+      subRow.querySelector('.sub-recup').textContent = recup.toFixed(2) + '%';
+      subRow.querySelector('.sub-ratio').textContent = ratio.toFixed(2);
     }
+
+    // Top banner card
+    const bannerEl = document.getElementById(`conc-subtotal-${g}`);
+    if (bannerEl) bannerEl.textContent = subConc.toFixed(2) + ' TMS';
+    const recupEl = document.getElementById(`conc-recup-${g}`);
+    if (recupEl) recupEl.textContent = `Recup: ${recup.toFixed(1)}%`;
   });
 
-  const avgFeSol = countFeSol > 0 ? (sumFeSol / countFeSol) : 0;
-  const avgRecup = (totalMineral > 0 && totalConc > 0 && avgFeSol > 0) ? ((totalConc * 68) / (totalMineral * avgFeSol) * 100) : 0;
-  const avgRatio = totalConc > 0 ? (totalMineral / totalConc) : 0;
+  const avgFeDay = countFeSolDay > 0 ? (sumFeSolDay / countFeSolDay) : 0;
+  const recupDay = (totalMineralDay > 0 && totalConcDay > 0 && avgFeDay > 0) ? ((totalConcDay * 68) / (totalMineralDay * avgFeDay) * 100) : 0;
 
-  document.getElementById('conc-sum-mineral').textContent = totalMineral.toFixed(2) + ' TMS';
-  document.getElementById('conc-sum-conc').textContent = totalConc.toFixed(2) + ' TMS';
-  document.getElementById('conc-avg-fesol').textContent = avgFeSol.toFixed(2) + '%';
-  document.getElementById('conc-avg-recup').textContent = avgRecup.toFixed(2) + '%';
-  document.getElementById('conc-avg-ratio').textContent = avgRatio.toFixed(2);
+  const dayTotalEl = document.getElementById('conc-total-day');
+  if (dayTotalEl) dayTotalEl.textContent = totalConcDay.toFixed(2) + ' TMS';
+  const dayRecupEl = document.getElementById('conc-recup-day');
+  if (dayRecupEl) dayRecupEl.textContent = `Recup: ${recupDay.toFixed(1)}%`;
 }
 
 async function saveConcentrado() {
@@ -760,10 +875,10 @@ async function saveConcentrado() {
 
   try {
     const rows = [];
-    document.querySelectorAll('#tbody-concentrado tr').forEach(tr => {
+    document.querySelectorAll('#tbody-concentrado tr.conc-row').forEach(tr => {
       rows.push({
         num_hora: Number(tr.dataset.horaIdx),
-        hora: tr.querySelector('td:first-child').textContent.split(' ')[0],
+        hora: tr.querySelector('td:first-child').textContent.trim(),
         mineral_tms: tr.querySelector('.conc-mineral').value,
         concentrado_tms: tr.querySelector('.conc-prod').value,
         s_pct: tr.querySelector('.conc-s').value,
@@ -786,54 +901,78 @@ async function saveConcentrado() {
     showToast('Error: ' + err.message, 'error');
   } finally {
     btn.disabled = false;
-    btn.innerHTML = '<i class="ph-bold ph-floppy-disk text-base"></i> Guardar 24h';
+    btn.innerHTML = '<i class="ph-bold ph-floppy-disk text-base"></i> Guardar Producción 24h';
   }
 }
 
 // ==========================================
-// TAB 4: CONTROLES DE PLANTA
+// TAB 4: CONTROLES DE PLANTA (1°, 2°, 3° TURNO LADO A LADO)
 // ==========================================
 
 async function loadControles() {
   try {
     const saved = await api(`/api/controles?fecha=${state.date}`);
     const savedMap = {};
-    saved.forEach(s => savedMap[`${s.modulo}_${s.item}_${s.turno}`] = s.valor);
+    saved.forEach(s => savedMap[`${s.modulo}_${s.item}_${s.turno}`] = { valor: s.valor, obs: s.observacion });
 
-    // 1. Filtros H2O
-    const filtrosGrid = document.getElementById('filtros-h2o-grid');
-    if (filtrosGrid) {
+    // 1. Filtros H2O: 3 Turnos en paralelo por cada filtro
+    const filtrosTbody = document.getElementById('tbody-filtros-turnos');
+    if (filtrosTbody) {
       const items = [
         'Filtro # 1', 'Filtro # 2', 'Filtro # 3', 'Filtro # 4', 'Filtro # 5',
         'Filtro Linea # 5', 'Filtro Linea # 6', 'Filtro Linea # 7', 'Filtro Linea # 8'
       ];
 
-      filtrosGrid.innerHTML = items.map(item => {
-        const val = savedMap[`FILTROS_H2O_${item}_1`] || 'OK';
-        const isOk = val === 'OK';
+      filtrosTbody.innerHTML = items.map(item => {
+        const v1 = savedMap[`FILTROS_H2O_${item}_1`]?.valor || 'OK';
+        const v2 = savedMap[`FILTROS_H2O_${item}_2`]?.valor || 'OK';
+        const v3 = savedMap[`FILTROS_H2O_${item}_3`]?.valor || 'OK';
+        const obs = savedMap[`FILTROS_H2O_${item}_1`]?.obs || '';
+
         return `
-          <div class="bg-slate-950/70 border border-slate-800 p-4 rounded-2xl flex items-center justify-between" data-control-item="${item}">
-            <div>
-              <span class="text-xs font-black text-white block">${item}</span>
-              <span class="text-[10px] text-slate-500 font-bold uppercase">Estado Operativo</span>
-            </div>
-            <button type="button" class="btn-toggle-filtro px-5 py-2 rounded-xl font-black text-xs transition-all ${isOk ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shadow-lg shadow-emerald-500/10' : 'bg-red-500/20 text-red-400 border border-red-500/40 shadow-lg shadow-red-500/10'}" data-status="${val}">
-              ${val}
-            </button>
-          </div>
+          <tr class="hover:bg-slate-800/40 transition-colors" data-filtro-item="${item}">
+            <td class="py-2.5 px-4 font-mono font-bold text-white">${item}</td>
+
+            <!-- Turno 1 Button -->
+            <td class="py-2 px-3 text-center bg-blue-950/10">
+              <button type="button" class="btn-turno-filtro px-3.5 py-1 rounded-lg font-bold text-xs ${v1 === 'OK' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' : 'bg-red-500/20 text-red-400 border border-red-500/40'}" data-turno="1" data-status="${v1}">
+                ${v1}
+              </button>
+            </td>
+
+            <!-- Turno 2 Button -->
+            <td class="py-2 px-3 text-center bg-amber-950/10">
+              <button type="button" class="btn-turno-filtro px-3.5 py-1 rounded-lg font-bold text-xs ${v2 === 'OK' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' : 'bg-red-500/20 text-red-400 border border-red-500/40'}" data-turno="2" data-status="${v2}">
+                ${v2}
+              </button>
+            </td>
+
+            <!-- Turno 3 Button -->
+            <td class="py-2 px-3 text-center bg-purple-950/10">
+              <button type="button" class="btn-turno-filtro px-3.5 py-1 rounded-lg font-bold text-xs ${v3 === 'OK' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' : 'bg-red-500/20 text-red-400 border border-red-500/40'}" data-turno="3" data-status="${v3}">
+                ${v3}
+              </button>
+            </td>
+
+            <td class="py-2 px-3 text-center filtro-status-badge font-bold text-xs">
+              ${v1 === 'OK' && v2 === 'OK' && v3 === 'OK' ? '<span class="text-emerald-400">100% OPERATIVO</span>' : '<span class="text-amber-400">CON PARADAS</span>'}
+            </td>
+
+            <td class="py-2 px-3">
+              <input type="text" value="${obs}" placeholder="Observación..." class="filtro-obs w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1 text-slate-300">
+            </td>
+          </tr>
         `;
       }).join('');
 
-      filtrosGrid.querySelectorAll('.btn-toggle-filtro').forEach(btn => {
+      filtrosTbody.querySelectorAll('.btn-turno-filtro').forEach(btn => {
         btn.addEventListener('click', () => {
           const next = btn.dataset.status === 'OK' ? 'FALLA' : 'OK';
           btn.dataset.status = next;
           btn.textContent = next;
-          btn.className = `btn-toggle-filtro px-5 py-2 rounded-xl font-black text-xs transition-all ${next === 'OK' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shadow-lg shadow-emerald-500/10' : 'bg-red-500/20 text-red-400 border border-red-500/40 shadow-lg shadow-red-500/10'}`;
-          updateFiltrosSummary();
+          btn.className = `btn-turno-filtro px-3.5 py-1 rounded-lg font-bold text-xs ${next === 'OK' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' : 'bg-red-500/20 text-red-400 border border-red-500/40'}`;
         });
       });
-      updateFiltrosSummary();
     }
 
     // 2. Purga Tanques de Aire
@@ -851,24 +990,31 @@ async function loadControles() {
         { name: 'TK-MG-008', loc: 'MB-5' }
       ];
 
-      purgaTbody.innerHTML = tks.map(t => `
-        <tr data-purga-item="${t.name}">
-          <td class="py-2.5 px-3 font-mono font-bold text-slate-200">${t.name}</td>
-          <td class="py-2.5 px-3 text-slate-400">${t.loc}</td>
-          <td class="py-2 px-3 text-center">
-            <input type="checkbox" class="purga-t1 w-4 h-4 accent-amber-500 rounded" ${savedMap[`PURGA_TKS_${t.name}_1`] === 'OK' ? 'checked' : ''}>
-          </td>
-          <td class="py-2 px-3 text-center">
-            <input type="checkbox" class="purga-t2 w-4 h-4 accent-amber-500 rounded" ${savedMap[`PURGA_TKS_${t.name}_2`] === 'OK' ? 'checked' : ''}>
-          </td>
-          <td class="py-2 px-3 text-center">
-            <input type="checkbox" class="purga-t3 w-4 h-4 accent-amber-500 rounded" ${savedMap[`PURGA_TKS_${t.name}_3`] === 'OK' ? 'checked' : ''}>
-          </td>
-          <td class="py-2 px-3">
-            <input type="text" class="purga-obs w-full bg-slate-950 border border-slate-700/80 rounded-lg px-2.5 py-1 text-slate-200" placeholder="Normal">
-          </td>
-        </tr>
-      `).join('');
+      purgaTbody.innerHTML = tks.map(t => {
+        const c1 = savedMap[`PURGA_TKS_${t.name}_1`]?.valor === 'OK';
+        const c2 = savedMap[`PURGA_TKS_${t.name}_2`]?.valor === 'OK';
+        const c3 = savedMap[`PURGA_TKS_${t.name}_3`]?.valor === 'OK';
+        const obs = savedMap[`PURGA_TKS_${t.name}_1`]?.obs || '';
+
+        return `
+          <tr data-purga-item="${t.name}">
+            <td class="py-2.5 px-4 font-mono font-bold text-slate-200">${t.name}</td>
+            <td class="py-2.5 px-3 text-slate-400">${t.loc}</td>
+            <td class="py-2 px-3 text-center bg-blue-950/10">
+              <input type="checkbox" class="purga-t1 w-4 h-4 accent-amber-500 rounded" ${c1 ? 'checked' : ''}>
+            </td>
+            <td class="py-2 px-3 text-center bg-amber-950/10">
+              <input type="checkbox" class="purga-t2 w-4 h-4 accent-amber-500 rounded" ${c2 ? 'checked' : ''}>
+            </td>
+            <td class="py-2 px-3 text-center bg-purple-950/10">
+              <input type="checkbox" class="purga-t3 w-4 h-4 accent-amber-500 rounded" ${c3 ? 'checked' : ''}>
+            </td>
+            <td class="py-2 px-3">
+              <input type="text" value="${obs}" class="purga-obs w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1 text-slate-300" placeholder="Normal">
+            </td>
+          </tr>
+        `;
+      }).join('');
     }
 
     // 3. Separadores Cobber
@@ -881,7 +1027,7 @@ async function loadControles() {
       ];
 
       cobberGrid.innerHTML = cobbers.map(c => {
-        const checked = savedMap[`COBBER_${c}_1`] === 'OK';
+        const checked = savedMap[`COBBER_${c}_1`]?.valor === 'OK';
         return `
           <button type="button" class="btn-cobber p-3 rounded-2xl border text-center font-mono font-bold text-xs transition-all ${checked ? 'bg-amber-500/20 text-amber-400 border-amber-500/40 shadow-lg shadow-amber-500/10' : 'bg-slate-950 text-slate-400 border-slate-800'}" data-cobber-id="${c}" data-checked="${checked}">
             <div>${c}</div>
@@ -905,33 +1051,20 @@ async function loadControles() {
   }
 }
 
-function updateFiltrosSummary() {
-  let okCount = 0;
-  const buttons = document.querySelectorAll('.btn-toggle-filtro');
-  buttons.forEach(b => {
-    if (b.dataset.status === 'OK') okCount++;
-  });
-  const total = buttons.length || 9;
-  const pct = Math.round((okCount / total) * 100);
-
-  const countEl = document.getElementById('filtros-operativos-count');
-  const pctEl = document.getElementById('filtros-cumplimiento-pct');
-  if (countEl) countEl.textContent = `${okCount} de ${total}`;
-  if (pctEl) pctEl.textContent = `${pct}%`;
-}
-
 async function saveControles() {
   const btn = document.getElementById('btn-save-controles');
   btn.disabled = true;
   btn.innerHTML = '<i class="ph-bold ph-spinner animate-spin"></i> Guardando...';
 
   try {
+    // 1. Filtros H2O
     const filtrosEntries = [];
-    document.querySelectorAll('#filtros-h2o-grid [data-control-item]').forEach(el => {
-      filtrosEntries.push({
-        item: el.dataset.controlItem,
-        turno: '1',
-        valor: el.querySelector('.btn-toggle-filtro').dataset.status
+    document.querySelectorAll('#tbody-filtros-turnos tr').forEach(tr => {
+      const item = tr.dataset.filtroItem;
+      const obs = tr.querySelector('.filtro-obs').value;
+      [1, 2, 3].forEach(t => {
+        const status = tr.querySelector(`button[data-turno="${t}"]`).dataset.status;
+        filtrosEntries.push({ item, turno: String(t), valor: status, observacion: obs });
       });
     });
     if (filtrosEntries.length > 0) {
@@ -941,6 +1074,7 @@ async function saveControles() {
       });
     }
 
+    // 2. Purga Tanques
     const purgaEntries = [];
     document.querySelectorAll('#tbody-purga-tks tr').forEach(tr => {
       const item = tr.dataset.purgaItem;
@@ -956,6 +1090,7 @@ async function saveControles() {
       });
     }
 
+    // 3. Cobber
     const cobberEntries = [];
     document.querySelectorAll('.btn-cobber').forEach(btn => {
       cobberEntries.push({
@@ -971,7 +1106,7 @@ async function saveControles() {
       });
     }
 
-    showToast('Controles de planta guardados exitosamente', 'success');
+    showToast('Controles de los 3 turnos guardados exitosamente', 'success');
   } catch (err) {
     showToast('Error: ' + err.message, 'error');
   } finally {
@@ -1047,7 +1182,7 @@ async function handleCreateParada(e) {
 }
 
 async function deleteParada(id) {
-  if (!confirm('¿Desea eliminar este registro de parada?')) return;
+  if (!confirm('¿Desea eliminar esta parada registrada?')) return;
   try {
     await api(`/api/paradas/${id}`, { method: 'DELETE' });
     showToast('Parada eliminada', 'info');
