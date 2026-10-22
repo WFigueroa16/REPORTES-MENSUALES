@@ -1,5 +1,5 @@
-/* Beneficio ZA - Custom App Styles */
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+/* Beneficio ZA - Modern Operator UI Styles */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
 
 :root {
   font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
@@ -9,27 +9,23 @@
   font-family: 'JetBrains Mono', monospace;
 }
 
-.bg-slate-850 {
-  background-color: #172033;
-}
-
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #0f172a;
+  background: #090d16;
 }
 ::-webkit-scrollbar-thumb {
-  background: #334155;
+  background: #1e293b;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #475569;
+  background: #334155;
 }
 
-/* Tab buttons styling */
+/* Tab navigation buttons */
 .tab-btn {
   color: #94a3b8;
   border: 1px solid transparent;
@@ -43,10 +39,23 @@
   color: #f59e0b;
   background-color: #1e293b;
   border-color: #334155;
-  font-weight: 700;
+  font-weight: 800;
 }
 
-/* Tab contents display */
+/* Guardias pill buttons */
+.guardia-pill-btn {
+  color: #94a3b8;
+}
+.guardia-pill-btn:hover {
+  color: #f8fafc;
+}
+.guardia-pill-btn.active {
+  background-color: #f59e0b;
+  color: #020617;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+}
+
+/* Tab Content Transitions */
 .tab-content {
   display: none;
 }
@@ -56,16 +65,35 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(3px); }
+  from { opacity: 0; transform: translateY(4px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Numeric input highlight */
-input[type="number"]:focus {
-  background-color: #0b1120;
+/* Silos Visual Gauge */
+.silo-card {
+  transition: all 0.2s ease;
+}
+.silo-card:hover {
+  border-color: #f59e0b;
+  transform: translateY(-2px);
+}
+.silo-bar {
+  transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s ease;
 }
 
-/* Toast styling */
+/* Validation Out-of-Range Warning */
+.field-warning {
+  border-color: #f59e0b !important;
+  background-color: rgba(245, 158, 11, 0.1) !important;
+  color: #fef08a !important;
+}
+.field-danger {
+  border-color: #ef4444 !important;
+  background-color: rgba(239, 68, 68, 0.1) !important;
+  color: #fca5a5 !important;
+}
+
+/* Toasts */
 .toast {
   animation: slideIn 0.25s ease-out forwards;
 }
@@ -73,4 +101,11 @@ input[type="number"]:focus {
 @keyframes slideIn {
   from { transform: translateX(100%); opacity: 0; }
   to { transform: translateX(0); opacity: 1; }
+}
+
+/* Touch Friendly Large Target Size */
+@media (max-width: 640px) {
+  input, select, textarea {
+    font-size: 14px !important;
+  }
 }

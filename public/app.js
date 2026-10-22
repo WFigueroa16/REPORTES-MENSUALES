@@ -1,4 +1,4 @@
-// Beneficio ZA - Client Application Logic
+// Beneficio ZA - Advanced Operator UI & Client Logic
 
 const state = {
   token: localStorage.getItem('za_token') || null,
@@ -6,6 +6,8 @@ const state = {
   currentTab: 'tab-dashboard',
   date: null,
   guardia: 'A',
+  rdoViewMode: 'focus', // 'focus' (Mi Guardia) or 'all' (3 Guardias A-B-C)
+  concFilter: 'ALL',     // 'ALL', 'GA', 'GB', 'GC'
   equipos: [],
   catControles: []
 };
@@ -15,9 +17,10 @@ const state = {
 // ==========================================
 
 document.addEventListener('DOMContentLoaded', async () => {
-  setupDateAndGuardia();
+  setupInitialDateAndGuardia();
   setupTabNavigation();
   setupEventListeners();
+  renderSilosVisual();
 
   if (state.token) {
     await checkSession();
@@ -26,20 +29,19 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
-// Setup default date & shift according to plant operations schedule (09:00 start)
-function setupDateAndGuardia() {
+// Setup default date & shift according to plant schedule (09:00 official start)
+function setupInitialDateAndGuardia() {
   const now = new Date();
   const currentHour = now.getHours();
 
-  // If before 09:00 AM, plant operating day is yesterday
+  // If before 09:00, operational plant date is yesterday
   const opDate = new Date();
   if (currentHour < 9) {
     opDate.setDate(opDate.getDate() - 1);
   }
-  const dateStr = opDate.toISOString().split('T')[0];
-  state.date = dateStr;
+  state.date = opDate.toISOString().split('T')[0];
 
-  // Determine standard shift
+  // Determine standard shift:
   // Guardia A: 07:00 - 15:00
   // Guardia B: 15:00 - 23:00
   // Guardia C: 23:00 - 07:00
@@ -51,10 +53,27 @@ function setupDateAndGuardia() {
     state.guardia = 'C';
   }
 
+  updateHeaderControls();
+}
+
+function updateHeaderControls() {
   const dateInput = document.getElementById('global-date');
-  const guardiaSelect = document.getElementById('global-guardia');
   if (dateInput) dateInput.value = state.date;
-  if (guardiaSelect) guardiaSelect.value = state.guardia;
+
+  const dashDateLabel = document.getElementById('dash-date-label');
+  if (dashDateLabel) dashDateLabel.textContent = state.date;
+
+  const focusTag = document.getElementById('focus-guardia-tag');
+  if (focusTag) focusTag.textContent = state.guardia;
+
+  // Update Guardia pills
+  document.querySelectorAll('.guardia-pill-btn').forEach(btn => {
+    if (btn.dataset.guardia === state.guardia) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  });
 
   const paradaFecha = document.getElementById('parada-fecha');
   if (paradaFecha) paradaFecha.value = state.date;
@@ -62,33 +81,73 @@ function setupDateAndGuardia() {
 
 // Global Event Listeners
 function setupEventListeners() {
-  // Global Date & Guardia change
+  // Global Date change
   document.getElementById('global-date')?.addEventListener('change', (e) => {
     state.date = e.target.value;
+    updateHeaderControls();
     loadActiveTabData();
   });
 
-  document.getElementById('global-guardia')?.addEventListener('change', (e) => {
-    state.guardia = e.target.value;
-    if (state.currentTab === 'tab-rdo') loadRDO();
+  // Prev / Next day buttons
+  document.getElementById('btn-prev-day')?.addEventListener('click', () => {
+    changeDateOffset(-1);
+  });
+  document.getElementById('btn-next-day')?.addEventListener('click', () => {
+    changeDateOffset(1);
   });
 
-  // Login form
+  // Guardia pill buttons
+  document.querySelectorAll('.guardia-pill-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      state.guardia = btn.dataset.guardia;
+      updateHeaderControls();
+      if (state.currentTab === 'tab-rdo') loadRDO();
+    });
+  });
+
+  // RDO Mode Toggle (Focus vs 3 Guardias)
+  document.getElementById('btn-mode-focus')?.addEventListener('click', () => {
+    state.rdoViewMode = 'focus';
+    document.getElementById('btn-mode-focus').classList.add('active', 'bg-amber-500', 'text-slate-950');
+    document.getElementById('btn-mode-focus').classList.remove('text-slate-400');
+    document.getElementById('btn-mode-all').classList.remove('active', 'bg-amber-500', 'text-slate-950');
+    document.getElementById('btn-mode-all').classList.add('text-slate-400');
+    loadRDO();
+  });
+
+  document.getElementById('btn-mode-all')?.addEventListener('click', () => {
+    state.rdoViewMode = 'all';
+    document.getElementById('btn-mode-all').classList.add('active', 'bg-amber-500', 'text-slate-950');
+    document.getElementById('btn-mode-all').classList.remove('text-slate-400');
+    document.getElementById('btn-mode-focus').classList.remove('active', 'bg-amber-500', 'text-slate-950');
+    document.getElementById('btn-mode-focus').classList.add('text-slate-400');
+    loadRDO();
+  });
+
+  // Copy previous shift
+  document.getElementById('btn-copy-prev-shift')?.addEventListener('click', handleCopyPrevShift);
+
+  // Concentrado shift filter
+  document.querySelectorAll('.conc-filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.conc-filter-btn').forEach(b => {
+        b.classList.remove('active', 'bg-amber-500', 'text-slate-950');
+        b.classList.add('text-slate-400');
+      });
+      btn.classList.add('active', 'bg-amber-500', 'text-slate-950');
+      btn.classList.remove('text-slate-400');
+
+      state.concFilter = btn.dataset.concFilter;
+      filterConcentradoRows();
+    });
+  });
+
+  // Forms and saves
   document.getElementById('login-form')?.addEventListener('submit', handleLogin);
-
-  // Logout button
   document.getElementById('btn-logout')?.addEventListener('click', handleLogout);
-
-  // RDO save
   document.getElementById('btn-save-rdo')?.addEventListener('click', saveRDO);
-
-  // Concentrado save
   document.getElementById('btn-save-concentrado')?.addEventListener('click', saveConcentrado);
-
-  // Controles save
   document.getElementById('btn-save-controles')?.addEventListener('click', saveControles);
-
-  // Paradas form submit
   document.getElementById('form-parada')?.addEventListener('submit', handleCreateParada);
 
   // User modal
@@ -100,14 +159,14 @@ function setupEventListeners() {
   });
   document.getElementById('form-create-user')?.addEventListener('submit', handleCreateUser);
 
-  // Subtabs for Controles
+  // Subtabs Controles
   document.querySelectorAll('.subtab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.subtab-btn').forEach(b => {
-        b.classList.remove('active', 'bg-slate-700', 'text-white');
+        b.classList.remove('active', 'bg-amber-500', 'text-slate-950');
         b.classList.add('text-slate-400');
       });
-      btn.classList.add('active', 'bg-slate-700', 'text-white');
+      btn.classList.add('active', 'bg-amber-500', 'text-slate-950');
       btn.classList.remove('text-slate-400');
 
       const target = btn.dataset.subtab;
@@ -116,9 +175,18 @@ function setupEventListeners() {
     });
   });
 
-  // Refresh buttons
+  // Refresh
   document.getElementById('btn-refresh-kpi')?.addEventListener('click', loadDashboardKPIs);
   document.getElementById('btn-refresh-auditoria')?.addEventListener('click', loadAuditoria);
+}
+
+function changeDateOffset(delta) {
+  const [y, m, d] = state.date.split('-').map(Number);
+  const cur = new Date(Date.UTC(y, m - 1, d));
+  cur.setUTCDate(cur.getUTCDate() + delta);
+  state.date = cur.toISOString().split('T')[0];
+  updateHeaderControls();
+  loadActiveTabData();
 }
 
 // Navigation Tabs
@@ -126,8 +194,7 @@ function setupTabNavigation() {
   const tabBtns = document.querySelectorAll('.tab-btn');
   tabBtns.forEach(btn => {
     btn.addEventListener('click', () => {
-      const targetId = btn.dataset.tab;
-      switchTab(targetId);
+      switchTab(btn.dataset.tab);
     });
   });
 }
@@ -186,7 +253,7 @@ function loadActiveTabData() {
 }
 
 // ==========================================
-// API HELPER
+// API CLIENT & SSE
 // ==========================================
 
 async function api(endpoint, options = {}) {
@@ -199,7 +266,7 @@ async function api(endpoint, options = {}) {
   const res = await fetch(endpoint, { ...options, headers });
   if (res.status === 401) {
     showLoginModal();
-    throw new Error('Sesión expirada');
+    throw new Error('Sesión requerida');
   }
 
   const data = await res.json().catch(() => ({}));
@@ -209,54 +276,39 @@ async function api(endpoint, options = {}) {
   return data;
 }
 
-// ==========================================
-// REAL-TIME SERVER-SENT EVENTS (SSE)
-// ==========================================
-
 function connectSSE() {
   const eventSource = new EventSource('/api/events');
   eventSource.onmessage = (e) => {
     try {
       const data = JSON.parse(e.data);
-      if (data.type === 'CONNECTED') {
-        console.log('SSE conectado:', data.message);
-      } else {
-        showToast(`Actualización en tiempo real: ${data.type}`, 'info');
-        // Refresh active tab if relevant
-        if (
-          (data.type === 'RDO_UPDATE' && state.currentTab === 'tab-rdo') ||
-          (data.type === 'CONCENTRADO_UPDATE' && state.currentTab === 'tab-concentrado') ||
-          (data.type === 'PARADAS_UPDATE' && state.currentTab === 'tab-paradas')
-        ) {
-          loadActiveTabData();
-        }
-        if (state.currentTab === 'tab-dashboard') loadDashboardKPIs();
-      }
-    } catch {}
-  };
+      if (data.type === 'CONNECTED') return;
 
-  eventSource.onerror = () => {
-    console.warn('SSE reconectando...');
+      showToast(`Actualización en vivo: ${data.type}`, 'info');
+      if (
+        (data.type === 'RDO_UPDATE' && state.currentTab === 'tab-rdo') ||
+        (data.type === 'CONCENTRADO_UPDATE' && state.currentTab === 'tab-concentrado') ||
+        (data.type === 'PARADAS_UPDATE' && state.currentTab === 'tab-paradas')
+      ) {
+        loadActiveTabData();
+      }
+      if (state.currentTab === 'tab-dashboard') loadDashboardKPIs();
+    } catch {}
   };
 }
 
-// Toast Notifications
 function showToast(message, type = 'success') {
   const container = document.getElementById('toast-container');
   if (!container) return;
 
   const toast = document.createElement('div');
   const bg = type === 'error' ? 'bg-red-600' : (type === 'info' ? 'bg-blue-600' : 'bg-emerald-600');
-  toast.className = `toast px-4 py-3 rounded-xl shadow-2xl text-white text-xs font-semibold flex items-center gap-2 pointer-events-auto ${bg}`;
+  toast.className = `toast px-4 py-3 rounded-2xl shadow-2xl text-white text-xs font-bold flex items-center gap-2.5 pointer-events-auto ${bg} border border-white/20`;
   toast.innerHTML = `
-    <i class="ph-bold ${type === 'error' ? 'ph-warning' : 'ph-check-circle'} text-base"></i>
+    <i class="ph-bold ${type === 'error' ? 'ph-warning' : 'ph-check-circle'} text-lg"></i>
     <span>${message}</span>
   `;
   container.appendChild(toast);
-
-  setTimeout(() => {
-    toast.remove();
-  }, 4000);
+  setTimeout(() => toast.remove(), 4000);
 }
 
 // ==========================================
@@ -292,9 +344,9 @@ async function handleLogin(e) {
     connectSSE();
     loadEquiposCatalog();
     loadActiveTabData();
-    showToast(`Bienvenido, ${state.user.full_name}`, 'success');
+    showToast(`Bienvenido a Planta, ${state.user.full_name}`, 'success');
   } catch (err) {
-    errorDiv.textContent = err.message;
+    document.getElementById('login-error-text').textContent = err.message;
     errorDiv.classList.remove('hidden');
   }
 }
@@ -327,7 +379,6 @@ function updateUserUI() {
   document.getElementById('user-role-badge').textContent = state.user.role.toUpperCase();
   document.getElementById('user-avatar').textContent = state.user.full_name.charAt(0);
 
-  // Hide Users & Audit tab for non-admin/supervisor
   const isAdminOrSup = state.user.role === 'admin' || state.user.role === 'supervisor';
   const usersTab = document.querySelector('[data-tab="tab-users"]');
   const auditTab = document.querySelector('[data-tab="tab-auditoria"]');
@@ -335,7 +386,6 @@ function updateUserUI() {
   if (auditTab) auditTab.style.display = isAdminOrSup ? 'flex' : 'none';
 }
 
-// Load master equipment catalog for autocomplete
 async function loadEquiposCatalog() {
   try {
     const equipos = await api('/api/equipos');
@@ -350,7 +400,7 @@ async function loadEquiposCatalog() {
 }
 
 // ==========================================
-// TAB 1: DASHBOARD & KPIS
+// TAB 1: DASHBOARD
 // ==========================================
 
 async function loadDashboardKPIs() {
@@ -364,37 +414,143 @@ async function loadDashboardKPIs() {
     document.getElementById('kpi-recup').textContent = `${Number(prod.prom_recuperacion || 0).toFixed(1)}%`;
     document.getElementById('kpi-horas-perdidas').textContent = Number(par.total_horas_perdidas || 0).toFixed(2);
     document.getElementById('kpi-paradas-count').textContent = par.total_paradas || 0;
+
+    // Load Guardias Quick Comparison Cards on Dashboard
+    const rdoData = await api(`/api/rdo?fecha=${state.date}&guardia=ALL`);
+    renderGuardiasSummaryGrid(rdoData.entries || []);
   } catch (err) {
     console.error('Error cargando KPIs:', err);
   }
 }
 
+function renderGuardiasSummaryGrid(entries) {
+  const container = document.getElementById('guardias-summary-grid');
+  if (!container) return;
+
+  const guardias = ['A', 'B', 'C'];
+  container.innerHTML = guardias.map(g => {
+    const gEntries = entries.filter(e => e.guardia === g);
+    const transferido = gEntries.find(e => e.parametro === 'Transferido (TMH)')?.valor || '0';
+    const envioMina = gEntries.find(e => e.parametro === 'Envío de mina')?.valor || '-';
+    const humedad = gEntries.find(e => e.parametro === '% Humedad (%)')?.valor || '-';
+    const tratamiento = gEntries.find(e => e.parametro === 'Tratamiento (Ton)')?.valor || '-';
+
+    return `
+      <div class="bg-slate-950/70 border border-slate-800 p-4 rounded-2xl space-y-3">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+          <div class="flex items-center gap-2">
+            <span class="w-6 h-6 rounded-lg bg-amber-500 text-slate-950 font-black text-xs flex items-center justify-center">${g}</span>
+            <span class="font-bold text-white text-xs">Guardia ${g}</span>
+          </div>
+          <span class="text-[11px] text-slate-500 font-mono">${gEntries.length} params</span>
+        </div>
+        <div class="grid grid-cols-2 gap-2 text-[11px]">
+          <div>
+            <span class="text-slate-500 block text-[10px]">Envío Mina:</span>
+            <span class="font-mono font-bold text-slate-200 truncate block">${envioMina}</span>
+          </div>
+          <div>
+            <span class="text-slate-500 block text-[10px]">Transferido Sinter:</span>
+            <span class="font-mono font-bold text-amber-400 block">${transferido} TMH</span>
+          </div>
+          <div>
+            <span class="text-slate-500 block text-[10px]">% Humedad:</span>
+            <span class="font-mono font-bold text-blue-400 block">${humedad}%</span>
+          </div>
+          <div>
+            <span class="text-slate-500 block text-[10px]">Tratamiento Magnética:</span>
+            <span class="font-mono font-bold text-emerald-400 block">${tratamiento} Ton</span>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
 // ==========================================
-// TAB 2: RDO (REPORTE DIARIO DE OPERACIONES)
+// TAB 2: CAPTURA RDO
 // ==========================================
+
+// Render 9 visual interactive silo level meters
+function renderSilosVisual() {
+  const container = document.getElementById('silos-visual-container');
+  if (!container) return;
+
+  container.innerHTML = Array.from({ length: 9 }, (_, i) => {
+    const siloNum = i + 1;
+    return `
+      <div class="silo-card bg-slate-900 border border-slate-800 p-2.5 rounded-xl flex flex-col items-center space-y-2">
+        <span class="font-mono font-black text-[11px] text-amber-400">Silo ${siloNum}</span>
+        
+        <!-- Vertical Bar Gauge -->
+        <div class="w-7 h-20 bg-slate-950 rounded-lg p-0.5 border border-slate-800 relative flex flex-col justify-end overflow-hidden">
+          <div id="silo-bar-${siloNum}" class="silo-bar w-full rounded-md bg-emerald-500" style="height: 60%;"></div>
+        </div>
+
+        <!-- Level Number Input (Scale 0 to 5 meters) -->
+        <div class="w-full">
+          <input type="number" step="0.5" min="0" max="5" value="3"
+            data-silo-id="${siloNum}"
+            data-rdo-param="Silo ${siloNum}"
+            data-rdo-area="TRITURACION"
+            class="silo-input rdo-field w-full bg-slate-950 border border-slate-700 rounded-lg py-1 text-center font-mono font-bold text-white text-xs focus:border-amber-400"
+            placeholder="m">
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  // Attach live visual updates to silo inputs
+  container.querySelectorAll('.silo-input').forEach(inp => {
+    inp.addEventListener('input', () => updateSiloBarVisual(inp));
+  });
+}
+
+function updateSiloBarVisual(input) {
+  const siloId = input.dataset.siloId;
+  const val = parseFloat(input.value) || 0;
+  const pct = Math.min(100, Math.max(0, (val / 5) * 100));
+  const bar = document.getElementById(`silo-bar-${siloId}`);
+  if (!bar) return;
+
+  bar.style.height = `${pct}%`;
+  if (val >= 3.5) {
+    bar.className = 'silo-bar w-full rounded-md bg-emerald-500';
+  } else if (val >= 2) {
+    bar.className = 'silo-bar w-full rounded-md bg-amber-500';
+  } else {
+    bar.className = 'silo-bar w-full rounded-md bg-red-500';
+  }
+}
 
 async function loadRDO() {
   try {
-    // Reset all RDO inputs
-    document.querySelectorAll('.rdo-input').forEach(inp => inp.value = '');
+    // Clear fields
+    document.querySelectorAll('.rdo-field').forEach(f => f.value = '');
+
     const data = await api(`/api/rdo?fecha=${state.date}&guardia=${state.guardia}`);
 
-    // Populate saved entries
+    // Populate values
     (data.entries || []).forEach(e => {
-      const input = document.querySelector(`.rdo-input[data-rdo-area="${e.area}"][data-rdo-param="${e.parametro}"]`);
-      if (input) input.value = e.valor || '';
+      const field = document.querySelector(`.rdo-field[data-rdo-area="${e.area}"][data-rdo-param="${e.parametro}"]`);
+      if (field) {
+        field.value = e.valor || '';
+        if (field.classList.contains('silo-input')) {
+          updateSiloBarVisual(field);
+        }
+      }
     });
 
-    // Populate bitacora
-    const historyDiv = document.getElementById('rdo-bitacora-history');
-    if (historyDiv) {
+    // Populate Bitácora
+    const hist = document.getElementById('rdo-bitacora-history');
+    if (hist) {
       if ((data.bitacora || []).length === 0) {
-        historyDiv.innerHTML = '<div class="text-slate-500 text-xs italic">Sin registros de bitácora para esta fecha y guardia.</div>';
+        hist.innerHTML = '<div class="text-slate-500 text-xs italic">Sin novedades registradas para este turno.</div>';
       } else {
-        historyDiv.innerHTML = data.bitacora.map(b => `
-          <div class="bg-slate-900 border border-slate-750 p-3 rounded-lg text-xs">
+        hist.innerHTML = data.bitacora.map(b => `
+          <div class="bg-slate-900 border border-slate-800 p-2.5 rounded-xl text-xs">
             <div class="flex items-center justify-between text-[11px] text-slate-400 mb-1">
-              <span class="font-bold text-amber-400 uppercase">${b.area}</span>
+              <span class="font-bold text-amber-400">${b.area}</span>
               <span>${b.registrado_por} • ${b.fecha_registro}</span>
             </div>
             <p class="text-slate-200">${b.detalle}</p>
@@ -413,56 +569,56 @@ async function saveRDO() {
   btn.innerHTML = '<i class="ph-bold ph-spinner animate-spin"></i> Guardando...';
 
   try {
-    const trituracionEntries = {};
-    const filtrosEntries = {};
-
-    document.querySelectorAll('.rdo-input').forEach(inp => {
-      const area = inp.dataset.rdoArea;
-      const param = inp.dataset.rdoParam;
-      const val = inp.value;
-      if (area === 'TRITURACION') trituracionEntries[param] = val;
-      if (area === 'FILTROS') filtrosEntries[param] = val;
-    });
-
+    const areas = ['TRITURACION', 'FILTROS', 'PLANTA MAGNETICA', 'RELAVES'];
     const bitacora = document.getElementById('rdo-bitacora-input').value;
 
-    // Save Trituración
-    await api('/api/rdo', {
-      method: 'POST',
-      body: JSON.stringify({
-        fecha: state.date,
-        guardia: state.guardia,
-        area: 'TRITURACION',
-        entries: trituracionEntries,
-        bitacoraDetalle: bitacora
-      })
-    });
+    for (const area of areas) {
+      const entries = {};
+      document.querySelectorAll(`.rdo-field[data-rdo-area="${area}"]`).forEach(inp => {
+        entries[inp.dataset.rdoParam] = inp.value;
+      });
 
-    // Save Filtros
-    await api('/api/rdo', {
-      method: 'POST',
-      body: JSON.stringify({
-        fecha: state.date,
-        guardia: state.guardia,
-        area: 'FILTROS',
-        entries: filtrosEntries,
-        bitacoraDetalle: null
-      })
-    });
+      await api('/api/rdo', {
+        method: 'POST',
+        body: JSON.stringify({
+          fecha: state.date,
+          guardia: state.guardia,
+          area,
+          entries,
+          bitacoraDetalle: area === 'TRITURACION' ? bitacora : null
+        })
+      });
+    }
 
     document.getElementById('rdo-bitacora-input').value = '';
-    showToast('RDO guardado exitosamente', 'success');
+    showToast('Reporte RDO guardado y sincronizado con éxito', 'success');
     loadRDO();
+    loadDashboardKPIs();
   } catch (err) {
     showToast('Error guardando RDO: ' + err.message, 'error');
   } finally {
     btn.disabled = false;
-    btn.innerHTML = '<i class="ph-bold ph-floppy-disk"></i> Guardar RDO';
+    btn.innerHTML = '<i class="ph-bold ph-floppy-disk text-base"></i> Guardar RDO';
+  }
+}
+
+async function handleCopyPrevShift() {
+  if (!confirm(`¿Copiar estados y líneas de la guardia anterior hacia Guardia ${state.guardia}?`)) return;
+
+  try {
+    const res = await api('/api/rdo/copy-previous', {
+      method: 'POST',
+      body: JSON.stringify({ fecha: state.date, targetGuardia: state.guardia })
+    });
+    showToast(res.message, 'success');
+    loadRDO();
+  } catch (err) {
+    showToast(err.message, 'error');
   }
 }
 
 // ==========================================
-// TAB 3: PRODUCCIÓN HORARIA / CONCENTRADO
+// TAB 3: PRODUCCIÓN HORARIA
 // ==========================================
 
 async function loadConcentrado() {
@@ -471,49 +627,83 @@ async function loadConcentrado() {
     const tbody = document.getElementById('tbody-concentrado');
     if (!tbody) return;
 
-    tbody.innerHTML = rows.map((r, i) => `
-      <tr class="hover:bg-slate-800/60 transition-colors" data-hora-idx="${r.num_hora}">
-        <td class="py-2.5 px-3 font-mono font-bold text-slate-300 whitespace-nowrap">${r.hora}</td>
-        <td class="py-2 px-2 text-right">
-          <input type="number" step="any" value="${r.mineral_tms || ''}" class="conc-mineral w-24 bg-slate-900 border border-slate-700 rounded px-2 py-1 text-right text-white font-mono focus:border-amber-400">
-        </td>
-        <td class="py-2 px-2 text-right">
-          <input type="number" step="any" value="${r.concentrado_tms || ''}" class="conc-prod w-24 bg-slate-900 border border-slate-700 rounded px-2 py-1 text-right text-white font-mono focus:border-amber-400">
-        </td>
-        <td class="py-2 px-2 text-right">
-          <input type="number" step="any" value="${r.s_pct || ''}" class="conc-s w-20 bg-slate-900 border border-slate-700 rounded px-2 py-1 text-right text-white font-mono focus:border-amber-400">
-        </td>
-        <td class="py-2 px-2 text-right">
-          <input type="number" step="any" value="${r.esp_n_fe_sol || ''}" class="conc-fesol w-20 bg-slate-900 border border-slate-700 rounded px-2 py-1 text-right text-white font-mono focus:border-amber-400">
-        </td>
-        <td class="py-2 px-2 text-right">
-          <input type="number" step="any" value="${r.esp_n_feo || ''}" class="conc-feo w-20 bg-slate-900 border border-slate-700 rounded px-2 py-1 text-right text-white font-mono focus:border-amber-400">
-        </td>
-        <td class="py-2 px-2 text-right">
-          <input type="number" step="any" value="${r.h2o_pct || ''}" class="conc-h2o w-20 bg-slate-900 border border-slate-700 rounded px-2 py-1 text-right text-white font-mono focus:border-amber-400">
-        </td>
-        <td class="py-2.5 px-3 text-right font-mono font-bold text-emerald-400 calc-recup">
-          ${r.recup_pct ? r.recup_pct + '%' : '-'}
-        </td>
-        <td class="py-2.5 px-3 text-right font-mono font-bold text-amber-400 calc-ratio">
-          ${r.ratio ? r.ratio : '-'}
-        </td>
-        <td class="py-2 px-2">
-          <input type="text" value="${r.obs_magnetica || ''}" placeholder="Obs..." class="conc-obs w-full min-w-[140px] bg-slate-900 border border-slate-700 rounded px-2 py-1 text-slate-200">
-        </td>
-      </tr>
-    `).join('');
+    tbody.innerHTML = rows.map((r, i) => {
+      // Determine shift tag for each hour
+      // Hours 1-8: Guardia A (09:00 - 17:00)
+      // Hours 9-16: Guardia B (17:00 - 01:00)
+      // Hours 17-24: Guardia C (01:00 - 09:00)
+      let shiftTag = 'GA';
+      let shiftBadge = '<span class="text-[9px] px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-400 font-bold ml-1">G-A</span>';
+      if (r.num_hora >= 9 && r.num_hora <= 16) {
+        shiftTag = 'GB';
+        shiftBadge = '<span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 font-bold ml-1">G-B</span>';
+      } else if (r.num_hora >= 17) {
+        shiftTag = 'GC';
+        shiftBadge = '<span class="text-[9px] px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-400 font-bold ml-1">G-C</span>';
+      }
 
-    // Attach live calculation listener
+      return `
+        <tr class="hover:bg-slate-800/60 transition-colors conc-row" data-hora-idx="${r.num_hora}" data-shift="${shiftTag}">
+          <td class="py-2.5 px-3 font-mono font-bold text-slate-300 whitespace-nowrap">
+            ${r.hora} ${shiftBadge}
+          </td>
+          <td class="py-2 px-2 text-right">
+            <input type="number" step="any" value="${r.mineral_tms || ''}" class="conc-mineral w-24 bg-slate-950 border border-slate-700/80 rounded-lg px-2.5 py-1.5 text-right text-white font-mono focus:border-amber-400">
+          </td>
+          <td class="py-2 px-2 text-right">
+            <input type="number" step="any" value="${r.concentrado_tms || ''}" class="conc-prod w-24 bg-slate-950 border border-slate-700/80 rounded-lg px-2.5 py-1.5 text-right text-amber-300 font-mono font-bold focus:border-amber-400">
+          </td>
+          <td class="py-2 px-2 text-right">
+            <input type="number" step="any" value="${r.s_pct || ''}" class="conc-s w-20 bg-slate-950 border border-slate-700/80 rounded-lg px-2 py-1.5 text-right text-white font-mono focus:border-amber-400">
+          </td>
+          <td class="py-2 px-2 text-right">
+            <input type="number" step="any" value="${r.esp_n_fe_sol || ''}" class="conc-fesol w-20 bg-slate-950 border border-slate-700/80 rounded-lg px-2 py-1.5 text-right text-white font-mono focus:border-amber-400">
+          </td>
+          <td class="py-2 px-2 text-right">
+            <input type="number" step="any" value="${r.esp_n_feo || ''}" class="conc-feo w-20 bg-slate-950 border border-slate-700/80 rounded-lg px-2 py-1.5 text-right text-white font-mono focus:border-amber-400">
+          </td>
+          <td class="py-2 px-2 text-right">
+            <input type="number" step="any" value="${r.h2o_pct || ''}" class="conc-h2o w-20 bg-slate-950 border border-slate-700/80 rounded-lg px-2 py-1.5 text-right text-white font-mono focus:border-amber-400">
+          </td>
+          <td class="py-2.5 px-3 text-right font-mono font-black text-emerald-400 calc-recup">
+            ${r.recup_pct ? r.recup_pct + '%' : '-'}
+          </td>
+          <td class="py-2.5 px-3 text-right font-mono font-black text-purple-400 calc-ratio">
+            ${r.ratio ? r.ratio : '-'}
+          </td>
+          <td class="py-2 px-2">
+            <input type="text" value="${r.obs_magnetica || ''}" placeholder="Obs..." class="conc-obs w-full min-w-[130px] bg-slate-950 border border-slate-700/80 rounded-lg px-2.5 py-1.5 text-slate-300">
+          </td>
+        </tr>
+      `;
+    }).join('');
+
     tbody.querySelectorAll('tr').forEach(tr => {
-      tr.addEventListener('input', () => calculateRow(tr));
+      tr.addEventListener('input', () => {
+        calculateConcentradoRow(tr);
+        updateConcentradoSummaryStrip();
+      });
     });
+
+    filterConcentradoRows();
+    updateConcentradoSummaryStrip();
   } catch (err) {
     showToast('Error cargando Producción: ' + err.message, 'error');
   }
 }
 
-function calculateRow(tr) {
+function filterConcentradoRows() {
+  document.querySelectorAll('.conc-row').forEach(tr => {
+    if (state.concFilter === 'ALL' || tr.dataset.shift === state.concFilter) {
+      tr.style.display = '';
+    } else {
+      tr.style.display = 'none';
+    }
+  });
+  updateConcentradoSummaryStrip();
+}
+
+function calculateConcentradoRow(tr) {
   const mineral = parseFloat(tr.querySelector('.conc-mineral')?.value) || 0;
   const conc = parseFloat(tr.querySelector('.conc-prod')?.value) || 0;
   const feSol = parseFloat(tr.querySelector('.conc-fesol')?.value) || 0;
@@ -532,6 +722,37 @@ function calculateRow(tr) {
   }
 }
 
+function updateConcentradoSummaryStrip() {
+  let totalMineral = 0;
+  let totalConc = 0;
+  let sumFeSol = 0;
+  let countFeSol = 0;
+
+  document.querySelectorAll('.conc-row').forEach(tr => {
+    if (tr.style.display === 'none') return;
+    const min = parseFloat(tr.querySelector('.conc-mineral')?.value) || 0;
+    const conc = parseFloat(tr.querySelector('.conc-prod')?.value) || 0;
+    const feSol = parseFloat(tr.querySelector('.conc-fesol')?.value) || 0;
+
+    totalMineral += min;
+    totalConc += conc;
+    if (feSol > 0) {
+      sumFeSol += feSol;
+      countFeSol++;
+    }
+  });
+
+  const avgFeSol = countFeSol > 0 ? (sumFeSol / countFeSol) : 0;
+  const avgRecup = (totalMineral > 0 && totalConc > 0 && avgFeSol > 0) ? ((totalConc * 68) / (totalMineral * avgFeSol) * 100) : 0;
+  const avgRatio = totalConc > 0 ? (totalMineral / totalConc) : 0;
+
+  document.getElementById('conc-sum-mineral').textContent = totalMineral.toFixed(2) + ' TMS';
+  document.getElementById('conc-sum-conc').textContent = totalConc.toFixed(2) + ' TMS';
+  document.getElementById('conc-avg-fesol').textContent = avgFeSol.toFixed(2) + '%';
+  document.getElementById('conc-avg-recup').textContent = avgRecup.toFixed(2) + '%';
+  document.getElementById('conc-avg-ratio').textContent = avgRatio.toFixed(2);
+}
+
 async function saveConcentrado() {
   const btn = document.getElementById('btn-save-concentrado');
   btn.disabled = true;
@@ -540,26 +761,16 @@ async function saveConcentrado() {
   try {
     const rows = [];
     document.querySelectorAll('#tbody-concentrado tr').forEach(tr => {
-      const numHora = Number(tr.dataset.horaIdx);
-      const hora = tr.querySelector('td:first-child').textContent.trim();
-      const mineral = tr.querySelector('.conc-mineral').value;
-      const conc = tr.querySelector('.conc-prod').value;
-      const s = tr.querySelector('.conc-s').value;
-      const feSol = tr.querySelector('.conc-fesol').value;
-      const feO = tr.querySelector('.conc-feo').value;
-      const h2o = tr.querySelector('.conc-h2o').value;
-      const obs = tr.querySelector('.conc-obs').value;
-
       rows.push({
-        num_hora: numHora,
-        hora,
-        mineral_tms: mineral,
-        concentrado_tms: conc,
-        s_pct: s,
-        esp_n_fe_sol: feSol,
-        esp_n_feo: feO,
-        h2o_pct: h2o,
-        obs_magnetica: obs
+        num_hora: Number(tr.dataset.horaIdx),
+        hora: tr.querySelector('td:first-child').textContent.split(' ')[0],
+        mineral_tms: tr.querySelector('.conc-mineral').value,
+        concentrado_tms: tr.querySelector('.conc-prod').value,
+        s_pct: tr.querySelector('.conc-s').value,
+        esp_n_fe_sol: tr.querySelector('.conc-fesol').value,
+        esp_n_feo: tr.querySelector('.conc-feo').value,
+        h2o_pct: tr.querySelector('.conc-h2o').value,
+        obs_magnetica: tr.querySelector('.conc-obs').value
       });
     });
 
@@ -570,11 +781,12 @@ async function saveConcentrado() {
 
     showToast('Producción 24h guardada con éxito', 'success');
     loadConcentrado();
+    loadDashboardKPIs();
   } catch (err) {
-    showToast('Error guardando producción: ' + err.message, 'error');
+    showToast('Error: ' + err.message, 'error');
   } finally {
     btn.disabled = false;
-    btn.innerHTML = '<i class="ph-bold ph-floppy-disk"></i> Guardar Producción 24h';
+    btn.innerHTML = '<i class="ph-bold ph-floppy-disk text-base"></i> Guardar 24h';
   }
 }
 
@@ -584,15 +796,9 @@ async function saveConcentrado() {
 
 async function loadControles() {
   try {
-    if (state.catControles.length === 0) {
-      state.catControles = await api('/api/cat_controles');
-    }
-
     const saved = await api(`/api/controles?fecha=${state.date}`);
     const savedMap = {};
-    saved.forEach(s => {
-      savedMap[`${s.modulo}_${s.item}_${s.turno}`] = s.valor;
-    });
+    saved.forEach(s => savedMap[`${s.modulo}_${s.item}_${s.turno}`] = s.valor);
 
     // 1. Filtros H2O
     const filtrosGrid = document.getElementById('filtros-h2o-grid');
@@ -601,16 +807,17 @@ async function loadControles() {
         'Filtro # 1', 'Filtro # 2', 'Filtro # 3', 'Filtro # 4', 'Filtro # 5',
         'Filtro Linea # 5', 'Filtro Linea # 6', 'Filtro Linea # 7', 'Filtro Linea # 8'
       ];
-      filtrosGrid.innerHTML = items.map((item, idx) => {
+
+      filtrosGrid.innerHTML = items.map(item => {
         const val = savedMap[`FILTROS_H2O_${item}_1`] || 'OK';
         const isOk = val === 'OK';
         return `
-          <div class="bg-slate-850 border border-slate-700/60 p-4 rounded-xl flex items-center justify-between" data-control-item="${item}">
+          <div class="bg-slate-950/70 border border-slate-800 p-4 rounded-2xl flex items-center justify-between" data-control-item="${item}">
             <div>
-              <span class="text-xs font-bold text-white block">${item}</span>
-              <span class="text-[10px] text-slate-400">Estado Operativo</span>
+              <span class="text-xs font-black text-white block">${item}</span>
+              <span class="text-[10px] text-slate-500 font-bold uppercase">Estado Operativo</span>
             </div>
-            <button type="button" class="btn-toggle-filtro px-4 py-1.5 rounded-lg font-bold text-xs transition-all ${isOk ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' : 'bg-red-500/20 text-red-400 border border-red-500/40'}" data-status="${val}">
+            <button type="button" class="btn-toggle-filtro px-5 py-2 rounded-xl font-black text-xs transition-all ${isOk ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shadow-lg shadow-emerald-500/10' : 'bg-red-500/20 text-red-400 border border-red-500/40 shadow-lg shadow-red-500/10'}" data-status="${val}">
               ${val}
             </button>
           </div>
@@ -619,13 +826,14 @@ async function loadControles() {
 
       filtrosGrid.querySelectorAll('.btn-toggle-filtro').forEach(btn => {
         btn.addEventListener('click', () => {
-          const current = btn.dataset.status;
-          const next = current === 'OK' ? 'FALLA' : 'OK';
+          const next = btn.dataset.status === 'OK' ? 'FALLA' : 'OK';
           btn.dataset.status = next;
           btn.textContent = next;
-          btn.className = `btn-toggle-filtro px-4 py-1.5 rounded-lg font-bold text-xs transition-all ${next === 'OK' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' : 'bg-red-500/20 text-red-400 border border-red-500/40'}`;
+          btn.className = `btn-toggle-filtro px-5 py-2 rounded-xl font-black text-xs transition-all ${next === 'OK' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shadow-lg shadow-emerald-500/10' : 'bg-red-500/20 text-red-400 border border-red-500/40 shadow-lg shadow-red-500/10'}`;
+          updateFiltrosSummary();
         });
       });
+      updateFiltrosSummary();
     }
 
     // 2. Purga Tanques de Aire
@@ -657,7 +865,7 @@ async function loadControles() {
             <input type="checkbox" class="purga-t3 w-4 h-4 accent-amber-500 rounded" ${savedMap[`PURGA_TKS_${t.name}_3`] === 'OK' ? 'checked' : ''}>
           </td>
           <td class="py-2 px-3">
-            <input type="text" class="purga-obs w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-slate-200" placeholder="Normal">
+            <input type="text" class="purga-obs w-full bg-slate-950 border border-slate-700/80 rounded-lg px-2.5 py-1 text-slate-200" placeholder="Normal">
           </td>
         </tr>
       `).join('');
@@ -671,10 +879,11 @@ async function loadControles() {
         '210-101', '210-102', '210-103', '210-104', '210-105', '210-106',
         '210-107', '210-108', '210-268', '210-269'
       ];
+
       cobberGrid.innerHTML = cobbers.map(c => {
         const checked = savedMap[`COBBER_${c}_1`] === 'OK';
         return `
-          <button type="button" class="btn-cobber p-3 rounded-xl border text-center font-mono font-bold text-xs transition-all ${checked ? 'bg-amber-500/20 text-amber-400 border-amber-500/40' : 'bg-slate-850 text-slate-400 border-slate-700/60'}" data-cobber-id="${c}" data-checked="${checked}">
+          <button type="button" class="btn-cobber p-3 rounded-2xl border text-center font-mono font-bold text-xs transition-all ${checked ? 'bg-amber-500/20 text-amber-400 border-amber-500/40 shadow-lg shadow-amber-500/10' : 'bg-slate-950 text-slate-400 border-slate-800'}" data-cobber-id="${c}" data-checked="${checked}">
             <div>${c}</div>
             <div class="text-[10px] font-normal mt-0.5 text-slate-400 cobber-status">${checked ? 'LIMPIO' : 'PENDIENTE'}</div>
           </button>
@@ -683,10 +892,9 @@ async function loadControles() {
 
       cobberGrid.querySelectorAll('.btn-cobber').forEach(btn => {
         btn.addEventListener('click', () => {
-          const isChecked = btn.dataset.checked === 'true';
-          const next = !isChecked;
+          const next = btn.dataset.checked !== 'true';
           btn.dataset.checked = String(next);
-          btn.className = `btn-cobber p-3 rounded-xl border text-center font-mono font-bold text-xs transition-all ${next ? 'bg-amber-500/20 text-amber-400 border-amber-500/40' : 'bg-slate-850 text-slate-400 border-slate-700/60'}`;
+          btn.className = `btn-cobber p-3 rounded-2xl border text-center font-mono font-bold text-xs transition-all ${next ? 'bg-amber-500/20 text-amber-400 border-amber-500/40 shadow-lg shadow-amber-500/10' : 'bg-slate-950 text-slate-400 border-slate-800'}`;
           btn.querySelector('.cobber-status').textContent = next ? 'LIMPIO' : 'PENDIENTE';
         });
       });
@@ -697,18 +905,34 @@ async function loadControles() {
   }
 }
 
+function updateFiltrosSummary() {
+  let okCount = 0;
+  const buttons = document.querySelectorAll('.btn-toggle-filtro');
+  buttons.forEach(b => {
+    if (b.dataset.status === 'OK') okCount++;
+  });
+  const total = buttons.length || 9;
+  const pct = Math.round((okCount / total) * 100);
+
+  const countEl = document.getElementById('filtros-operativos-count');
+  const pctEl = document.getElementById('filtros-cumplimiento-pct');
+  if (countEl) countEl.textContent = `${okCount} de ${total}`;
+  if (pctEl) pctEl.textContent = `${pct}%`;
+}
+
 async function saveControles() {
   const btn = document.getElementById('btn-save-controles');
   btn.disabled = true;
   btn.innerHTML = '<i class="ph-bold ph-spinner animate-spin"></i> Guardando...';
 
   try {
-    // 1. Filtros H2O entries
     const filtrosEntries = [];
     document.querySelectorAll('#filtros-h2o-grid [data-control-item]').forEach(el => {
-      const item = el.dataset.controlItem;
-      const status = el.querySelector('.btn-toggle-filtro').dataset.status;
-      filtrosEntries.push({ item, turno: '1', valor: status });
+      filtrosEntries.push({
+        item: el.dataset.controlItem,
+        turno: '1',
+        valor: el.querySelector('.btn-toggle-filtro').dataset.status
+      });
     });
     if (filtrosEntries.length > 0) {
       await api('/api/controles', {
@@ -717,17 +941,13 @@ async function saveControles() {
       });
     }
 
-    // 2. Purga TKs Aire
     const purgaEntries = [];
     document.querySelectorAll('#tbody-purga-tks tr').forEach(tr => {
       const item = tr.dataset.purgaItem;
-      const t1 = tr.querySelector('.purga-t1').checked ? 'OK' : 'X';
-      const t2 = tr.querySelector('.purga-t2').checked ? 'OK' : 'X';
-      const t3 = tr.querySelector('.purga-t3').checked ? 'OK' : 'X';
       const obs = tr.querySelector('.purga-obs').value;
-      purgaEntries.push({ item, turno: '1', valor: t1, observacion: obs });
-      purgaEntries.push({ item, turno: '2', valor: t2, observacion: obs });
-      purgaEntries.push({ item, turno: '3', valor: t3, observacion: obs });
+      purgaEntries.push({ item, turno: '1', valor: tr.querySelector('.purga-t1').checked ? 'OK' : 'X', observacion: obs });
+      purgaEntries.push({ item, turno: '2', valor: tr.querySelector('.purga-t2').checked ? 'OK' : 'X', observacion: obs });
+      purgaEntries.push({ item, turno: '3', valor: tr.querySelector('.purga-t3').checked ? 'OK' : 'X', observacion: obs });
     });
     if (purgaEntries.length > 0) {
       await api('/api/controles', {
@@ -736,12 +956,13 @@ async function saveControles() {
       });
     }
 
-    // 3. Cobber
     const cobberEntries = [];
     document.querySelectorAll('.btn-cobber').forEach(btn => {
-      const item = btn.dataset.cobberId;
-      const isClean = btn.dataset.checked === 'true';
-      cobberEntries.push({ item, turno: '1', valor: isClean ? 'OK' : 'PENDIENTE' });
+      cobberEntries.push({
+        item: btn.dataset.cobberId,
+        turno: '1',
+        valor: btn.dataset.checked === 'true' ? 'OK' : 'PENDIENTE'
+      });
     });
     if (cobberEntries.length > 0) {
       await api('/api/controles', {
@@ -752,10 +973,10 @@ async function saveControles() {
 
     showToast('Controles de planta guardados exitosamente', 'success');
   } catch (err) {
-    showToast('Error guardando controles: ' + err.message, 'error');
+    showToast('Error: ' + err.message, 'error');
   } finally {
     btn.disabled = false;
-    btn.innerHTML = '<i class="ph-bold ph-floppy-disk"></i> Guardar Controles';
+    btn.innerHTML = '<i class="ph-bold ph-floppy-disk text-base"></i> Guardar Controles';
   }
 }
 
@@ -769,8 +990,8 @@ async function loadParadas() {
     const tbody = document.getElementById('tbody-paradas');
     const badge = document.getElementById('paradas-badge');
     if (badge) badge.textContent = `${rows.length} registradas`;
-
     if (!tbody) return;
+
     if (rows.length === 0) {
       tbody.innerHTML = '<tr><td colspan="7" class="py-6 text-center text-slate-500 italic">No hay paradas registradas para esta fecha.</td></tr>';
       return;
@@ -781,15 +1002,15 @@ async function loadParadas() {
         <td class="py-2.5 px-3 font-mono">${r.fecha}</td>
         <td class="py-2.5 px-3 font-mono font-bold text-amber-400">${r.equipo}</td>
         <td class="py-2.5 px-3 font-mono text-slate-300">${r.inicio_parada} - ${r.arranque}</td>
-        <td class="py-2.5 px-3 text-right font-mono font-bold text-red-400">${Number(r.horas_perdidas).toFixed(2)}h</td>
+        <td class="py-2.5 px-3 text-right font-mono font-black text-red-400">${Number(r.horas_perdidas).toFixed(2)}h</td>
         <td class="py-2.5 px-3 text-right font-mono font-bold text-slate-200">${Number(r.mineral_no_procesado).toFixed(2)} TM</td>
         <td class="py-2.5 px-3">
           <span class="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-slate-300 border border-slate-700 mr-1">${r.tipo_falla}</span>
           <span class="text-slate-300">${r.motivo || ''}</span>
         </td>
         <td class="py-2.5 px-3 text-center">
-          <button onclick="deleteParada(${r.id})" class="p-1 rounded hover:bg-red-500/20 text-slate-400 hover:text-red-400 transition-colors" title="Eliminar">
-            <i class="ph-bold ph-trash"></i>
+          <button onclick="deleteParada(${r.id})" class="p-1.5 rounded-lg hover:bg-red-500/20 text-slate-400 hover:text-red-400 transition-colors" title="Eliminar">
+            <i class="ph-bold ph-trash text-base"></i>
           </button>
         </td>
       </tr>
@@ -802,7 +1023,7 @@ async function loadParadas() {
 async function handleCreateParada(e) {
   e.preventDefault();
   const fecha = document.getElementById('parada-fecha').value;
-  const equipo = document.getElementById('parada-equipo').value.split(' ')[0]; // Extract code
+  const equipo = document.getElementById('parada-equipo').value.split(' ')[0];
   const inicio_parada = document.getElementById('parada-inicio').value;
   const arranque = document.getElementById('parada-arranque').value;
   const tmh_no_procesadas = document.getElementById('parada-tmh').value;
@@ -821,19 +1042,19 @@ async function handleCreateParada(e) {
     loadParadas();
     loadDashboardKPIs();
   } catch (err) {
-    showToast('Error registrando parada: ' + err.message, 'error');
+    showToast('Error: ' + err.message, 'error');
   }
 }
 
 async function deleteParada(id) {
-  if (!confirm('¿Desea eliminar esta parada registrada?')) return;
+  if (!confirm('¿Desea eliminar este registro de parada?')) return;
   try {
     await api(`/api/paradas/${id}`, { method: 'DELETE' });
     showToast('Parada eliminada', 'info');
     loadParadas();
     loadDashboardKPIs();
   } catch (err) {
-    showToast('Error eliminando: ' + err.message, 'error');
+    showToast(err.message, 'error');
   }
 }
 
@@ -855,8 +1076,8 @@ async function loadMantto() {
     tbody.innerHTML = rows.map(r => `
       <tr class="hover:bg-slate-800/60 transition-colors">
         <td class="py-2.5 px-3 font-mono">${r.fecha}</td>
-        <td class="py-2.5 px-3 font-bold">${r.guardia}</td>
-        <td class="py-2.5 px-3 font-mono text-amber-400">${r.equipo} <span class="text-slate-500 font-normal">(${r.area})</span></td>
+        <td class="py-2.5 px-3 font-bold text-amber-400">${r.guardia}</td>
+        <td class="py-2.5 px-3 font-mono font-bold text-white">${r.equipo} <span class="text-slate-500 font-normal">(${r.area})</span></td>
         <td class="py-2.5 px-3 font-mono">${r.aviso_sap || '-'}</td>
         <td class="py-2.5 px-3">${r.especialidad}</td>
         <td class="py-2.5 px-3 font-semibold text-slate-200">${r.trabajo_realizado}</td>
@@ -883,7 +1104,7 @@ async function loadBalanzas() {
     if (!tbody) return;
 
     if (rows.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="10" class="py-6 text-center text-slate-500 italic">No hay calibraciones de balanzas registradas.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="10" class="py-6 text-center text-slate-500 italic">No hay calibraciones registradas.</td></tr>';
       return;
     }
 
@@ -907,7 +1128,7 @@ async function loadBalanzas() {
 }
 
 // ==========================================
-// TAB 8: GESTIÓN DE USUARIOS
+// TAB 8: USUARIOS
 // ==========================================
 
 async function loadUsers() {
@@ -920,20 +1141,19 @@ async function loadUsers() {
       <tr class="hover:bg-slate-800/60 transition-colors">
         <td class="py-2.5 px-3 font-mono text-slate-500">#${u.id}</td>
         <td class="py-2.5 px-3 font-mono font-bold text-white">${u.username}</td>
-        <td class="py-2.5 px-3 text-slate-200">${u.full_name}</td>
+        <td class="py-2.5 px-3 text-slate-200 font-bold">${u.full_name}</td>
         <td class="py-2.5 px-3">
           <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30 uppercase">${u.role}</span>
         </td>
         <td class="py-2.5 px-3 text-slate-400">${u.area || '-'}</td>
         <td class="py-2.5 px-3">
-          <span class="inline-flex items-center gap-1 text-[11px] font-semibold ${u.activo ? 'text-emerald-400' : 'text-red-400'}">
+          <span class="inline-flex items-center gap-1.5 text-[11px] font-bold ${u.activo ? 'text-emerald-400' : 'text-red-400'}">
             <span class="w-1.5 h-1.5 rounded-full ${u.activo ? 'bg-emerald-400' : 'bg-red-400'}"></span>
             ${u.activo ? 'Activo' : 'Inactivo'}
           </span>
         </td>
-        <td class="py-2.5 px-3 font-mono text-slate-500 text-[11px]">${u.created_at || '-'}</td>
         <td class="py-2.5 px-3 text-center">
-          <button onclick="toggleUserStatus(${u.id}, ${u.activo ? 0 : 1})" class="text-xs px-2.5 py-1 rounded-lg border border-slate-700 hover:bg-slate-700 text-slate-300">
+          <button onclick="toggleUserStatus(${u.id}, ${u.activo ? 0 : 1})" class="text-xs px-2.5 py-1 rounded-lg border border-slate-700 hover:bg-slate-800 text-slate-300">
             ${u.activo ? 'Desactivar' : 'Reactivar'}
           </button>
         </td>
@@ -963,7 +1183,7 @@ async function handleCreateUser(e) {
     showToast(`Usuario ${username} creado exitosamente`, 'success');
     loadUsers();
   } catch (err) {
-    showToast('Error creando usuario: ' + err.message, 'error');
+    showToast('Error: ' + err.message, 'error');
   }
 }
 
@@ -976,7 +1196,7 @@ async function toggleUserStatus(id, newStatus) {
     showToast('Estado de usuario actualizado', 'info');
     loadUsers();
   } catch (err) {
-    showToast('Error actualizando usuario: ' + err.message, 'error');
+    showToast('Error: ' + err.message, 'error');
   }
 }
 
@@ -991,7 +1211,7 @@ async function loadAuditoria() {
     if (!tbody) return;
 
     if (rows.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="8" class="py-6 text-center text-slate-500 italic">No hay registros de auditoría aún.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="7" class="py-6 text-center text-slate-500 italic">No hay registros de auditoría aún.</td></tr>';
       return;
     }
 
@@ -999,13 +1219,12 @@ async function loadAuditoria() {
       <tr class="hover:bg-slate-800/60 transition-colors">
         <td class="py-2 px-3 text-slate-400 whitespace-nowrap">${r.fecha_hora}</td>
         <td class="py-2 px-3 font-bold text-amber-400">${r.usuario}</td>
-        <td class="py-2 px-3 text-slate-300">${r.tabla}</td>
-        <td class="py-2 px-3 text-slate-400">${r.registro_id || '-'}</td>
+        <td class="py-2 px-3 text-slate-300 font-mono">${r.tabla}</td>
         <td class="py-2 px-3">
           <span class="px-1.5 py-0.5 rounded text-[10px] font-bold ${r.accion === 'INSERT' ? 'bg-emerald-500/20 text-emerald-400' : (r.accion === 'DELETE' ? 'bg-red-500/20 text-red-400' : 'bg-blue-500/20 text-blue-400')}">${r.accion}</span>
         </td>
         <td class="py-2 px-3 text-slate-400 truncate max-w-[120px]">${r.valor_anterior || '-'}</td>
-        <td class="py-2 px-3 text-slate-200 truncate max-w-[120px]">${r.valor_nuevo || '-'}</td>
+        <td class="py-2 px-3 text-slate-200 font-bold truncate max-w-[120px]">${r.valor_nuevo || '-'}</td>
         <td class="py-2 px-3 text-slate-400">${r.motivo || '-'}</td>
       </tr>
     `).join('');

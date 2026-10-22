@@ -164,14 +164,75 @@ app.put('/api/users/:id', authMiddleware, requireRole('admin'), (req, res) => {
 
 app.get('/api/rdo', authMiddleware, (req, res) => {
   const { fecha, guardia } = req.query;
-  if (!fecha || !guardia) {
-    return res.status(400).json({ error: 'Parámetros fecha y guardia requeridos' });
+  if (!fecha) {
+    return res.status(400).json({ error: 'Parámetro fecha requerido' });
   }
 
-  const entries = db.prepare('SELECT * FROM rdo_entries WHERE fecha = ? AND guardia = ?').all(fecha, guardia);
-  const bitacora = db.prepare('SELECT * FROM bitacora WHERE fecha = ? AND guardia = ? ORDER BY id ASC').all(fecha, guardia);
+  let entries, bitacora;
+  if (guardia && guardia !== 'ALL') {
+    entries = db.prepare('SELECT * FROM rdo_entries WHERE fecha = ? AND guardia = ?').all(fecha, guardia);
+    bitacora = db.prepare('SELECT * FROM bitacora WHERE fecha = ? AND guardia = ? ORDER BY id ASC').all(fecha, guardia);
+  } else {
+    entries = db.prepare('SELECT * FROM rdo_entries WHERE fecha = ? ORDER BY area, id ASC').all(fecha);
+    bitacora = db.prepare('SELECT * FROM bitacora WHERE fecha = ? ORDER BY guardia, id ASC').all(fecha);
+  }
 
   res.json({ entries, bitacora });
+});
+
+// Copy previous shift values helper
+app.post('/api/rdo/copy-previous', authMiddleware, (req, res) => {
+  const { fecha, targetGuardia } = req.body;
+  if (!fecha || !targetGuardia) {
+    return res.status(400).json({ error: 'Fecha y guardia de destino requeridos' });
+  }
+
+  // Determine previous shift
+  let prevFecha = fecha;
+  let prevGuardia = 'A';
+  if (targetGuardia === 'B') {
+    prevGuardia = 'A';
+  } else if (targetGuardia === 'C') {
+    prevGuardia = 'B';
+  } else if (targetGuardia === 'A') {
+    prevGuardia = 'C';
+    const d = new Date(`${fecha}T12:00:00Z`);
+    d.setUTCDate(d.getUTCDate() - 1);
+    prevFecha = d.toISOString().split('T')[0];
+  }
+
+  const prevEntries = db.prepare('SELECT * FROM rdo_entries WHERE fecha = ? AND guardia = ?').all(prevFecha, prevGuardia);
+  if (prevEntries.length === 0) {
+    return res.status(404).json({ error: `No se encontraron datos previos en Guardia ${prevGuardia} (${prevFecha})` });
+  }
+
+  const upsert = db.prepare(`
+    INSERT INTO rdo_entries (fecha, guardia, area, parametro, valor, registrado_por, fecha_registro)
+    VALUES (?, ?, ?, ?, ?, ?, datetime('now', 'localtime'))
+    ON CONFLICT(fecha, guardia, area, parametro) DO UPDATE SET
+      valor = excluded.valor,
+      registrado_por = excluded.registrado_por,
+      fecha_registro = excluded.fecha_registro
+  `);
+
+  db.exec('BEGIN TRANSACTION');
+  try {
+    let copied = 0;
+    for (const e of prevEntries) {
+      upsert.run(fecha, targetGuardia, e.area, e.parametro, e.valor, req.user.username);
+      copied++;
+    }
+    db.exec('COMMIT');
+
+    logAudit(req.user.username, 'rdo_entries', `${fecha}_${targetGuardia}`, 'COPY', 'previous_shift', null, `${copied} params`, `Copiado desde Guardia ${prevGuardia} (${prevFecha})`);
+    broadcastEvent('RDO_UPDATE', { fecha, guardia: targetGuardia, user: req.user.username });
+    scheduleLiveSync();
+
+    res.json({ message: `Se copiaron ${copied} parámetros desde Guardia ${prevGuardia} (${prevFecha})`, count: copied });
+  } catch (err) {
+    db.exec('ROLLBACK');
+    res.status(500).json({ error: err.message });
+  }
 });
 
 app.post('/api/rdo', authMiddleware, (req, res) => {
