@@ -35,7 +35,7 @@
           <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Usuario</label>
           <div class="relative">
             <i class="ph-bold ph-user absolute left-3.5 top-3.5 text-slate-500 text-base"></i>
-            <input type="text" id="login-username" required class="w-full bg-slate-950 border border-slate-700 rounded-xl pl-11 pr-4 py-3 text-sm text-white focus:outline-none focus:border-amber-400 transition-colors" placeholder="wfigueroa o admin">
+            <input type="text" id="login-username" required autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="username" class="w-full bg-slate-950 border border-slate-700 rounded-xl pl-11 pr-4 py-3 text-sm text-white focus:outline-none focus:border-amber-400 transition-colors font-mono" placeholder="wfigueroa o admin">
           </div>
         </div>
 
@@ -43,11 +43,11 @@
           <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Contraseña</label>
           <div class="relative">
             <i class="ph-bold ph-lock-key absolute left-3.5 top-3.5 text-slate-500 text-base"></i>
-            <input type="password" id="login-password" required class="w-full bg-slate-950 border border-slate-700 rounded-xl pl-11 pr-4 py-3 text-sm text-white focus:outline-none focus:border-amber-400 transition-colors" placeholder="••••••••">
+            <input type="password" id="login-password" required autocomplete="current-password" class="w-full bg-slate-950 border border-slate-700 rounded-xl pl-11 pr-4 py-3 text-sm text-white focus:outline-none focus:border-amber-400 transition-colors" placeholder="••••••••">
           </div>
         </div>
 
-        <button type="submit" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-3.5 rounded-xl transition-all shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2 mt-3 text-sm">
+        <button type="submit" id="btn-login-submit" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-3.5 rounded-xl transition-all shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2 mt-3 text-sm active:scale-95 cursor-pointer">
           <span>Ingresar a Planta</span>
           <i class="ph-bold ph-arrow-right"></i>
         </button>

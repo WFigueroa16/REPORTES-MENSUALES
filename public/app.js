@@ -240,12 +240,17 @@ async function api(endpoint, options = {}) {
   };
 
   const res = await fetch(endpoint, { ...options, headers });
+  const data = await res.json().catch(() => ({}));
+
   if (res.status === 401) {
-    showLoginModal();
-    throw new Error('Sesión requerida');
+    if (endpoint !== '/api/auth/login') {
+      showLoginModal();
+      throw new Error('Sesión requerida');
+    } else {
+      throw new Error(data.error || 'Credenciales inválidas');
+    }
   }
 
-  const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.error || 'Error en la solicitud');
   return data;
 }
@@ -291,9 +296,25 @@ function hideLoginModal() {
 
 async function handleLogin(e) {
   e.preventDefault();
-  const username = document.getElementById('login-username').value;
-  const password = document.getElementById('login-password').value;
+  const usernameInput = document.getElementById('login-username');
+  const passwordInput = document.getElementById('login-password');
   const errorDiv = document.getElementById('login-error');
+  const submitBtn = document.getElementById('btn-login-submit');
+
+  const username = usernameInput ? usernameInput.value.trim() : '';
+  const password = passwordInput ? passwordInput.value.trim() : '';
+
+  if (!username || !password) {
+    document.getElementById('login-error-text').textContent = 'Ingresa tu usuario y contraseña';
+    errorDiv.classList.remove('hidden');
+    return;
+  }
+
+  const originalBtnHtml = submitBtn ? submitBtn.innerHTML : '';
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = `<i class="ph-bold ph-spinner animate-spin text-base"></i><span>Verificando...</span>`;
+  }
 
   try {
     errorDiv.classList.add('hidden');
@@ -314,6 +335,11 @@ async function handleLogin(e) {
   } catch (err) {
     document.getElementById('login-error-text').textContent = err.message;
     errorDiv.classList.remove('hidden');
+  } finally {
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalBtnHtml;
+    }
   }
 }
 
@@ -1386,6 +1412,9 @@ async function loadAuditoria() {
         <td class="py-2 px-3 text-slate-400">${r.motivo || '-'}</td>
       </tr>
     `).join('');
+  } catch (err) {
+    showToast('Error cargando auditoría: ' + err.message, 'error');
+  }
 }
 
 // ==========================================
