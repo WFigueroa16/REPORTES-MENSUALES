@@ -585,23 +585,46 @@ function renderMatrixSilos(map) {
     const valB = parseFloat(map[`TRITURACION_Silo ${sNum}_B`]);
     const valA = parseFloat(map[`TRITURACION_Silo ${sNum}_A`]);
 
-    const activeVal = !isNaN(valC) ? valC : (!isNaN(valB) ? valB : (!isNaN(valA) ? valA : 3));
+    const activeVal = !isNaN(valC) ? valC : (!isNaN(valB) ? valB : (!isNaN(valA) ? valA : 3.0));
     const pct = Math.min(100, Math.max(0, (activeVal / 5) * 100));
 
-    let barColor = 'bg-emerald-500';
-    if (activeVal < 2) barColor = 'bg-red-500';
-    else if (activeVal < 3.5) barColor = 'bg-amber-500';
+    let barGradient = 'from-emerald-500 to-emerald-400';
+    let statusBadge = '<span class="text-[9px] px-1.5 py-0.5 rounded font-black bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">ÓPTIMO</span>';
+    let glowShadow = 'shadow-emerald-500/20';
+
+    if (activeVal < 2.0) {
+      barGradient = 'from-red-600 to-rose-500';
+      statusBadge = '<span class="text-[9px] px-1.5 py-0.5 rounded font-black bg-red-500/20 text-red-400 border border-red-500/30 animate-pulse">CRÍTICO</span>';
+      glowShadow = 'shadow-red-500/30';
+    } else if (activeVal < 3.5) {
+      barGradient = 'from-amber-600 to-amber-400';
+      statusBadge = '<span class="text-[9px] px-1.5 py-0.5 rounded font-black bg-amber-500/20 text-amber-400 border border-amber-500/30">MEDIO</span>';
+      glowShadow = 'shadow-amber-500/20';
+    }
 
     return `
-      <div class="bg-slate-900 border border-slate-800 p-2.5 rounded-xl flex flex-col items-center space-y-2">
-        <span class="font-mono font-black text-xs text-amber-400">Silo ${sNum}</span>
+      <div class="silo-card p-3 flex flex-col items-center justify-between space-y-2 border border-slate-800 bg-slate-900/90 shadow-lg rounded-2xl">
+        <div class="w-full flex items-center justify-between">
+          <span class="font-mono font-black text-xs text-amber-400 tracking-tight">Silo #${sNum}</span>
+          ${statusBadge}
+        </div>
         
-        <div class="w-8 h-20 bg-slate-950 rounded-lg p-0.5 border border-slate-800 relative flex flex-col justify-end overflow-hidden">
-          <div class="w-full rounded-md ${barColor}" style="height: ${pct}%;"></div>
+        <!-- Industrial Silo Cylinder with level gradient and tick marks -->
+        <div class="silo-cylinder my-1">
+          <div class="silo-markings">
+            <span>5m</span>
+            <span>4m</span>
+            <span>3m</span>
+            <span>2m</span>
+            <span>1m</span>
+            <span>0m</span>
+          </div>
+          <div class="silo-level-fill bg-gradient-to-t ${barGradient} ${glowShadow}" style="height: ${pct}%;"></div>
         </div>
 
-        <div class="text-[11px] font-mono text-slate-300 font-bold">
-          ${activeVal.toFixed(1)} m
+        <div class="w-full flex items-baseline justify-between pt-1 border-t border-slate-800/80">
+          <span class="text-sm font-mono font-black text-white">${activeVal.toFixed(1)} <span class="text-[10px] text-slate-400 font-normal">m</span></span>
+          <span class="text-[10px] font-mono text-slate-400 font-bold">${Math.round(pct)}%</span>
         </div>
       </div>
     `;
@@ -1363,7 +1386,72 @@ async function loadAuditoria() {
         <td class="py-2 px-3 text-slate-400">${r.motivo || '-'}</td>
       </tr>
     `).join('');
+}
+
+// ==========================================
+// EXPORTACIÓN A EXCEL (.XLSX) ROBUSTA
+// ==========================================
+
+async function downloadExcelReport(e) {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  
+  const triggerBtn = e?.currentTarget;
+  const originalHtml = triggerBtn ? triggerBtn.innerHTML : '';
+  
+  if (triggerBtn) {
+    triggerBtn.disabled = true;
+    triggerBtn.classList.add('opacity-75', 'cursor-not-allowed');
+    triggerBtn.innerHTML = `<i class="ph-bold ph-spinner animate-spin text-base"></i><span>Generando Excel...</span>`;
+  }
+  
+  showToast('Generando libro Excel consolidado con las 10 hojas...', 'info');
+  
+  try {
+    const selectedDate = state.date || document.getElementById('global-date')?.value || new Date().toISOString().split('T')[0];
+    const url = `/api/export/excel?fecha=${encodeURIComponent(selectedDate)}&token=${encodeURIComponent(state.token || '')}`;
+    
+    const res = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${state.token || ''}`
+      }
+    });
+    
+    if (!res.ok) {
+      let errText = 'Error en el servidor al exportar Excel';
+      try {
+        const errJson = await res.json();
+        errText = errJson.error || errText;
+      } catch {}
+      throw new Error(errText);
+    }
+    
+    const blob = await res.blob();
+    const blobUrl = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = blobUrl;
+    link.download = `BENEFICIO_ZA_REPORTE_${selectedDate}.xlsx`;
+    document.body.appendChild(link);
+    link.click();
+    
+    setTimeout(() => {
+      link.remove();
+      window.URL.revokeObjectURL(blobUrl);
+    }, 1500);
+    
+    showToast('¡Descarga completada! Archivo Excel (.xlsx) listo en tus descargas.', 'success');
   } catch (err) {
-    showToast('Error cargando auditoría: ' + err.message, 'error');
+    console.error('Error al exportar Excel:', err);
+    showToast('Fallo en la descarga: ' + err.message, 'error');
+  } finally {
+    if (triggerBtn) {
+      triggerBtn.disabled = false;
+      triggerBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+      triggerBtn.innerHTML = originalHtml;
+    }
   }
 }
+window.downloadExcelReport = downloadExcelReport;

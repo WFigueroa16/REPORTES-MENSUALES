@@ -99,9 +99,14 @@
         </div>
 
         <!-- Right Side: Excel Sincronizado + User Profile -->
-        <div class="flex items-center gap-3">
-          <div class="hidden lg:flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-1 rounded-lg text-emerald-400 text-xs font-bold">
-            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <div class="flex items-center gap-2 sm:gap-3">
+          <button type="button" onclick="downloadExcelReport(event)" title="Descargar Reporte Excel (.xlsx)" class="flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white text-xs font-black px-3.5 py-2 rounded-xl transition-all shadow-md shadow-emerald-500/20 border border-emerald-400/30 cursor-pointer active:scale-95">
+            <i class="ph-bold ph-file-xls text-base"></i>
+            <span class="hidden md:inline">Descargar Excel (.xlsx)</span>
+          </button>
+
+          <div class="hidden xl:flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-1.5 rounded-xl text-emerald-400 text-xs font-bold">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 pulse-emerald"></span>
             <span>Excel Sincronizado</span>
           </div>
 
@@ -192,10 +197,10 @@
             <i class="ph-bold ph-arrows-clockwise text-base"></i>
             <span>Actualizar</span>
           </button>
-          <a href="/api/export/excel" download class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black px-4 py-2.5 rounded-xl transition-all shadow-lg shadow-emerald-600/20 flex items-center gap-2">
-            <i class="ph-bold ph-download-simple text-base"></i>
-            <span>Exportar Excel</span>
-          </a>
+          <button type="button" onclick="downloadExcelReport(event)" class="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white text-xs font-black px-4 py-2.5 rounded-xl transition-all shadow-lg shadow-emerald-600/25 flex items-center gap-2 border border-emerald-400/30 cursor-pointer active:scale-95">
+            <i class="ph-bold ph-file-xls text-base"></i>
+            <span>Exportar Excel (.xlsx)</span>
+          </button>
         </div>
       </div>
 
@@ -814,10 +819,10 @@
           </p>
         </div>
 
-        <a href="/api/export/excel" download class="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black px-8 py-3.5 rounded-2xl transition-all shadow-xl shadow-emerald-500/20 text-sm">
-          <i class="ph-bold ph-download-simple text-lg"></i>
+        <button type="button" onclick="downloadExcelReport(event)" class="inline-flex items-center gap-2.5 bg-gradient-to-r from-emerald-500 to-emerald-400 hover:from-emerald-400 hover:to-emerald-300 text-slate-950 font-black px-8 py-4 rounded-2xl transition-all shadow-xl shadow-emerald-500/25 text-sm cursor-pointer active:scale-95">
+          <i class="ph-bold ph-file-xls text-xl"></i>
           <span>Descargar Archivo Excel (.xlsx)</span>
-        </a>
+        </button>
 
         <div class="p-4 bg-slate-950 border border-slate-800 rounded-2xl text-left text-xs text-slate-400 space-y-1">
           <div class="font-bold text-slate-300">Copia local continua en tu disco:</div>

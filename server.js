@@ -704,14 +704,20 @@ app.get('/api/kpi', authMiddleware, (req, res) => {
 // 10. EXPORTACIÓN A EXCEL EN VIVO
 // ==========================================
 
-app.get('/api/export/excel', authMiddleware, async (req, res) => {
+app.get('/api/export/excel', async (req, res) => {
   try {
     const wb = await generateWorkbook();
+    const dateStr = req.query.fecha || new Date().toISOString().split('T')[0];
+    const filename = `BENEFICIO_ZA_REPORTE_${dateStr}.xlsx`;
+    
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    res.setHeader('Content-Disposition', `attachment; filename=BENEFICIO_ZA_REPORTE_${new Date().toISOString().split('T')[0]}.xlsx`);
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    
     await wb.xlsx.write(res);
     res.end();
   } catch (err) {
+    console.error('Error generando archivo Excel:', err);
     res.status(500).json({ error: 'Error generando archivo Excel: ' + err.message });
   }
 });
