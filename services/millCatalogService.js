@@ -11,28 +11,77 @@ let catalogCache = new Map();
  */
 const MOLINOS_MAP = {
   // Barras 1 a 9: 032-081 a 032-089
-  '032-081': { nombre: 'BARRAS 1', tipo: 'Barras', numero: 1 },
-  '032-082': { nombre: 'BARRAS 2', tipo: 'Barras', numero: 2 },
-  '032-083': { nombre: 'BARRAS 3', tipo: 'Barras', numero: 3 },
-  '032-084': { nombre: 'BARRAS 4', tipo: 'Barras', numero: 4 },
-  '032-085': { nombre: 'BARRAS 5', tipo: 'Barras', numero: 5 },
-  '032-086': { nombre: 'BARRAS 6', tipo: 'Barras', numero: 6 },
-  '032-087': { nombre: 'BARRAS 7', tipo: 'Barras', numero: 7 },
-  '032-088': { nombre: 'BARRAS 8', tipo: 'Barras', numero: 8 },
-  '032-089': { nombre: 'BARRAS 9', tipo: 'Barras', numero: 9 },
+  '032-081': { nombre: 'BARRAS 1', tipo: 'Barras', numero: 1, codigo_hmi: '032-081' },
+  '032-082': { nombre: 'BARRAS 2', tipo: 'Barras', numero: 2, codigo_hmi: '032-082' },
+  '032-083': { nombre: 'BARRAS 3', tipo: 'Barras', numero: 3, codigo_hmi: '032-083' },
+  '032-084': { nombre: 'BARRAS 4', tipo: 'Barras', numero: 4, codigo_hmi: '032-084' },
+  '032-085': { nombre: 'BARRAS 5', tipo: 'Barras', numero: 5, codigo_hmi: '032-085' },
+  '032-086': { nombre: 'BARRAS 6', tipo: 'Barras', numero: 6, codigo_hmi: '032-086' },
+  '032-087': { nombre: 'BARRAS 7', tipo: 'Barras', numero: 7, codigo_hmi: '032-087' },
+  '032-088': { nombre: 'BARRAS 8', tipo: 'Barras', numero: 8, codigo_hmi: '032-088' },
+  '032-089': { nombre: 'BARRAS 9', tipo: 'Barras', numero: 9, codigo_hmi: '032-089' },
 
   // Bolas 1 a 9: 032-201 a 032-209
-  '032-201': { nombre: 'BOLAS 1', tipo: 'Bolas', numero: 1 },
-  '032-202': { nombre: 'BOLAS 2', tipo: 'Bolas', numero: 2 },
-  '032-203': { nombre: 'BOLAS 3', tipo: 'Bolas', numero: 3 },
-  '032-204': { nombre: 'BOLAS 4', tipo: 'Bolas', numero: 4 },
-  '032-205': { nombre: 'BOLAS 5', tipo: 'Bolas', numero: 5 },
-  '032-206': { nombre: 'BOLAS 6', tipo: 'Bolas', numero: 6 },
-  '032-207': { nombre: 'BOLAS 7', tipo: 'Bolas', numero: 7 },
-  '032-208': { nombre: 'BOLAS 8', tipo: 'Bolas', numero: 8 },
-  '032-209': { nombre: 'BOLAS 9', tipo: 'Bolas', numero: 9 },
-  '032-2010': { nombre: 'BOLAS 10', tipo: 'Bolas', numero: 10 }
+  '032-201': { nombre: 'BOLAS 1', tipo: 'Bolas', numero: 1, codigo_hmi: '032-201' },
+  '032-202': { nombre: 'BOLAS 2', tipo: 'Bolas', numero: 2, codigo_hmi: '032-202' },
+  '032-203': { nombre: 'BOLAS 3', tipo: 'Bolas', numero: 3, codigo_hmi: '032-203' },
+  '032-204': { nombre: 'BOLAS 4', tipo: 'Bolas', numero: 4, codigo_hmi: '032-204' },
+  '032-205': { nombre: 'BOLAS 5', tipo: 'Bolas', numero: 5, codigo_hmi: '032-205' },
+  '032-206': { nombre: 'BOLAS 6', tipo: 'Bolas', numero: 6, codigo_hmi: '032-206' },
+  '032-207': { nombre: 'BOLAS 7', tipo: 'Bolas', numero: 7, codigo_hmi: '032-207' },
+  '032-208': { nombre: 'BOLAS 8', tipo: 'Bolas', numero: 8, codigo_hmi: '032-208' },
+  '032-209': { nombre: 'BOLAS 9', tipo: 'Bolas', numero: 9, codigo_hmi: '032-209' },
+  '032-2010': { nombre: 'BOLAS 10', tipo: 'Bolas', numero: 10, codigo_hmi: '032-2010' }
 };
+
+/**
+ * Normaliza cualquier variante de código o nombre de molino a su formato canónico '032-XXX'
+ * Ejemplos: '201', 'MOLINO 201', 'Molino de bolas 201', 'Bolas 1', '032-201' -> '032-201'
+ *           '2010', '032-210', 'Bolas 10' -> '032-2010'
+ *           '81', '081', 'Barras 1' -> '032-081'
+ */
+function normalizarCodigoMolino(texto) {
+  if (!texto) return null;
+  const str = String(texto).toUpperCase().trim();
+
+  // 1. Formato canónico exacto o contenido ('032-201', '032-081', '032-2010')
+  const matchCanonico = str.match(/032-(2010|20[1-9]|08[1-9])/);
+  if (matchCanonico) return matchCanonico[0];
+
+  // 2. Variantes de Bolas 10
+  if (str.includes('032-210') || str.includes('BOLAS 10') || str.includes('BOLA 10') || str.includes('2010') || str.includes('B-10')) {
+    return '032-2010';
+  }
+
+  // 3. Números directos de 3 o 4 dígitos de bolas: '201'..'209', '2010', '210'
+  const matchNumBolas = str.match(/\b(20[1-9]|2010|210)\b/);
+  if (matchNumBolas) {
+    const val = matchNumBolas[1];
+    return (val === '2010' || val === '210') ? '032-2010' : `032-${val}`;
+  }
+
+  // 4. Números directos de barras: '081'..'089', u '81'..'89'
+  const matchNumBarras = str.match(/\b(?:08|8)([1-9])\b/);
+  if (matchNumBarras) {
+    return `032-08${matchNumBarras[1]}`;
+  }
+
+  // 5. Patrones "Bolas X" / "Molino de bolas X" (1 a 9)
+  const matchBolas = str.match(/(?:BOLA[S]?|MOLINO DE BOLA[S]?)\s*#?\s*([1-9]|10)\b/);
+  if (matchBolas) {
+    const num = parseInt(matchBolas[1], 10);
+    return num === 10 ? '032-2010' : `032-20${num}`;
+  }
+
+  // 6. Patrones "Barras X" / "Molino de barras X" (1 a 9)
+  const matchBarras = str.match(/(?:BARRA[S]?|MOLINO DE BARRA[S]?)\s*#?\s*([1-9])\b/);
+  if (matchBarras) {
+    const num = parseInt(matchBarras[1], 10);
+    return `032-08${num}`;
+  }
+
+  return str;
+}
 
 /**
  * Normaliza acrónimos extraídos del HMI
@@ -151,9 +200,11 @@ function poblarCatalogoBase() {
 
 module.exports = {
   MOLINOS_MAP,
+  normalizarCodigoMolino,
   normalizarAcronimo,
   cargarCatalogoDesdeExcel,
   obtenerInfoMolino(codigo) {
-    return MOLINOS_MAP[codigo] || null;
+    const codNorm = normalizarCodigoMolino(codigo);
+    return MOLINOS_MAP[codNorm] || MOLINOS_MAP[codigo] || null;
   }
 };

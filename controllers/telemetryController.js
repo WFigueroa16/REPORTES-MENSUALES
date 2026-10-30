@@ -197,6 +197,21 @@ class TelemetryController {
       return res.status(500).json({ error: err.message });
     }
   }
+
+  /**
+   * Sincroniza estado de telemetría enviado desde el cliente (LocalStorage -> SQLite)
+   */
+  sincronizarEstadoCliente(req, res) {
+    try {
+      const { items } = req.body;
+      const syncedCount = dbService.sincronizarCapturasDesdeCliente(items);
+      const dataActualizada = dbService.obtenerDashboard();
+      return res.json({ success: true, synced: syncedCount, data: dataActualizada });
+    } catch (err) {
+      console.error('[Sync State] Error:', err);
+      return res.status(500).json({ error: err.message });
+    }
+  }
 }
 
 module.exports = new TelemetryController();

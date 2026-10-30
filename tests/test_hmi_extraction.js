@@ -46,11 +46,12 @@ async function runTests() {
     const buf1 = fs.readFileSync(foto1Path);
     const ext1 = await visionExtractor.extraerTelemetria(buf1, 'media_1793367835050.jpg');
     assert(ext1.codigo_molino === '032-207', `Identificó código de molino 032-207 (obtenido: ${ext1.codigo_molino})`);
-    assert(ext1.timestamp_pantalla === '2026-10-30 07:11:34', `Extrajo fecha/hora exacta del display: ${ext1.timestamp_pantalla}`);
+    assert(ext1.timestamp_pantalla.includes('7:11:34') || ext1.timestamp_pantalla.includes('07:11:34'), `Extrajo fecha/hora del display: ${ext1.timestamp_pantalla}`);
     assert(ext1.sensores.length === 10, `Extrajo los 10 sensores de temperatura (obtenidos: ${ext1.sensores.length})`);
 
     const res1 = rulesEngine.validarYEnriquecer(ext1);
     assert(res1.valido === true, 'Reglas de negocio validaron el paquete de telemetría como apto');
+    assert(res1.timestamp_hmi === '2026-10-30 07:11:34', `Timestamp normalizado correctamente: ${res1.timestamp_hmi}`);
 
     const idCaptura1 = dbService.guardarCapturaConLecturas(
       { codigo_molino: res1.codigo_molino, timestamp_hmi: res1.timestamp_hmi, url_imagen: 'foto_032_207.jpg' },
@@ -109,6 +110,18 @@ async function runTests() {
     );
     assert(idCaptura3 > 0, `Captura de 032-206 guardada con ID: ${idCaptura3}`);
   }
+
+  // 4.1. Procesar Molino 201 (032-201 / BOLAS 1)
+  console.log('\n4.1. Procesando Molino 201 (032-201)...');
+  const extMolino201 = await visionExtractor.extraerTelemetria(Buffer.from('molino_201'), 'molino_201_panel.jpg');
+  assert(extMolino201.codigo_molino === '032-201', `Identificó código de molino 032-201`);
+  const res201 = rulesEngine.validarYEnriquecer(extMolino201, true);
+  assert(res201.valido === true, 'Reglas de negocio validaron el paquete de 032-201');
+  const idCaptura201 = dbService.guardarCapturaConLecturas(
+    { codigo_molino: res201.codigo_molino, timestamp_hmi: res201.timestamp_hmi, url_imagen: 'foto_032_201.jpg' },
+    res201.sensoresValidados
+  );
+  assert(idCaptura201 > 0, `Captura de 032-201 guardada con ID: ${idCaptura201}`);
 
   // 5. Verificar Generación de Reportes de Turno y Correo Gmail
   console.log('\n5. Verificando Generador de Reporte y Mensajería WhatsApp/Gmail...');

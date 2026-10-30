@@ -741,6 +741,8 @@ const millCatalog = require('./services/millCatalogService');
 
 app.post('/api/telemetria/webhook/greenapi', (req, res) => telemetryController.handleGreenApiWebhook(req, res));
 app.post('/api/telemetria/subir-foto', (req, res) => telemetryController.procesarFotoManual(req, res));
+app.post('/api/telemetria/subir-hmi', (req, res) => telemetryController.procesarFotoManual(req, res));
+app.post('/api/telemetria/sync-state', (req, res) => telemetryController.sincronizarEstadoCliente(req, res));
 app.get('/api/telemetria/dashboard', (req, res) => telemetryController.obtenerDashboard(req, res));
 app.get('/api/telemetria/reporte-turno', (req, res) => telemetryController.obtenerReporteTurno(req, res));
 app.post('/api/telemetria/enviar-correo-reporte', (req, res) => telemetryController.enviarReporteCorreo(req, res));

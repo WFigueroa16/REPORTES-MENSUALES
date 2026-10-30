@@ -245,5 +245,42 @@ module.exports = {
     }
 
     return resultado;
+  },
+
+  sincronizarCapturasDesdeCliente(items) {
+    if (!Array.isArray(items)) return 0;
+    let synced = 0;
+    for (const item of items) {
+      if (!item || !item.molino || !item.ultima_captura) continue;
+      const cod = item.ultima_captura.codigo_molino || item.molino.codigo_hmi;
+      const ts = item.ultima_captura.timestamp_hmi;
+      if (!cod || !ts) continue;
+
+      if (!this.existeCaptura(cod, ts) && Array.isArray(item.sensores) && item.sensores.length > 0) {
+        this.guardarCapturaConLecturas(
+          {
+            codigo_molino: cod,
+            timestamp_hmi: ts,
+            hash_imagen: item.ultima_captura.hash_imagen || null,
+            url_imagen: item.ultima_captura.url_imagen || 'cliente_sync',
+            estado_motor: item.ultima_captura.estado_motor || 'ON',
+            calidad_ocr: item.ultima_captura.calidad_ocr || 'ALTA',
+            observaciones: item.ultima_captura.observaciones || 'Sincronizado desde caché de cliente'
+          },
+          item.sensores.map(s => ({
+            acronimo: s.acronimo_sensor || s.acronimo,
+            nombre_sensor: s.nombre_sensor || s.descripcion || s.acronimo_sensor,
+            valor: s.valor,
+            unidad: s.unidad || '',
+            alarma: s.alarma !== undefined ? s.alarma : null,
+            falla: s.falla !== undefined ? s.falla : null,
+            sentido: s.sentido || 'MAX',
+            condicion: s.condicion || 'NORMAL'
+          }))
+        );
+        synced++;
+      }
+    }
+    return synced;
   }
 };

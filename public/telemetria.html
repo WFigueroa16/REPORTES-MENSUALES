@@ -358,12 +358,30 @@
       }
     }
 
+    function normalizarCodigo(cod) {
+      if (!cod) return '';
+      const str = String(cod).toUpperCase().trim();
+      const match = str.match(/032-(2010|20[1-9]|08[1-9])/);
+      if (match) return match[0];
+      if (str.includes('2010') || str.includes('210') || str.includes('BOLAS 10') || str.includes('B-10')) return '032-2010';
+      const mNumB = str.match(/\b(20[1-9]|2010|210)\b/);
+      if (mNumB) return (mNumB[1] === '2010' || mNumB[1] === '210') ? '032-2010' : `032-${mNumB[1]}`;
+      const mNumBar = str.match(/\b(?:08|8)([1-9])\b/);
+      if (mNumBar) return `032-08${mNumBar[1]}`;
+      const mBolas = str.match(/(?:BOLA[S]?|MOLINO DE BOLA[S]?)\s*#?\s*([1-9]|10)\b/);
+      if (mBolas) return parseInt(mBolas[1]) === 10 ? '032-2010' : `032-20${mBolas[1]}`;
+      const mBarras = str.match(/(?:BARRA[S]?|MOLINO DE BARRA[S]?)\s*#?\s*([1-9])\b/);
+      if (mBarras) return `032-08${mBarras[1]}`;
+      return str;
+    }
+
     function actualizarMolinoEnMemoria(json) {
       if (!json || !json.molino) return;
-      let item = molinosDataCache.find(m => m.molino && m.molino.codigo_hmi === json.molino);
+      const codNorm = normalizarCodigo(json.molino);
+      let item = molinosDataCache.find(m => m.molino && (normalizarCodigo(m.molino.codigo_hmi) === codNorm || m.molino.codigo_hmi === codNorm));
       if (!item) {
         item = {
-          molino: { codigo_hmi: json.molino, nombre: 'Molino ' + json.molino, tipo: 'Molienda', total_sensores: (json.sensores || []).length, activo: 1 },
+          molino: { codigo_hmi: codNorm, nombre: 'Molino ' + codNorm, tipo: 'Molienda', total_sensores: (json.sensores || []).length, activo: 1 },
           ultima_captura: null,
           sensores: [],
           estado_general: 'NORMAL',
@@ -372,9 +390,10 @@
         molinosDataCache.push(item);
       }
 
+      item.molino.codigo_hmi = codNorm;
       item.ultima_captura = {
         id: json.captura_id || Date.now(),
-        codigo_molino: json.molino,
+        codigo_molino: codNorm,
         timestamp_hmi: json.timestamp_hmi,
         estado_motor: 'ON',
         calidad_ocr: 'ALTA',
@@ -401,6 +420,13 @@
 
       guardarCacheLocal();
       renderDashboard();
+
+      // Sincronizar en segundo plano con el servidor para persistencia total
+      fetch('/api/telemetria/sync-state', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items: molinosDataCache })
+      }).catch(() => {});
     }
 
     async function cargarDashboard() {
@@ -410,25 +436,41 @@
         if (!json.success || !Array.isArray(json.data)) return;
 
         const serverData = json.data;
+        let servidorNecesitaSync = false;
 
         if (!molinosDataCache || molinosDataCache.length === 0) {
           molinosDataCache = serverData;
         } else {
           serverData.forEach(srvItem => {
-            const localIdx = molinosDataCache.findIndex(m => m.molino && m.molino.codigo_hmi === srvItem.molino.codigo_hmi);
+            const srvCod = normalizarCodigo(srvItem.molino.codigo_hmi);
+            const localIdx = molinosDataCache.findIndex(m => m.molino && (normalizarCodigo(m.molino.codigo_hmi) === srvCod || m.molino.codigo_hmi === srvCod));
             if (localIdx === -1) {
               molinosDataCache.push(srvItem);
             } else {
               const localItem = molinosDataCache[localIdx];
-              // Si el usuario procesó recientemente esta tarjeta en el navegador (últimos 10 min), NO sobrescribir
-              const esReciente = localItem._updatedAt && (Date.now() - localItem._updatedAt < 600000);
-              if (!esReciente && srvItem.ultima_captura && srvItem.sensores && srvItem.sensores.length > 0) {
-                if (!localItem.ultima_captura || srvItem.ultima_captura.timestamp_hmi > localItem.ultima_captura.timestamp_hmi) {
+              const srvTieneLectura = srvItem.ultima_captura && srvItem.ultima_captura.timestamp_hmi;
+              const localTieneLectura = localItem.ultima_captura && localItem.ultima_captura.timestamp_hmi;
+
+              if (!localTieneLectura && srvTieneLectura) {
+                molinosDataCache[localIdx] = srvItem;
+              } else if (localTieneLectura && !srvTieneLectura) {
+                // El cliente tiene una lectura local que el servidor no tiene (ej. reinicio serverless)
+                servidorNecesitaSync = true;
+              } else if (localTieneLectura && srvTieneLectura) {
+                if (srvItem.ultima_captura.timestamp_hmi > localItem.ultima_captura.timestamp_hmi) {
                   molinosDataCache[localIdx] = srvItem;
                 }
               }
             }
           });
+        }
+
+        if (servidorNecesitaSync) {
+          fetch('/api/telemetria/sync-state', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ items: molinosDataCache })
+          }).catch(() => {});
         }
 
         guardarCacheLocal();
@@ -746,7 +788,7 @@
 
           const json = await res.json();
 
-          if (res.status === 201) {
+          if (res.status === 201 || (json && json.status === 'procesado_exitosamente')) {
             exitosas++;
             actualizarMolinoEnMemoria(json);
             uploadLog.innerHTML += `
@@ -758,6 +800,10 @@
           } else if (json.status === 'duplicado') {
             duplicadas++;
             uploadLog.innerHTML += `<div style="color: #eab308;">[${num}/${total}] ⚠️ <strong>Duplicado:</strong> ${json.detalle}</div>`;
+          } else if (json.status === 'enviado_a_revision') {
+            errores++;
+            const mot = (json.incidencias && json.incidencias[0]) ? json.incidencias[0].detalle : 'Enviado a revisión';
+            uploadLog.innerHTML += `<div style="color: #eab308;">[${num}/${total}] ⚠️ <strong>En revisión:</strong> ${mot} (${item.nombre})</div>`;
           } else {
             errores++;
             uploadLog.innerHTML += `<div style="color: #ef4444;">[${num}/${total}] ❌ <strong>Error:</strong> ${json.error || 'Lectura fallida'} (${item.nombre})</div>`;

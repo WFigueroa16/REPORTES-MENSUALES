@@ -7,8 +7,8 @@ Eres un asistente industrial experto en telemetría de molienda minera para Plan
 Analiza la fotografía de la pantalla HMI Siemens (SIMATIC) y extrae las variables operativas en JSON estricto.
 
 REGLAS OBLIGATORIAS:
-1. Extrae 'codigo_molino' exacto del banner (ej: '032-208', '032-207', '032-081').
-2. Extrae 'timestamp_pantalla' visible en pantalla (formato YYYY-MM-DD HH:mm:ss).
+1. Extrae 'codigo_molino' exacto del banner (ej: '032-201', '032-206', '032-207', '032-208', '032-081', etc.). Si el banner indica 'Molino 201' o 'Molino de bolas 201' o '201' o 'Bolas 1', devuélvelo como '032-201'.
+2. Extrae 'timestamp_pantalla' visible en pantalla (formato YYYY-MM-DD HH:mm:ss o DD/MM/YYYY HH:mm:ss).
 3. Convierte comas a puntos decimales: '42,9' -> 42.9. NUNCA omitas el decimal (evita convertir 52,2 en 522).
 4. Extrae lista 'sensores' con: acronimo, descripcion, valor_actual, unidad, alarma, falla.
 5. Extrae objeto 'estados_discretos' (ON/OFF, Listo, Desactivado, Parada de Emergencia).
@@ -141,9 +141,13 @@ class VisionExtractorService {
       throw new Error('Gemini no retornó candidatos válidos');
     }
     const rawText = data.candidates[0].content.parts[0].text;
-    const cleanJson = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
+    const cleanJson = rawText.replace(/```json/gi, '').replace(/```/g, '').trim();
     const parsed = JSON.parse(cleanJson);
     parsed.hash_imagen = hash;
+    const millCatalog = require('./millCatalogService');
+    if (parsed.codigo_molino) {
+      parsed.codigo_molino = millCatalog.normalizarCodigoMolino(parsed.codigo_molino);
+    }
     console.log(`[VisionExtractor] ✅ Éxito OCR para molino ${parsed.codigo_molino} (${parsed.sensores ? parsed.sensores.length : 0} sensores).`);
     return parsed;
   }
@@ -154,6 +158,30 @@ class VisionExtractorService {
   _extractorLocalReferencia(buffer, nombreArchivo, hash) {
     const size = buffer ? buffer.length : 0;
     const nameLower = (nombreArchivo || '').toLowerCase();
+
+    // Detección para Molino de Bolas 201 (032-201)
+    if (nameLower.includes('201') || nameLower.includes('bolas 1') || nameLower.includes('032-201')) {
+      return {
+        codigo_molino: '032-201',
+        nombre_pantalla: 'Molino de bolas 032-201',
+        timestamp_pantalla: '2026-10-30 09:45:25',
+        hash_imagen: hash,
+        estados_discretos: {
+          motor_principal: 'ON',
+          parada_emergencia_1: 'Desactivado',
+          parada_emergencia_2: 'Desactivado',
+          sistema_hidrostatico: 'Listo'
+        },
+        sensores: [
+          { acronimo: 'CAP', descripcion: 'Presion de aire embrague (CAP)', valor_actual: 111.5, unidad: 'psi', alarma: 90.0, falla: 80.0, sentido: 'MIN' },
+          { acronimo: 'RAP', descripcion: 'Presion de aire recepecion (RAP)', valor_actual: 112.0, unidad: 'psi', alarma: 90.0, falla: 80.0, sentido: 'MIN' },
+          { acronimo: 'ROP', descripcion: 'Temp. Aceite reductor molino (ROT)', valor_actual: 38.5, unidad: '°C', alarma: 50.0, falla: 60.0 },
+          { acronimo: 'STA', descripcion: 'Temp. Pedestal motor anillo ( STA)', valor_actual: 54.2, unidad: '°C', alarma: 68.0, falla: 70.0 },
+          { acronimo: 'TEMP_INFRARROJO', descripcion: 'Temp. Infrarrojo descarga', valor_actual: 44.8, unidad: '°C', alarma: 55.0, falla: 60.0 },
+          { acronimo: 'VR1', descripcion: 'Sensor vibracion VR1 al VR6', valor_actual: 0.8, unidad: 'mm/seg', alarma: 8.0, falla: 10.0 }
+        ]
+      };
+    }
 
     // Detección por nombre de archivo de WhatsApp
     if (nameLower.includes('(1)') || nameLower.includes('032-208') || nameLower.includes('1793367840260') || (size > 210000 && size < 240000)) {

@@ -90,15 +90,31 @@ class BusinessRulesEngine {
    * Valida y procesa un paquete de telemetría extraído por el OCR
    */
   validarYEnriquecer(datosExtraidos, permitirSobrescritura = false) {
-    const { codigo_molino, timestamp_pantalla, sensores = [], estados_discretos = {} } = datosExtraidos;
-    const tsNormalizado = normalizarTimestamp(timestamp_pantalla);
+    const rawCodigo = datosExtraidos.codigo_molino;
+    const codigo_molino = millCatalog.normalizarCodigoMolino(rawCodigo);
+    const { timestamp_pantalla, sensores = [], estados_discretos = {} } = datosExtraidos;
+    
+    let tsNormalizado = normalizarTimestamp(timestamp_pantalla);
+    const incidencias = [];
+
+    // Fallback de timestamp para no descartar telemetría si la fecha/hora en la foto no es legible
+    if (!tsNormalizado || tsNormalizado.length < 10) {
+      const now = new Date();
+      const pad = (n) => String(n).padStart(2, '0');
+      tsNormalizado = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+      incidencias.push({
+        motivo: 'TIMESTAMP_SISTEMA',
+        detalle: 'Fecha y hora asignadas automáticamente desde el servidor por ausencia o reflejo en la pantalla HMI.'
+      });
+    }
+
     const resultado = {
       valido: true,
       esDuplicado: false,
       codigo_molino,
       timestamp_hmi: tsNormalizado,
       sensoresValidados: [],
-      incidencias: [],
+      incidencias,
       resumenCondiciones: { normal: 0, preaviso: 0, alarma: 0, falla: 0 }
     };
 
@@ -108,22 +124,12 @@ class BusinessRulesEngine {
       resultado.valido = false;
       resultado.incidencias.push({
         motivo: 'MOLINO_DESCONOCIDO',
-        detalle: `El código extraído '${codigo_molino}' no pertenece a los 19 molinos catalogados.`
+        detalle: `El código extraído '${rawCodigo}' no pertenece a los 19 molinos catalogados.`
       });
       return resultado;
     }
 
-    // 2. Validar timestamp
-    if (!tsNormalizado) {
-      resultado.valido = false;
-      resultado.incidencias.push({
-        motivo: 'TIMESTAMP_INVALIDO',
-        detalle: 'No fue posible extraer la fecha y hora de la pantalla del tablero HMI.'
-      });
-      return resultado;
-    }
-
-    // 3. Chequear deduplicación
+    // 2. Chequear deduplicación
     if (!permitirSobrescritura && dbService.existeCaptura(codigo_molino, tsNormalizado)) {
       resultado.esDuplicado = true;
       resultado.incidencias.push({
