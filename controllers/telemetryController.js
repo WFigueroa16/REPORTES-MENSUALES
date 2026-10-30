@@ -111,11 +111,8 @@ class TelemetryController {
       }
 
       const datosExtraidos = await visionExtractor.extraerTelemetria(buffer, nombreArchivo || 'foto_manual.jpg');
-      const resultado = rulesEngine.validarYEnriquecer(datosExtraidos);
-
-      if (resultado.esDuplicado) {
-        return res.status(200).json({ status: 'duplicado', detalle: resultado.incidencias[0].detalle });
-      }
+      // En subida manual permitimos sobreescritura/reprocesamiento para pruebas inmediatas en pantalla
+      const resultado = rulesEngine.validarYEnriquecer(datosExtraidos, true);
 
       if (!resultado.valido) {
         dbService.registrarIncidencia(
@@ -140,13 +137,16 @@ class TelemetryController {
         resultado.sensoresValidados
       );
 
+      const muestraSensores = resultado.sensoresValidados.slice(0, 4).map(s => `${s.acronimo}: ${s.valor}${s.unidad}`).join(' | ');
+
       return res.status(201).json({
         status: 'procesado_exitosamente',
         captura_id: capturaId,
         molino: resultado.codigo_molino,
         timestamp_hmi: resultado.timestamp_hmi,
         sensores_registrados: resultado.sensoresValidados.length,
-        resumen: resultado.resumenCondiciones
+        resumen: resultado.resumenCondiciones,
+        sensores_resumen: muestraSensores
       });
     } catch (err) {
       console.error('[Procesar Foto] Error:', err);

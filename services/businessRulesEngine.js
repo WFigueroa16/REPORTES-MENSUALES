@@ -18,6 +18,22 @@ function parseNumeroSeguro(val) {
   return isNaN(num) ? null : num;
 }
 
+function normalizarTimestamp(str) {
+  if (!str) return null;
+  const s = String(str).trim();
+  const matchDmy = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})\s+(\d{1,2}):(\d{2})(?::(\d{2}))?/);
+  if (matchDmy) {
+    const d = matchDmy[1].padStart(2, '0');
+    const mo = matchDmy[2].padStart(2, '0');
+    const y = matchDmy[3];
+    const h = matchDmy[4].padStart(2, '0');
+    const mi = matchDmy[5].padStart(2, '0');
+    const sec = (matchDmy[6] || '00').padStart(2, '0');
+    return `${y}-${mo}-${d} ${h}:${mi}:${sec}`;
+  }
+  return s;
+}
+
 /**
  * Motor de Reglas de Negocio para Telemetría de Molinos
  */
@@ -73,13 +89,14 @@ class BusinessRulesEngine {
   /**
    * Valida y procesa un paquete de telemetría extraído por el OCR
    */
-  validarYEnriquecer(datosExtraidos) {
+  validarYEnriquecer(datosExtraidos, permitirSobrescritura = false) {
     const { codigo_molino, timestamp_pantalla, sensores = [], estados_discretos = {} } = datosExtraidos;
+    const tsNormalizado = normalizarTimestamp(timestamp_pantalla);
     const resultado = {
       valido: true,
       esDuplicado: false,
       codigo_molino,
-      timestamp_hmi: timestamp_pantalla,
+      timestamp_hmi: tsNormalizado,
       sensoresValidados: [],
       incidencias: [],
       resumenCondiciones: { normal: 0, preaviso: 0, alarma: 0, falla: 0 }
@@ -97,7 +114,7 @@ class BusinessRulesEngine {
     }
 
     // 2. Validar timestamp
-    if (!timestamp_pantalla) {
+    if (!tsNormalizado) {
       resultado.valido = false;
       resultado.incidencias.push({
         motivo: 'TIMESTAMP_INVALIDO',
@@ -107,11 +124,11 @@ class BusinessRulesEngine {
     }
 
     // 3. Chequear deduplicación
-    if (dbService.existeCaptura(codigo_molino, timestamp_pantalla)) {
+    if (!permitirSobrescritura && dbService.existeCaptura(codigo_molino, tsNormalizado)) {
       resultado.esDuplicado = true;
       resultado.incidencias.push({
         motivo: 'CAPTURA_DUPLICADA',
-        detalle: `Ya existe una captura registrada para ${codigo_molino} a las ${timestamp_pantalla}.`
+        detalle: `Ya existe una captura registrada para ${codigo_molino} a las ${tsNormalizado}.`
       });
       return resultado;
     }
@@ -126,7 +143,8 @@ class BusinessRulesEngine {
       const acronimo = millCatalog.normalizarAcronimo(s.acronimo || s.nombre || s.descripcion);
       const conf = configMap.get(acronimo);
 
-      let valorNumerico = parseNumeroSeguro(s.valor_actual !== undefined ? s.valor_actual : s.valor);
+      let rawVal = s.valor_actual !== undefined ? s.valor_actual : (s.actual !== undefined ? s.actual : s.valor);
+      let valorNumerico = parseNumeroSeguro(rawVal);
 
       // Chequeo de error decimal (ej. 522 -> 52.2)
       const ajuste = this.corregirErrorDecimal(acronimo, valorNumerico, conf);

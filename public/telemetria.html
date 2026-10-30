@@ -655,10 +655,15 @@
 
           if (res.status === 201) {
             exitosas++;
-            uploadLog.innerHTML += `<div style="color: #22c55e;">[${num}/${total}] ✅ <strong>${json.molino}:</strong> ${json.sensores_registrados} sensores leídos (${item.nombre})</div>`;
+            uploadLog.innerHTML += `
+              <div style="color: #22c55e; margin-bottom: 6px; padding: 6px; background: rgba(34, 197, 94, 0.08); border-radius: 6px;">
+                [${num}/${total}] ✅ <strong>${json.molino}:</strong> ${json.sensores_registrados} sensores extraídos (${json.timestamp_hmi})<br>
+                <span style="font-size: 0.72rem; color: #cbd5e1; font-family: monospace;">📊 ${json.sensores_resumen || ''}</span>
+              </div>
+            `;
           } else if (json.status === 'duplicado') {
             duplicadas++;
-            uploadLog.innerHTML += `<div style="color: #eab308;">[${num}/${total}] ⚠️ <strong>Duplicado:</strong> Ya existía captura de esa hora (${item.nombre})</div>`;
+            uploadLog.innerHTML += `<div style="color: #eab308;">[${num}/${total}] ⚠️ <strong>Duplicado:</strong> ${json.detalle}</div>`;
           } else {
             errores++;
             uploadLog.innerHTML += `<div style="color: #ef4444;">[${num}/${total}] ❌ <strong>Error:</strong> ${json.error || 'Lectura fallida'} (${item.nombre})</div>`;

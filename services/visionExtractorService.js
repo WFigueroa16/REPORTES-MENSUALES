@@ -100,14 +100,16 @@ class VisionExtractorService {
   }
 
   /**
-   * Llamada a Google Gemini 1.5 Flash Vision
+   * Llamada a Google Gemini 3.5 Flash Lite Vision
    */
   async _llamarGeminiVision(buffer, hash) {
     const base64Image = buffer.toString('base64');
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=${process.env.GEMINI_API_KEY}`;
     
+    console.log(`[VisionExtractor] Enviando imagen (${buffer.length} bytes) a Gemini 3.5 Flash Lite...`);
     const response = await fetch(url, {
       method: 'POST',
+      signal: AbortSignal.timeout(15000),
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         contents: [
@@ -130,9 +132,17 @@ class VisionExtractorService {
     });
 
     const data = await response.json();
+    if (data.error) {
+      throw new Error(`Gemini Error: ${data.error.message || JSON.stringify(data.error)}`);
+    }
+    if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
+      throw new Error('Gemini no retornó candidatos válidos');
+    }
     const rawText = data.candidates[0].content.parts[0].text;
-    const parsed = JSON.parse(rawText);
+    const cleanJson = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
+    const parsed = JSON.parse(cleanJson);
     parsed.hash_imagen = hash;
+    console.log(`[VisionExtractor] ✅ Éxito OCR para molino ${parsed.codigo_molino} (${parsed.sensores ? parsed.sensores.length : 0} sensores).`);
     return parsed;
   }
 
