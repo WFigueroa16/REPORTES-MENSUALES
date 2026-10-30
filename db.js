@@ -248,17 +248,28 @@ function seedInitialData() {
     const supPass = hashPassword('supervisor123');
 
     const insertUser = db.prepare(`
-      INSERT INTO users (username, password_hash, salt, full_name, role, area)
+      INSERT OR IGNORE INTO users (username, password_hash, salt, full_name, role, area)
       VALUES (?, ?, ?, ?, ?, ?)
     `);
 
     insertUser.run('admin', adminPass.hash, adminPass.salt, 'Administrador del Sistema', 'admin', 'SISTEMAS / PLANTA');
+    insertUser.run('wfigueroa', adminPass.hash, adminPass.salt, 'Ing. W. Figueroa', 'admin', 'SUPERVISIÓN GENERAL');
     insertUser.run('supervisor', supPass.hash, supPass.salt, 'Supervisor de Guardia', 'supervisor', 'PLANTA BENEFICIO');
     insertUser.run('operador_rdo', opPass.hash, opPass.salt, 'Operador RDO Trituración/Filtros', 'operador_rdo', 'OPERACIONES');
     insertUser.run('operador_planta', opPass.hash, opPass.salt, 'Operador Controles Planta', 'operador_planta', 'PRODUCCION');
     insertUser.run('mantto', opPass.hash, opPass.salt, 'Técnico de Mantenimiento', 'mantto', 'MANTENIMIENTO');
 
-    console.log('✅ Usuarios base creados (admin, supervisor, operador_rdo, operador_planta, mantto)');
+    console.log('✅ Usuarios base creados (admin, wfigueroa, supervisor, operador_rdo, operador_planta, mantto)');
+  } else {
+    // Asegurar que wfigueroa exista siempre
+    const wfCheck = db.prepare('SELECT id FROM users WHERE username = ?').get('wfigueroa');
+    if (!wfCheck) {
+      const adminPass = hashPassword('admin123');
+      db.prepare(`
+        INSERT INTO users (username, password_hash, salt, full_name, role, area)
+        VALUES (?, ?, ?, ?, ?, ?)
+      `).run('wfigueroa', adminPass.hash, adminPass.salt, 'Ing. W. Figueroa', 'admin', 'SUPERVISIÓN GENERAL');
+    }
   }
 
   // Load catalogs from seed_catalogs.json if available
