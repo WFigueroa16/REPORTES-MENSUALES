@@ -116,6 +116,108 @@ function verificarMolinosSilenciosos() {
 
   if (rezagados.length > 0) {
     Logger.log("Molinos rezagados:\n" + rezagados.join("\n"));
-    // Opcional: Enviar email o Webhook
   }
+}
+
+/**
+ * Envía el reporte consolidado de turno a través de Gmail de forma 100% nativa
+ * Configurar un trigger por tiempo para que se ejecute a las 07:00, 15:00 y 23:00
+ */
+function enviarReporteTurnoPorGmail() {
+  actualizarDashboardTurno();
+
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const hojaDash = ss.getSheetByName(CONFIG.HOJA_DASHBOARD);
+  const datos = hojaDash.getRange(2, 1, hojaDash.getLastRow() - 1, 7).getValues();
+
+  const ahora = new Date();
+  const hora = ahora.getHours();
+  let turnoNombre = 'Guardia 1 (Día: 07:00 - 15:00)';
+  if (hora >= 15 && hora < 23) turnoNombre = 'Guardia 2 (Tarde: 15:00 - 23:00)';
+  else if (hora >= 23 || hora < 7) turnoNombre = 'Guardia 3 (Noche: 23:00 - 07:00)';
+
+  let filasHtml = '';
+  let operandoCount = 0;
+  let alarmasTotal = 0;
+  let fallasTotal = 0;
+
+  datos.forEach(([molino, ultimaLectura, horas, motor, alarmas, fallas, semaforo]) => {
+    if (motor === 'ON') operandoCount++;
+    alarmasTotal += Number(alarmas || 0);
+    fallasTotal += Number(fallas || 0);
+
+    let colorBg = '#dcfce7';
+    let colorTxt = '#166534';
+    if (String(semaforo).includes('FALLA') || String(semaforo).includes('ROJO')) {
+      colorBg = '#fee2e2'; colorTxt = '#991b1b';
+    } else if (String(semaforo).includes('ALARMA') || String(semaforo).includes('NARANJA')) {
+      colorBg = '#ffedd5'; colorTxt = '#9a3412';
+    } else if (String(semaforo).includes('PREAVISO') || String(semaforo).includes('AMARILLO')) {
+      colorBg = '#fef9c3'; colorTxt = '#854d0e';
+    } else if (String(semaforo).includes('Demora') || String(semaforo).includes('GRIS')) {
+      colorBg = '#f1f5f9'; colorTxt = '#475569';
+    }
+
+    filasHtml += `
+      <tr style="border-bottom: 1px solid #e2e8f0; font-size: 13px;">
+        <td style="padding: 8px 12px; font-weight: bold; font-family: monospace;">${molino}</td>
+        <td style="padding: 8px 12px; text-align: center;">${motor}</td>
+        <td style="padding: 8px 12px; text-align: center;">${ultimaLectura}</td>
+        <td style="padding: 8px 12px; text-align: center;">${horas > 90 ? '-' : horas + 'h'}</td>
+        <td style="padding: 8px 12px; text-align: center;">${alarmas}</td>
+        <td style="padding: 8px 12px; text-align: center;">${fallas}</td>
+        <td style="padding: 8px 12px; text-align: center;">
+          <span style="background: ${colorBg}; color: ${colorTxt}; padding: 3px 8px; border-radius: 12px; font-weight: bold; font-size: 11px;">
+            ${semaforo}
+          </span>
+        </td>
+      </tr>
+    `;
+  });
+
+  const fechaStr = Utilities.formatDate(ahora, Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm');
+  const asunto = `📊 [Planta ZA] Reporte de Molienda por Gmail - ${turnoNombre}`;
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 720px; margin: 0 auto; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; overflow: hidden;">
+      <div style="background: #0f172a; color: #ffffff; padding: 20px; border-bottom: 3px solid #38bdf8;">
+        <h2 style="margin: 0; font-size: 18px;">⚡ PLANTA BENEFICIO ZA - TELEMETRÍA DE MOLINOS</h2>
+        <p style="margin: 4px 0 0 0; color: #94a3b8; font-size: 13px;">Reporte Consolidado por Guardia | Emitido: ${fechaStr}</p>
+      </div>
+
+      <div style="padding: 20px;">
+        <p style="margin: 0 0 16px 0; font-size: 14px;"><strong>Turno Activo:</strong> ${turnoNombre}<br>
+        <strong>Molinos en Operación:</strong> ${operandoCount} / ${datos.length}<br>
+        <strong>Alertas Totales:</strong> ${alarmasTotal} alarmas | ${fallasTotal} fallas</p>
+
+        <table style="width: 100%; border-collapse: collapse; border: 1px solid #e2e8f0;">
+          <thead>
+            <tr style="background: #f8fafc; color: #475569; font-size: 12px; text-transform: uppercase;">
+              <th style="padding: 8px 12px; text-align: left;">Molino</th>
+              <th style="padding: 8px 12px; text-align: center;">Motor</th>
+              <th style="padding: 8px 12px; text-align: center;">Última Foto</th>
+              <th style="padding: 8px 12px; text-align: center;">Demora</th>
+              <th style="padding: 8px 12px; text-align: center;">Alarmas</th>
+              <th style="padding: 8px 12px; text-align: center;">Fallas</th>
+              <th style="padding: 8px 12px; text-align: center;">Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${filasHtml}
+          </tbody>
+        </table>
+
+        <p style="color: #94a3b8; font-size: 11px; margin-top: 20px; text-align: center;">
+          Generado automáticamente desde Google Sheets y despachado por GmailApp · Planta Beneficio ZA
+        </p>
+      </div>
+    </div>
+  `;
+
+  GmailApp.sendEmail(CONFIG.EMAIL_SUPERVISORES, asunto, "", {
+    htmlBody: html,
+    name: "Telemetría Planta Beneficio ZA"
+  });
+
+  Logger.log("Reporte despachado exitosamente por Gmail a: " + CONFIG.EMAIL_SUPERVISORES);
 }

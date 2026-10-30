@@ -56,3 +56,23 @@ Este documento detalla los pasos exactos para poner en marcha el sistema automat
    * Claude analizará la imagen y extraerá los 22 sensores con comas convertidas a decimales (`69.3`, `112.0`).
    * La hoja `Lecturas` se poblará automáticamente con una fila por sensor.
    * La temperatura `STE` (`69.3 °C`) se marcará como `PREAVISO` antes de romper la alarma (`70.0 °C`).
+
+---
+
+## 4. Envío Automático de Reportes a través de Gmail
+
+Tienes dos opciones para despachar los reportes por correo mediante Gmail:
+
+### Opción 1: Reporte por Guardia con Google Apps Script (Recomendado y Gratis)
+1. En tu Google Sheets, abre **Extensiones > Apps Script**.
+2. En `codigo_google_apps_script.js`, actualiza la línea `EMAIL_SUPERVISORES` con los correos destinatarios.
+3. Haz clic en el ícono de reloj (**Activadores / Triggers**) a la izquierda y pulsa **Añadir activador**:
+   * Función: `enviarReporteTurnoPorGmail`.
+   * Fuente del evento: **Según tiempo**.
+   * Tipo: **Temporizador por horas** o programar 3 activadores específicos a las **07:00, 15:00 y 23:00**.
+4. ¡Listo! Al terminar cada guardia, Google Sheets despachará un correo HTML con el cuadro semafórico de los 19 molinos sin costo alguno.
+
+### Opción 2: Módulo Gmail en Make.com
+* En el Blueprint importado verás el módulo **8b (Gmail: Send an Email)**.
+* Conéctalo a tu cuenta de Gmail con un clic (OAuth de Google).
+* Cada vez que se detecte un sensor en falla crítica, se disparará una alerta inmediata a los correos configurados.

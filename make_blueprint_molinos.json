@@ -236,6 +236,29 @@
           "name": "8a. Alerta Inmediata WhatsApp (Si Falla)"
         }
       }
+    },
+    {
+      "id": 11,
+      "module": "gmail:ActionSendAnEmail",
+      "version": 2,
+      "parameters": {
+        "account": null
+      },
+      "mapper": {
+        "to": [
+          "{{var.supervisor_email}}"
+        ],
+        "subject": "🚨 [Alerta Telemetría] Molino {{5.metadatos.codigo_molino}} en Condición Crítica",
+        "content": "<div style=\"font-family: Arial, sans-serif;\"><h2 style=\"color: #dc2626;\">Alerta de Telemetría - Planta Beneficio ZA</h2><p><strong>Molino:</strong> {{5.metadatos.codigo_molino}} ({{5.metadatos.tipo_molino}})<br><strong>Hora Tablero:</strong> {{5.metadatos.timestamp_pantalla}}<br><strong>Sensor en Falla:</strong> {{7.acronimo}} ({{7.valor_actual}} {{7.unidad}})<br><strong>Umbral de Disparo:</strong> {{7.falla}} {{7.unidad}}</p><p>Favor de verificar en campo inmediatamente.</p><p><a href=\"{{1.messageData.fileMessageData.downloadUrl}}\">Ver fotografía del tablero HMI</a></p></div>",
+        "contentType": "html"
+      },
+      "metadata": {
+        "designer": {
+          "x": 1120,
+          "y": -300,
+          "name": "8b. Notificación por Gmail (Alerta Crítica)"
+        }
+      }
     }
   ],
   "metadata": {
