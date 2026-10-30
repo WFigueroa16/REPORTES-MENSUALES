@@ -397,6 +397,7 @@
       item.estado_general = json.estado_general || 'NORMAL';
       item.resumen = json.resumen || { normal: 0, preaviso: 0, alarma: 0, falla: 0 };
       item.horas_sin_reporte = 0.0;
+      item._updatedAt = Date.now();
 
       guardarCacheLocal();
       renderDashboard();
@@ -410,18 +411,19 @@
 
         const serverData = json.data;
 
-        if (molinosDataCache.length === 0) {
+        if (!molinosDataCache || molinosDataCache.length === 0) {
           molinosDataCache = serverData;
         } else {
-          // Fusión inteligente: si el cliente ya tiene una captura más reciente, no sobrescribirla con nulo
           serverData.forEach(srvItem => {
             const localIdx = molinosDataCache.findIndex(m => m.molino && m.molino.codigo_hmi === srvItem.molino.codigo_hmi);
             if (localIdx === -1) {
               molinosDataCache.push(srvItem);
             } else {
               const localItem = molinosDataCache[localIdx];
-              if (srvItem.ultima_captura) {
-                if (!localItem.ultima_captura || srvItem.ultima_captura.timestamp_hmi >= localItem.ultima_captura.timestamp_hmi) {
+              // Si el usuario procesó recientemente esta tarjeta en el navegador (últimos 10 min), NO sobrescribir
+              const esReciente = localItem._updatedAt && (Date.now() - localItem._updatedAt < 600000);
+              if (!esReciente && srvItem.ultima_captura && srvItem.sensores && srvItem.sensores.length > 0) {
+                if (!localItem.ultima_captura || srvItem.ultima_captura.timestamp_hmi > localItem.ultima_captura.timestamp_hmi) {
                   molinosDataCache[localIdx] = srvItem;
                 }
               }
@@ -784,7 +786,7 @@
         btn.onclick = procesarLoteFotos;
       };
 
-      cargarDashboard(); // Actualizar tablero con todos los molinos que recibieron datos
+      renderDashboard(); // Renderizar inmediatamente los datos procesados en memoria
     }
 
     cargarCacheLocal(); // 1. Cargar datos instantáneamente de localStorage para que nunca se pierdan al refrescar
