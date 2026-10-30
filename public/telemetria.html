@@ -214,12 +214,21 @@
       <h1>⚡ Monitoreo Automatizado de Molinos (HMI Siemens)</h1>
       <p>Captura desde WhatsApp con Visión Artificial | Planta Beneficio ZA</p>
     </div>
-    <div style="display: flex; gap: 12px;">
+    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
       <button class="btn" onclick="cargarDashboard()">🔄 Actualizar</button>
+      <button class="btn" style="background: #8b5cf6; color: #fff;" onclick="mostrarModalSubida()">📷 Cargar Foto HMI</button>
       <button class="btn" style="background: #10b981;" onclick="verReporteTurno()">📋 Reporte Turno</button>
       <button class="btn" style="background: #ea4335; color: #fff;" onclick="enviarPorGmail()">📧 Enviar Gmail</button>
     </div>
   </header>
+
+  <!-- Banner explicativo del origen de fotos -->
+  <div style="background: #1e293b; border-left: 4px solid #38bdf8; padding: 14px 18px; border-radius: 8px; margin-bottom: 24px; font-size: 0.88rem; color: #cbd5e1; display: flex; justify-content: space-between; align-items: center;">
+    <div>
+      <strong style="color: #38bdf8;">📲 Modo Automático (Producción):</strong> Las fotos se leen solas desde el <strong>Grupo de WhatsApp</strong> vía Green API.<br>
+      <strong style="color: #a78bfa;">🧪 Modo Manual (Pruebas):</strong> Puedes usar el botón <em>"📷 Cargar Foto HMI"</em> para probar cualquier imagen de tablero desde tu computadora.
+    </div>
+  </div>
 
   <div class="stats-bar">
     <div class="stat-card">
@@ -266,6 +275,38 @@
         </thead>
         <tbody id="modal-tbody"></tbody>
       </table>
+    </div>
+  </div>
+
+  <!-- Modal Cargar Foto HMI -->
+  <div class="modal-overlay" id="modal-subida" onclick="cerrarModalSubida(event)">
+    <div class="modal-content" onclick="event.stopPropagation()" style="max-width: 550px;">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h2 style="font-size: 1.25rem;">📷 Cargar Fotografía de Tablero HMI</h2>
+        <button style="background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer;" onclick="document.getElementById('modal-subida').style.display = 'none'">&times;</button>
+      </div>
+      <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 4px;">
+        Selecciona una imagen de la pantalla de cualquier molino para que la IA extraiga los valores inmediatamente.
+      </p>
+
+      <div id="drop-zone" style="border: 2px dashed #475569; border-radius: 10px; padding: 30px; text-align: center; margin: 18px 0; cursor: pointer; transition: border-color 0.2s;" onclick="document.getElementById('file-input').click()">
+        <div style="font-size: 2.5rem; margin-bottom: 8px;">🖼️</div>
+        <div style="font-weight: 600; color: #38bdf8;">Haz clic para buscar foto o arrástrala aquí</div>
+        <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 4px;">Formatos admitidos: JPG, PNG, WEBP (fotos de celular o tablero)</div>
+        <input type="file" id="file-input" accept="image/*" style="display: none;" onchange="handleFileSelect(event)">
+      </div>
+
+      <div id="upload-preview" style="display: none; margin-bottom: 16px; text-align: center;">
+        <img id="preview-img" style="max-width: 100%; max-height: 200px; border-radius: 8px; border: 1px solid #334155;">
+        <p id="file-name" style="font-size: 0.8rem; color: #94a3b8; margin-top: 6px;"></p>
+      </div>
+
+      <div id="upload-status" style="display: none; padding: 12px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 16px;"></div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 10px;">
+        <button class="btn" style="background: #334155; color: #fff;" onclick="document.getElementById('modal-subida').style.display = 'none'">Cancelar</button>
+        <button class="btn" id="btn-procesar-foto" style="background: #8b5cf6; color: #fff;" onclick="enviarFotoManual()" disabled>⚡ Procesar con IA</button>
+      </div>
     </div>
   </div>
 
@@ -407,6 +448,102 @@
         }
       } catch (err) {
         alert('Error enviando correo: ' + err.message);
+      }
+    }
+
+    // Funciones de Carga Manual de Fotos
+    let fotoSeleccionadaBase64 = null;
+    let fotoNombre = '';
+
+    function mostrarModalSubida() {
+      document.getElementById('modal-subida').style.display = 'flex';
+      document.getElementById('upload-status').style.display = 'none';
+    }
+
+    function cerrarModalSubida(e) {
+      if (e.target.id === 'modal-subida') {
+        document.getElementById('modal-subida').style.display = 'none';
+      }
+    }
+
+    function handleFileSelect(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      fotoNombre = file.name;
+      document.getElementById('file-name').innerText = file.name;
+
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        const fullBase64 = evt.target.result;
+        // Quitar encabezado data:image/...;base64,
+        fotoSeleccionadaBase64 = fullBase64.split(',')[1];
+        document.getElementById('preview-img').src = fullBase64;
+        document.getElementById('upload-preview').style.display = 'block';
+        document.getElementById('btn-procesar-foto').disabled = false;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    async function enviarFotoManual() {
+      if (!fotoSeleccionadaBase64) return;
+
+      const btn = document.getElementById('btn-procesar-foto');
+      const statusDiv = document.getElementById('upload-status');
+
+      btn.disabled = true;
+      btn.innerText = '⏳ Procesando con IA...';
+      statusDiv.style.display = 'block';
+      statusDiv.style.background = 'rgba(56, 189, 248, 0.15)';
+      statusDiv.style.color = '#38bdf8';
+      statusDiv.style.border = '1px solid #38bdf8';
+      statusDiv.innerText = 'Analizando tablero HMI Siemens con modelo multimodal...';
+
+      try {
+        const res = await fetch('/api/telemetria/subir-foto', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            base64: fotoSeleccionadaBase64,
+            nombreArchivo: fotoNombre
+          })
+        });
+
+        const json = await res.json();
+
+        if (res.status === 201) {
+          statusDiv.style.background = 'rgba(34, 197, 94, 0.15)';
+          statusDiv.style.color = '#22c55e';
+          statusDiv.style.border = '1px solid #22c55e';
+          statusDiv.innerHTML = `✅ <strong>¡Procesado con Éxito!</strong><br>Molino detectado: <strong>${json.molino}</strong> | Fecha: <strong>${json.timestamp_hmi}</strong><br>Sensores registrados: ${json.sensores_registrados}`;
+          cargarDashboard();
+          setTimeout(() => {
+            document.getElementById('modal-subida').style.display = 'none';
+            btn.disabled = false;
+            btn.innerText = '⚡ Procesar con IA';
+          }, 2500);
+        } else if (json.status === 'duplicado') {
+          statusDiv.style.background = 'rgba(234, 179, 8, 0.15)';
+          statusDiv.style.color = '#eab308';
+          statusDiv.style.border = '1px solid #eab308';
+          statusDiv.innerHTML = `⚠️ <strong>Foto Duplicada:</strong> ${json.detalle}`;
+          btn.disabled = false;
+          btn.innerText = '⚡ Procesar con IA';
+        } else {
+          statusDiv.style.background = 'rgba(239, 68, 68, 0.15)';
+          statusDiv.style.color = '#ef4444';
+          statusDiv.style.border = '1px solid #ef4444';
+          statusDiv.innerHTML = `❌ <strong>Error:</strong> ${json.error || JSON.stringify(json.incidencias)}`;
+          btn.disabled = false;
+          btn.innerText = '⚡ Procesar con IA';
+        }
+      } catch (err) {
+        statusDiv.style.background = 'rgba(239, 68, 68, 0.15)';
+        statusDiv.style.color = '#ef4444';
+        statusDiv.style.border = '1px solid #ef4444';
+        statusDiv.innerText = 'Error de conexión: ' + err.message;
+        btn.disabled = false;
+        btn.innerText = '⚡ Procesar con IA';
       }
     }
 
