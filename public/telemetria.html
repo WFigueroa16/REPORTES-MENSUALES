@@ -330,18 +330,109 @@
   </div>
 
   <script>
+    const STORAGE_KEY = 'za_telemetria_cache_v2';
     let molinosDataCache = [];
+
+    function cargarCacheLocal() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            molinosDataCache = parsed;
+            renderDashboard();
+          }
+        }
+      } catch (e) {
+        console.warn('Error leyendo localStorage:', e);
+      }
+    }
+
+    function guardarCacheLocal() {
+      try {
+        if (molinosDataCache && molinosDataCache.length > 0) {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(molinosDataCache));
+        }
+      } catch (e) {
+        console.warn('Error guardando localStorage:', e);
+      }
+    }
+
+    function actualizarMolinoEnMemoria(json) {
+      if (!json || !json.molino) return;
+      let item = molinosDataCache.find(m => m.molino && m.molino.codigo_hmi === json.molino);
+      if (!item) {
+        item = {
+          molino: { codigo_hmi: json.molino, nombre: 'Molino ' + json.molino, tipo: 'Molienda', total_sensores: (json.sensores || []).length, activo: 1 },
+          ultima_captura: null,
+          sensores: [],
+          estado_general: 'NORMAL',
+          resumen: { normal: 0, preaviso: 0, alarma: 0, falla: 0 }
+        };
+        molinosDataCache.push(item);
+      }
+
+      item.ultima_captura = {
+        id: json.captura_id || Date.now(),
+        codigo_molino: json.molino,
+        timestamp_hmi: json.timestamp_hmi,
+        estado_motor: 'ON',
+        calidad_ocr: 'ALTA',
+        observaciones: ''
+      };
+
+      if (json.sensores && json.sensores.length > 0) {
+        item.sensores = json.sensores.map(s => ({
+          acronimo_sensor: s.acronimo || s.acronimo_sensor,
+          nombre_sensor: s.nombre_sensor || s.descripcion || s.acronimo,
+          valor: s.valor,
+          unidad: s.unidad || '',
+          alarma: s.alarma !== undefined ? s.alarma : null,
+          falla: s.falla !== undefined ? s.falla : null,
+          sentido: s.sentido || 'MAX',
+          condicion: s.condicion || 'NORMAL'
+        }));
+      }
+
+      item.estado_general = json.estado_general || 'NORMAL';
+      item.resumen = json.resumen || { normal: 0, preaviso: 0, alarma: 0, falla: 0 };
+      item.horas_sin_reporte = 0.0;
+
+      guardarCacheLocal();
+      renderDashboard();
+    }
 
     async function cargarDashboard() {
       try {
         const res = await fetch('/api/telemetria/dashboard');
         const json = await res.json();
-        if (!json.success) return;
+        if (!json.success || !Array.isArray(json.data)) return;
 
-        molinosDataCache = json.data;
+        const serverData = json.data;
+
+        if (molinosDataCache.length === 0) {
+          molinosDataCache = serverData;
+        } else {
+          // Fusión inteligente: si el cliente ya tiene una captura más reciente, no sobrescribirla con nulo
+          serverData.forEach(srvItem => {
+            const localIdx = molinosDataCache.findIndex(m => m.molino && m.molino.codigo_hmi === srvItem.molino.codigo_hmi);
+            if (localIdx === -1) {
+              molinosDataCache.push(srvItem);
+            } else {
+              const localItem = molinosDataCache[localIdx];
+              if (srvItem.ultima_captura) {
+                if (!localItem.ultima_captura || srvItem.ultima_captura.timestamp_hmi >= localItem.ultima_captura.timestamp_hmi) {
+                  molinosDataCache[localIdx] = srvItem;
+                }
+              }
+            }
+          });
+        }
+
+        guardarCacheLocal();
         renderDashboard();
       } catch (err) {
-        console.error('Error cargando telemetría:', err);
+        console.error('Error sincronizando con el servidor:', err);
       }
     }
 
@@ -655,6 +746,7 @@
 
           if (res.status === 201) {
             exitosas++;
+            actualizarMolinoEnMemoria(json);
             uploadLog.innerHTML += `
               <div style="color: #22c55e; margin-bottom: 6px; padding: 6px; background: rgba(34, 197, 94, 0.08); border-radius: 6px;">
                 [${num}/${total}] ✅ <strong>${json.molino}:</strong> ${json.sensores_registrados} sensores extraídos (${json.timestamp_hmi})<br>
@@ -695,7 +787,8 @@
       cargarDashboard(); // Actualizar tablero con todos los molinos que recibieron datos
     }
 
-    cargarDashboard();
+    cargarCacheLocal(); // 1. Cargar datos instantáneamente de localStorage para que nunca se pierdan al refrescar
+    cargarDashboard();  // 2. Sincronizar en segundo plano con el servidor
     setInterval(cargarDashboard, 15000); // Polling cada 15 segundos
   </script>
 </body>

@@ -146,7 +146,9 @@ class TelemetryController {
         timestamp_hmi: resultado.timestamp_hmi,
         sensores_registrados: resultado.sensoresValidados.length,
         resumen: resultado.resumenCondiciones,
-        sensores_resumen: muestraSensores
+        sensores_resumen: muestraSensores,
+        sensores: resultado.sensoresValidados,
+        estado_general: resultado.resumenCondiciones.falla > 0 ? 'FALLA' : (resultado.resumenCondiciones.alarma > 0 ? 'ALARMA' : (resultado.resumenCondiciones.preaviso > 0 ? 'PREAVISO' : 'NORMAL'))
       });
     } catch (err) {
       console.error('[Procesar Foto] Error:', err);

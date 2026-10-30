@@ -41,9 +41,10 @@ class VisionExtractorService {
       }
     }
 
-    if (process.env.GEMINI_API_KEY) {
+    const geminiKey = process.env.GEMINI_API_KEY;
+    if (geminiKey) {
       try {
-        return await this._llamarGeminiVision(imagenBuffer, hash);
+        return await this._llamarGeminiVision(imagenBuffer, hash, geminiKey);
       } catch (err) {
         console.error('[VisionExtractor] Error en API Gemini:', err.message);
       }
@@ -102,14 +103,14 @@ class VisionExtractorService {
   /**
    * Llamada a Google Gemini 3.5 Flash Lite Vision
    */
-  async _llamarGeminiVision(buffer, hash) {
+  async _llamarGeminiVision(buffer, hash, apiKey = process.env.GEMINI_API_KEY) {
     const base64Image = buffer.toString('base64');
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=${process.env.GEMINI_API_KEY}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=${apiKey}`;
     
     console.log(`[VisionExtractor] Enviando imagen (${buffer.length} bytes) a Gemini 3.5 Flash Lite...`);
     const response = await fetch(url, {
       method: 'POST',
-      signal: AbortSignal.timeout(15000),
+      signal: AbortSignal.timeout(25000),
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         contents: [
