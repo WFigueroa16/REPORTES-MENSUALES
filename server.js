@@ -732,17 +732,35 @@ app.get('/api/export/excel', async (req, res) => {
   }
 });
 
+// ==========================================
+// 11. TELEMETRÍA AUTOMATIZADA DE MOLINOS (HMI / WHATSAPP)
+// ==========================================
+const telemetryController = require('./controllers/telemetryController');
+const millCatalog = require('./services/millCatalogService');
+
+app.post('/api/telemetria/webhook/greenapi', (req, res) => telemetryController.handleGreenApiWebhook(req, res));
+app.post('/api/telemetria/subir-foto', (req, res) => telemetryController.procesarFotoManual(req, res));
+app.get('/api/telemetria/dashboard', (req, res) => telemetryController.obtenerDashboard(req, res));
+app.get('/api/telemetria/reporte-turno', (req, res) => telemetryController.obtenerReporteTurno(req, res));
+
 // Fallback to index.html for SPA routing
 app.use((req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // Start Server and perform initial sync
-app.listen(PORT, '0.0.0.0', () => {
+app.listen(PORT, '0.0.0.0', async () => {
   console.log(`\n======================================================`);
   console.log(`🚀 SERVIDOR WEB BENEFICIO ZA ACTIVO EN PUERTO ${PORT}`);
   console.log(`👉 Acceso local: http://localhost:${PORT}`);
+  console.log(`👉 Dashboard Telemetría: http://localhost:${PORT}/telemetria.html`);
   console.log(`👉 Archivo Excel local sincronizado: ${consolidatedFilePath}`);
   console.log(`======================================================\n`);
   scheduleLiveSync();
+
+  try {
+    await millCatalog.cargarCatalogoDesdeExcel();
+  } catch (err) {
+    console.error('Error inicializando catálogo de molinos:', err.message);
+  }
 });

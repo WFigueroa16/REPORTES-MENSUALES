@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Telemetría en Vivo de Molinos - Planta Beneficio ZA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0f172a;
+      --card-bg: #1e293b;
+      --card-border: #334155;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #38bdf8;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --preaviso: #eab308;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      padding: 24px;
+      min-height: 100vh;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--card-border);
+      margin-bottom: 24px;
+    }
+
+    .header-title h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-title p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-top: 4px;
+    }
+
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .stat-card .label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    .stat-card .val {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-top: 6px;
+    }
+
+    .grid-molinos {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 18px;
+      margin-bottom: 30px;
+    }
+
+    .molino-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 18px;
+      transition: transform 0.15s ease, border-color 0.15s ease;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .molino-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--primary);
+    }
+
+    .molino-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+
+    .molino-codigo {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .molino-tipo {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .badge-status {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 20px;
+      text-transform: uppercase;
+    }
+
+    .badge-NORMAL { background: rgba(34, 197, 94, 0.15); color: var(--success); border: 1px solid var(--success); }
+    .badge-PREAVISO { background: rgba(234, 179, 8, 0.15); color: var(--preaviso); border: 1px solid var(--preaviso); }
+    .badge-ALARMA { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid var(--warning); }
+    .badge-FALLA { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid var(--danger); }
+    .badge-SIN_DATOS { background: rgba(148, 163, 184, 0.15); color: var(--text-muted); border: 1px solid var(--card-border); }
+
+    .molino-body {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .sensor-item-preview {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+      border-top: 1px dashed var(--card-border);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+    }
+
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      width: 90%;
+      max-width: 800px;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 24px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+      font-size: 0.85rem;
+    }
+
+    th, td {
+      padding: 10px 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    th {
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .btn {
+      background: var(--primary);
+      color: #000;
+      font-weight: 600;
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn:hover { opacity: 0.9; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-title">
+      <h1>⚡ Monitoreo Automatizado de Molinos (HMI Siemens)</h1>
+      <p>Captura desde WhatsApp con Visión Artificial | Planta Beneficio ZA</p>
+    </div>
+    <div style="display: flex; gap: 12px;">
+      <button class="btn" onclick="cargarDashboard()">🔄 Actualizar</button>
+      <button class="btn" style="background: #10b981;" onclick="verReporteTurno()">📋 Reporte Turno</button>
+    </div>
+  </header>
+
+  <div class="stats-bar">
+    <div class="stat-card">
+      <span class="label">Total Molinos</span>
+      <span class="val" id="stat-total">19</span>
+    </div>
+    <div class="stat-card">
+      <span class="label">Operando Normal</span>
+      <span class="val" style="color: var(--success);" id="stat-normal">0</span>
+    </div>
+    <div class="stat-card">
+      <span class="label">En Preaviso (5%)</span>
+      <span class="val" style="color: var(--preaviso);" id="stat-preaviso">0</span>
+    </div>
+    <div class="stat-card">
+      <span class="label">En Alarma / Falla</span>
+      <span class="val" style="color: var(--danger);" id="stat-alertas">0</span>
+    </div>
+  </div>
+
+  <div class="grid-molinos" id="molinos-container">
+    <!-- Se llena dinámicamente -->
+  </div>
+
+  <!-- Modal Detalle -->
+  <div class="modal-overlay" id="modal-detalle" onclick="cerrarModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h2 id="modal-titulo" style="font-size: 1.3rem;">Detalle del Molino</h2>
+        <button style="background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer;" onclick="document.getElementById('modal-detalle').style.display = 'none'">&times;</button>
+      </div>
+      <p id="modal-subtitulo" style="color: var(--text-muted); margin-top: 4px; font-size: 0.9rem;"></p>
+      
+      <table>
+        <thead>
+          <tr>
+            <th>Sensor</th>
+            <th>Valor Actual</th>
+            <th>Alarma</th>
+            <th>Falla</th>
+            <th>Sentido</th>
+            <th>Condición</th>
+          </tr>
+        </thead>
+        <tbody id="modal-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    let molinosDataCache = [];
+
+    async function cargarDashboard() {
+      try {
+        const res = await fetch('/api/telemetria/dashboard');
+        const json = await res.json();
+        if (!json.success) return;
+
+        molinosDataCache = json.data;
+        renderDashboard();
+      } catch (err) {
+        console.error('Error cargando telemetría:', err);
+      }
+    }
+
+    function renderDashboard() {
+      const container = document.getElementById('molinos-container');
+      container.innerHTML = '';
+
+      let normalCount = 0, preavisoCount = 0, alertasCount = 0;
+
+      molinosDataCache.forEach((item, index) => {
+        const m = item.molino;
+        const st = item.estado_general;
+
+        if (st === 'NORMAL') normalCount++;
+        else if (st === 'PREAVISO') preavisoCount++;
+        else if (st === 'ALARMA' || st === 'FALLA') alertasCount++;
+
+        const card = document.createElement('div');
+        card.className = 'molino-card';
+        card.onclick = () => abrirDetalle(index);
+
+        const fechaTxt = item.ultima_captura ? item.ultima_captura.timestamp_hmi : 'Sin lecturas';
+        const horasTxt = item.horas_sin_reporte !== null ? `${item.horas_sin_reporte}h transcurridas` : '';
+
+        // Vista previa de sensores críticos (hasta 3)
+        let previewSensores = '';
+        if (item.sensores && item.sensores.length > 0) {
+          const criticos = item.sensores.slice(0, 3);
+          criticos.forEach(s => {
+            previewSensores += `
+              <div class="sensor-item-preview">
+                <span>${s.acronimo_sensor}</span>
+                <span style="color: ${s.condicion === 'NORMAL' ? 'var(--text-main)' : s.condicion === 'PREAVISO' ? 'var(--preaviso)' : 'var(--danger)'}">${s.valor} ${s.unidad}</span>
+              </div>
+            `;
+          });
+        }
+
+        card.innerHTML = `
+          <div class="molino-header">
+            <div>
+              <div class="molino-codigo">${m.codigo_hmi}</div>
+              <div class="molino-tipo">${m.nombre} (${m.tipo})</div>
+            </div>
+            <span class="badge-status badge-${st}">${st}</span>
+          </div>
+          <div class="molino-body">
+            <div>🕒 ${fechaTxt}</div>
+            ${horasTxt ? `<div style="font-size: 0.75rem; color: #f59e0b;">⏳ ${horasTxt}</div>` : ''}
+            <div style="margin-top: 8px;">${previewSensores}</div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+
+      document.getElementById('stat-normal').innerText = normalCount;
+      document.getElementById('stat-preaviso').innerText = preavisoCount;
+      document.getElementById('stat-alertas').innerText = alertasCount;
+    }
+
+    function abrirDetalle(index) {
+      const item = molinosDataCache[index];
+      if (!item) return;
+
+      document.getElementById('modal-titulo').innerText = `${item.molino.codigo_hmi} - ${item.molino.nombre}`;
+      document.getElementById('modal-subtitulo').innerText = `Última telemetría HMI: ${item.ultima_captura ? item.ultima_captura.timestamp_hmi : 'Sin datos'} | Motor: ${item.ultima_captura ? item.ultima_captura.estado_motor : 'N/A'}`;
+
+      const tbody = document.getElementById('modal-tbody');
+      tbody.innerHTML = '';
+
+      if (!item.sensores || item.sensores.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #94a3b8;">No hay lecturas registradas para este molino aún.</td></tr>';
+      } else {
+        item.sensores.forEach(s => {
+          const tr = document.createElement('tr');
+          const color = s.condicion === 'NORMAL' ? '#22c55e' : s.condicion === 'PREAVISO' ? '#eab308' : '#ef4444';
+          tr.innerHTML = `
+            <td><strong>${s.acronimo_sensor}</strong> <span style="font-size:0.75rem; color:#94a3b8;">(${s.nombre_sensor})</span></td>
+            <td><strong>${s.valor}</strong> ${s.unidad}</td>
+            <td>${s.alarma !== null ? s.alarma : '-'}</td>
+            <td>${s.falla !== null ? s.falla : '-'}</td>
+            <td>${s.sentido}</td>
+            <td><span style="color: ${color}; font-weight: 600;">${s.condicion}</span></td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      document.getElementById('modal-detalle').style.display = 'flex';
+    }
+
+    function cerrarModal(e) {
+      if (e.target.id === 'modal-detalle') {
+        document.getElementById('modal-detalle').style.display = 'none';
+      }
+    }
+
+    async function verReporteTurno() {
+      try {
+        const res = await fetch('/api/telemetria/reporte-turno');
+        const json = await res.json();
+        alert(json.textoWhatsApp);
+      } catch (err) {
+        alert('Error obteniendo reporte de turno');
+      }
+    }
+
+    cargarDashboard();
+    setInterval(cargarDashboard, 15000); // Polling cada 15 segundos
+  </script>
+</body>
+</html>
