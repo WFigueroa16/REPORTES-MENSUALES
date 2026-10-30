@@ -278,34 +278,53 @@
     </div>
   </div>
 
-  <!-- Modal Cargar Foto HMI -->
+  <!-- Modal Cargar Fotos HMI (Múltiple / Por Lote) -->
   <div class="modal-overlay" id="modal-subida" onclick="cerrarModalSubida(event)">
-    <div class="modal-content" onclick="event.stopPropagation()" style="max-width: 550px;">
+    <div class="modal-content" onclick="event.stopPropagation()" style="max-width: 680px;">
       <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h2 style="font-size: 1.25rem;">📷 Cargar Fotografía de Tablero HMI</h2>
-        <button style="background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer;" onclick="document.getElementById('modal-subida').style.display = 'none'">&times;</button>
+        <h2 style="font-size: 1.3rem;">📷 Cargar Fotografías de Tableros HMI</h2>
+        <button style="background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer;" onclick="cerrarModalSubidaDirecto()">&times;</button>
       </div>
       <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 4px;">
-        Selecciona una imagen de la pantalla de cualquier molino para que la IA extraiga los valores inmediatamente.
+        Puedes seleccionar o arrastrar <strong>una o varias fotos juntas</strong>. La IA identificará automáticamente el molino de cada pantalla y registrará sus sensores.
       </p>
 
-      <div id="drop-zone" style="border: 2px dashed #475569; border-radius: 10px; padding: 30px; text-align: center; margin: 18px 0; cursor: pointer; transition: border-color 0.2s;" onclick="document.getElementById('file-input').click()">
-        <div style="font-size: 2.5rem; margin-bottom: 8px;">🖼️</div>
-        <div style="font-weight: 600; color: #38bdf8;">Haz clic para buscar foto o arrástrala aquí</div>
-        <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 4px;">Formatos admitidos: JPG, PNG, WEBP (fotos de celular o tablero)</div>
-        <input type="file" id="file-input" accept="image/*" style="display: none;" onchange="handleFileSelect(event)">
+      <div id="drop-zone" style="border: 2px dashed #475569; border-radius: 10px; padding: 25px; text-align: center; margin: 16px 0; cursor: pointer; transition: border-color 0.2s;" onclick="document.getElementById('file-input').click()">
+        <div style="font-size: 2.2rem; margin-bottom: 6px;">🖼️ ➕</div>
+        <div style="font-weight: 600; color: #38bdf8; font-size: 1rem;">Haz clic para seleccionar fotos o arrástralas aquí</div>
+        <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 4px;">Puedes elegir múltiples archivos a la vez (JPG, PNG, WEBP)</div>
+        <input type="file" id="file-input" accept="image/*" multiple style="display: none;" onchange="handleFilesSelect(event)">
       </div>
 
-      <div id="upload-preview" style="display: none; margin-bottom: 16px; text-align: center;">
-        <img id="preview-img" style="max-width: 100%; max-height: 200px; border-radius: 8px; border: 1px solid #334155;">
-        <p id="file-name" style="font-size: 0.8rem; color: #94a3b8; margin-top: 6px;"></p>
+      <!-- Galería de fotos seleccionadas -->
+      <div id="upload-preview-container" style="display: none; margin-bottom: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <span style="font-size: 0.85rem; font-weight: 600; color: #cbd5e1;" id="count-fotos-seleccionadas">0 fotos seleccionadas</span>
+          <button style="background: none; border: none; color: #ef4444; font-size: 0.75rem; cursor: pointer;" onclick="limpiarSeleccionFotos()">Limpiar todas</button>
+        </div>
+        <div id="preview-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; max-height: 180px; overflow-y: auto; padding: 4px;">
+          <!-- Miniaturas dinámicas -->
+        </div>
       </div>
 
-      <div id="upload-status" style="display: none; padding: 12px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 16px;"></div>
+      <!-- Barra de progreso de procesamiento -->
+      <div id="progress-container" style="display: none; margin-bottom: 16px;">
+        <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 4px;">
+          <span id="progress-label" style="color: #38bdf8;">Procesando fotos...</span>
+          <span id="progress-percent" style="font-weight: bold;">0%</span>
+        </div>
+        <div style="background: #334155; border-radius: 8px; height: 8px; overflow: hidden;">
+          <div id="progress-bar" style="background: #8b5cf6; width: 0%; height: 100%; transition: width 0.3s ease;"></div>
+        </div>
+      </div>
+
+      <!-- Log de resultados por foto -->
+      <div id="upload-log" style="display: none; max-height: 140px; overflow-y: auto; background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 10px; font-size: 0.78rem; font-family: 'JetBrains Mono', monospace; margin-bottom: 16px;">
+      </div>
 
       <div style="display: flex; justify-content: flex-end; gap: 10px;">
-        <button class="btn" style="background: #334155; color: #fff;" onclick="document.getElementById('modal-subida').style.display = 'none'">Cancelar</button>
-        <button class="btn" id="btn-procesar-foto" style="background: #8b5cf6; color: #fff;" onclick="enviarFotoManual()" disabled>⚡ Procesar con IA</button>
+        <button class="btn" style="background: #334155; color: #fff;" onclick="cerrarModalSubidaDirecto()">Cerrar</button>
+        <button class="btn" id="btn-procesar-lote" style="background: #8b5cf6; color: #fff;" onclick="procesarLoteFotos()" disabled>⚡ Procesar Fotos con IA</button>
       </div>
     </div>
   </div>
@@ -451,100 +470,224 @@
       }
     }
 
-    // Funciones de Carga Manual de Fotos
-    let fotoSeleccionadaBase64 = null;
-    let fotoNombre = '';
+    // ==========================================
+    // SISTEMA DE CARGA MÚLTIPLE DE FOTOGRAFÍAS (POR LOTE)
+    // ==========================================
+    let colaFotos = []; // Array de { id, file, nombre, base64, previewUrl }
+    let procesandoEnCurso = false;
 
     function mostrarModalSubida() {
       document.getElementById('modal-subida').style.display = 'flex';
-      document.getElementById('upload-status').style.display = 'none';
+      setupDragAndDrop();
+    }
+
+    function cerrarModalSubidaDirecto() {
+      if (procesandoEnCurso) {
+        if (!confirm('Hay fotos procesándose. ¿Deseas cerrar el modal de todas formas?')) return;
+      }
+      document.getElementById('modal-subida').style.display = 'none';
     }
 
     function cerrarModalSubida(e) {
       if (e.target.id === 'modal-subida') {
-        document.getElementById('modal-subida').style.display = 'none';
+        cerrarModalSubidaDirecto();
       }
     }
 
-    function handleFileSelect(e) {
-      const file = e.target.files[0];
-      if (!file) return;
+    function setupDragAndDrop() {
+      const dropZone = document.getElementById('drop-zone');
+      if (dropZone._dragSetup) return;
+      dropZone._dragSetup = true;
 
-      fotoNombre = file.name;
-      document.getElementById('file-name').innerText = file.name;
+      ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropZone.style.borderColor = '#38bdf8';
+          dropZone.style.background = 'rgba(56, 189, 248, 0.05)';
+        }, false);
+      });
 
-      const reader = new FileReader();
-      reader.onload = function(evt) {
-        const fullBase64 = evt.target.result;
-        // Quitar encabezado data:image/...;base64,
-        fotoSeleccionadaBase64 = fullBase64.split(',')[1];
-        document.getElementById('preview-img').src = fullBase64;
-        document.getElementById('upload-preview').style.display = 'block';
-        document.getElementById('btn-procesar-foto').disabled = false;
-      };
-      reader.readAsDataURL(file);
+      ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropZone.style.borderColor = '#475569';
+          dropZone.style.background = 'transparent';
+        }, false);
+      });
+
+      dropZone.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        handleFiles(files);
+      }, false);
     }
 
-    async function enviarFotoManual() {
-      if (!fotoSeleccionadaBase64) return;
+    function handleFilesSelect(e) {
+      handleFiles(e.target.files);
+    }
 
-      const btn = document.getElementById('btn-procesar-foto');
-      const statusDiv = document.getElementById('upload-status');
+    function handleFiles(files) {
+      if (!files || files.length === 0) return;
+
+      const fileList = Array.from(files);
+      let cargadas = 0;
+
+      fileList.forEach(file => {
+        if (!file.type.startsWith('image/')) return;
+
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          const fullBase64 = evt.target.result;
+          const pureBase64 = fullBase64.split(',')[1];
+          const id = 'foto_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+
+          colaFotos.push({
+            id,
+            file,
+            nombre: file.name,
+            base64: pureBase64,
+            previewUrl: fullBase64,
+            estado: 'PENDIENTE'
+          });
+
+          cargadas++;
+          if (cargadas === fileList.length) {
+            renderPreviewFotos();
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function renderPreviewFotos() {
+      const container = document.getElementById('upload-preview-container');
+      const grid = document.getElementById('preview-grid');
+      const countLabel = document.getElementById('count-fotos-seleccionadas');
+      const btn = document.getElementById('btn-procesar-lote');
+
+      if (colaFotos.length === 0) {
+        container.style.display = 'none';
+        btn.disabled = true;
+        btn.innerText = '⚡ Procesar Fotos con IA';
+        return;
+      }
+
+      container.style.display = 'block';
+      countLabel.innerText = `${colaFotos.length} foto(s) seleccionada(s)`;
+      btn.disabled = false;
+      btn.innerText = `⚡ Procesar ${colaFotos.length} Foto(s) con IA`;
+
+      grid.innerHTML = '';
+      colaFotos.forEach((item, index) => {
+        const card = document.createElement('div');
+        card.style.position = 'relative';
+        card.style.borderRadius = '8px';
+        card.style.overflow = 'hidden';
+        card.style.border = '1px solid #334155';
+        card.style.background = '#0f172a';
+
+        card.innerHTML = `
+          <img src="${item.previewUrl}" style="width: 100%; height: 75px; object-fit: cover;">
+          <div style="font-size: 0.68rem; color: #94a3b8; padding: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${item.nombre}">${item.nombre}</div>
+          <button onclick="eliminarFoto(${index})" style="position: absolute; top: 2px; right: 2px; background: rgba(0,0,0,0.6); color: #ef4444; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center;">&times;</button>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function eliminarFoto(index) {
+      if (procesandoEnCurso) return;
+      colaFotos.splice(index, 1);
+      renderPreviewFotos();
+    }
+
+    function limpiarSeleccionFotos() {
+      if (procesandoEnCurso) return;
+      colaFotos = [];
+      renderPreviewFotos();
+      document.getElementById('upload-log').style.display = 'none';
+      document.getElementById('progress-container').style.display = 'none';
+    }
+
+    async function procesarLoteFotos() {
+      if (colaFotos.length === 0 || procesandoEnCurso) return;
+
+      procesandoEnCurso = true;
+      const btn = document.getElementById('btn-procesar-lote');
+      const progressContainer = document.getElementById('progress-container');
+      const progressBar = document.getElementById('progress-bar');
+      const progressLabel = document.getElementById('progress-label');
+      const progressPercent = document.getElementById('progress-percent');
+      const uploadLog = document.getElementById('upload-log');
 
       btn.disabled = true;
-      btn.innerText = '⏳ Procesando con IA...';
-      statusDiv.style.display = 'block';
-      statusDiv.style.background = 'rgba(56, 189, 248, 0.15)';
-      statusDiv.style.color = '#38bdf8';
-      statusDiv.style.border = '1px solid #38bdf8';
-      statusDiv.innerText = 'Analizando tablero HMI Siemens con modelo multimodal...';
+      progressContainer.style.display = 'block';
+      uploadLog.style.display = 'block';
+      uploadLog.innerHTML = `<div style="color: #94a3b8;">🚀 Iniciando lote de ${colaFotos.length} fotografía(s)...</div>`;
 
-      try {
-        const res = await fetch('/api/telemetria/subir-foto', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            base64: fotoSeleccionadaBase64,
-            nombreArchivo: fotoNombre
-          })
-        });
+      let exitosas = 0;
+      let duplicadas = 0;
+      let errores = 0;
 
-        const json = await res.json();
+      for (let i = 0; i < colaFotos.length; i++) {
+        const item = colaFotos[i];
+        const num = i + 1;
+        const total = colaFotos.length;
+        const pct = Math.round((num / total) * 100);
 
-        if (res.status === 201) {
-          statusDiv.style.background = 'rgba(34, 197, 94, 0.15)';
-          statusDiv.style.color = '#22c55e';
-          statusDiv.style.border = '1px solid #22c55e';
-          statusDiv.innerHTML = `✅ <strong>¡Procesado con Éxito!</strong><br>Molino detectado: <strong>${json.molino}</strong> | Fecha: <strong>${json.timestamp_hmi}</strong><br>Sensores registrados: ${json.sensores_registrados}`;
-          cargarDashboard();
-          setTimeout(() => {
-            document.getElementById('modal-subida').style.display = 'none';
-            btn.disabled = false;
-            btn.innerText = '⚡ Procesar con IA';
-          }, 2500);
-        } else if (json.status === 'duplicado') {
-          statusDiv.style.background = 'rgba(234, 179, 8, 0.15)';
-          statusDiv.style.color = '#eab308';
-          statusDiv.style.border = '1px solid #eab308';
-          statusDiv.innerHTML = `⚠️ <strong>Foto Duplicada:</strong> ${json.detalle}`;
-          btn.disabled = false;
-          btn.innerText = '⚡ Procesar con IA';
-        } else {
-          statusDiv.style.background = 'rgba(239, 68, 68, 0.15)';
-          statusDiv.style.color = '#ef4444';
-          statusDiv.style.border = '1px solid #ef4444';
-          statusDiv.innerHTML = `❌ <strong>Error:</strong> ${json.error || JSON.stringify(json.incidencias)}`;
-          btn.disabled = false;
-          btn.innerText = '⚡ Procesar con IA';
+        progressBar.style.width = pct + '%';
+        progressPercent.innerText = pct + '%';
+        progressLabel.innerText = `Analizando imagen ${num} de ${total}: ${item.nombre}`;
+
+        try {
+          const res = await fetch('/api/telemetria/subir-foto', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              base64: item.base64,
+              nombreArchivo: item.nombre
+            })
+          });
+
+          const json = await res.json();
+
+          if (res.status === 201) {
+            exitosas++;
+            uploadLog.innerHTML += `<div style="color: #22c55e;">[${num}/${total}] ✅ <strong>${json.molino}:</strong> ${json.sensores_registrados} sensores leídos (${item.nombre})</div>`;
+          } else if (json.status === 'duplicado') {
+            duplicadas++;
+            uploadLog.innerHTML += `<div style="color: #eab308;">[${num}/${total}] ⚠️ <strong>Duplicado:</strong> Ya existía captura de esa hora (${item.nombre})</div>`;
+          } else {
+            errores++;
+            uploadLog.innerHTML += `<div style="color: #ef4444;">[${num}/${total}] ❌ <strong>Error:</strong> ${json.error || 'Lectura fallida'} (${item.nombre})</div>`;
+          }
+        } catch (err) {
+          errores++;
+          uploadLog.innerHTML += `<div style="color: #ef4444;">[${num}/${total}] ❌ <strong>Error red:</strong> ${err.message}</div>`;
         }
-      } catch (err) {
-        statusDiv.style.background = 'rgba(239, 68, 68, 0.15)';
-        statusDiv.style.color = '#ef4444';
-        statusDiv.style.border = '1px solid #ef4444';
-        statusDiv.innerText = 'Error de conexión: ' + err.message;
-        btn.disabled = false;
-        btn.innerText = '⚡ Procesar con IA';
+
+        uploadLog.scrollTop = uploadLog.scrollHeight;
+        // Breve pausa para estabilidad visual
+        await new Promise(r => setTimeout(r, 400));
       }
+
+      progressLabel.innerText = '🎉 ¡Lote Completado!';
+      progressBar.style.background = '#22c55e';
+      uploadLog.innerHTML += `<div style="margin-top: 8px; padding-top: 6px; border-top: 1px dashed #334155; color: #38bdf8;">🏁 Resumen: ${exitosas} registradas | ${duplicadas} duplicadas | ${errores} errores.</div>`;
+      uploadLog.scrollTop = uploadLog.scrollHeight;
+
+      procesandoEnCurso = false;
+      btn.innerText = '✅ Lote Finalizado';
+      btn.disabled = false;
+      btn.onclick = () => {
+        limpiarSeleccionFotos();
+        document.getElementById('modal-subida').style.display = 'none';
+        btn.onclick = procesarLoteFotos;
+      };
+
+      cargarDashboard(); // Actualizar tablero con todos los molinos que recibieron datos
     }
 
     cargarDashboard();
