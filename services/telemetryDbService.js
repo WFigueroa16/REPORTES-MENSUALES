@@ -1,12 +1,6 @@
-const { DatabaseSync } = require('node:sqlite');
 const path = require('node:path');
 const fs = require('node:fs');
-
-const dbPath = path.join(__dirname, '..', 'beneficio_za.sqlite');
-const db = new DatabaseSync(dbPath);
-
-db.exec('PRAGMA journal_mode = WAL;');
-db.exec('PRAGMA foreign_keys = ON;');
+const { db } = require('../db');
 
 function initTelemetrySchema() {
   db.exec(`

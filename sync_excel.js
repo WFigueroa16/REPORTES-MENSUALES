@@ -3,9 +3,14 @@ const path = require('node:path');
 const fs = require('node:fs');
 const { db } = require('./db');
 
-const exportDir = path.join(__dirname, 'exports');
+const isVercel = !!process.env.VERCEL;
+const exportDir = isVercel ? path.join('/tmp', 'exports') : path.join(__dirname, 'exports');
 if (!fs.existsSync(exportDir)) {
-  fs.mkdirSync(exportDir, { recursive: true });
+  try {
+    fs.mkdirSync(exportDir, { recursive: true });
+  } catch (err) {
+    console.warn('[SyncExcel] Error creando exportDir:', err.message);
+  }
 }
 
 const consolidatedFilePath = path.join(exportDir, 'DATOS_CONSOLIDADOS_PLANTA.xlsx');

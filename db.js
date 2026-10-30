@@ -3,12 +3,32 @@ const path = require('node:path');
 const fs = require('node:fs');
 const crypto = require('node:crypto');
 
-const dbPath = path.join(__dirname, 'beneficio_za.sqlite');
-const db = new DatabaseSync(dbPath);
+const isVercel = !!process.env.VERCEL;
+let dbPath = path.join(__dirname, 'beneficio_za.sqlite');
 
-// Enable WAL mode for high concurrency
-db.exec('PRAGMA journal_mode = WAL;');
-db.exec('PRAGMA foreign_keys = ON;');
+if (isVercel) {
+  const tmpDbPath = path.join('/tmp', 'beneficio_za.sqlite');
+  if (!fs.existsSync(tmpDbPath) && fs.existsSync(dbPath)) {
+    try {
+      fs.copyFileSync(dbPath, tmpDbPath);
+    } catch (e) {
+      console.warn('[DB] No se pudo copiar sqlite a /tmp:', e.message);
+    }
+  }
+  dbPath = tmpDbPath;
+}
+
+let db;
+try {
+  db = new DatabaseSync(dbPath);
+  if (!isVercel) {
+    db.exec('PRAGMA journal_mode = WAL;');
+  }
+  db.exec('PRAGMA foreign_keys = ON;');
+} catch (err) {
+  console.error('[DB] Error abriendo archivo SQLite, iniciando en memoria:', err.message);
+  db = new DatabaseSync(':memory:');
+}
 
 // Initialize Tables
 function initSchema() {

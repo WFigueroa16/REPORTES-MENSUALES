@@ -751,18 +751,27 @@ app.use((req, res) => {
 });
 
 // Start Server and perform initial sync
-app.listen(PORT, '0.0.0.0', async () => {
-  console.log(`\n======================================================`);
-  console.log(`🚀 SERVIDOR WEB BENEFICIO ZA ACTIVO EN PUERTO ${PORT}`);
-  console.log(`👉 Acceso local: http://localhost:${PORT}`);
-  console.log(`👉 Dashboard Telemetría: http://localhost:${PORT}/telemetria.html`);
-  console.log(`👉 Archivo Excel local sincronizado: ${consolidatedFilePath}`);
-  console.log(`======================================================\n`);
-  scheduleLiveSync();
+if (!process.env.VERCEL) {
+  app.listen(PORT, '0.0.0.0', async () => {
+    console.log(`\n======================================================`);
+    console.log(`🚀 SERVIDOR WEB BENEFICIO ZA ACTIVO EN PUERTO ${PORT}`);
+    console.log(`👉 Acceso local: http://localhost:${PORT}`);
+    console.log(`👉 Dashboard Telemetría: http://localhost:${PORT}/telemetria.html`);
+    console.log(`👉 Archivo Excel local sincronizado: ${consolidatedFilePath}`);
+    console.log(`======================================================\n`);
+    scheduleLiveSync();
 
-  try {
-    await millCatalog.cargarCatalogoDesdeExcel();
-  } catch (err) {
-    console.error('Error inicializando catálogo de molinos:', err.message);
-  }
-});
+    try {
+      await millCatalog.cargarCatalogoDesdeExcel();
+    } catch (err) {
+      console.error('Error inicializando catálogo de molinos:', err.message);
+    }
+  });
+} else {
+  // En Vercel Serverless Function
+  millCatalog.cargarCatalogoDesdeExcel().catch((err) => {
+    console.warn('[Vercel] Error cargando catálogo:', err.message);
+  });
+}
+
+module.exports = app;
