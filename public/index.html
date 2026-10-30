@@ -3,885 +3,695 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Beneficio ZA - Matriz de Control Operacional Multi-Turno</title>
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Phosphor Icons -->
-  <script src="https://unpkg.com/@phosphor-icons/web"></script>
-  <link rel="stylesheet" href="styles.css">
+  <title>Telemetría en Vivo de Molinos - Planta Beneficio ZA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0f172a;
+      --card-bg: #1e293b;
+      --card-border: #334155;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #38bdf8;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --preaviso: #eab308;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      padding: 24px;
+      min-height: 100vh;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--card-border);
+      margin-bottom: 24px;
+    }
+
+    .header-title h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-title p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-top: 4px;
+    }
+
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .stat-card .label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    .stat-card .val {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-top: 6px;
+    }
+
+    .grid-molinos {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 18px;
+      margin-bottom: 30px;
+    }
+
+    .molino-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 18px;
+      transition: transform 0.15s ease, border-color 0.15s ease;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .molino-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--primary);
+    }
+
+    .molino-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+
+    .molino-codigo {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .molino-tipo {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .badge-status {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 20px;
+      text-transform: uppercase;
+    }
+
+    .badge-NORMAL { background: rgba(34, 197, 94, 0.15); color: var(--success); border: 1px solid var(--success); }
+    .badge-PREAVISO { background: rgba(234, 179, 8, 0.15); color: var(--preaviso); border: 1px solid var(--preaviso); }
+    .badge-ALARMA { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid var(--warning); }
+    .badge-FALLA { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid var(--danger); }
+    .badge-SIN_DATOS { background: rgba(148, 163, 184, 0.15); color: var(--text-muted); border: 1px solid var(--card-border); }
+
+    .molino-body {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .sensor-item-preview {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+      border-top: 1px dashed var(--card-border);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+    }
+
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      width: 90%;
+      max-width: 800px;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 24px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+      font-size: 0.85rem;
+    }
+
+    th, td {
+      padding: 10px 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    th {
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .btn {
+      background: var(--primary);
+      color: #000;
+      font-weight: 600;
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn:hover { opacity: 0.9; }
+  </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-amber-500 selection:text-slate-950">
-
-  <!-- ================= AUTH MODAL (LOGIN) ================= -->
-  <div id="login-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md flex items-center justify-center z-50 p-4">
-    <div class="bg-slate-900 border border-slate-800 p-8 rounded-3xl shadow-2xl max-w-md w-full relative">
-      <div class="flex items-center gap-3.5 mb-6">
-        <div class="w-12 h-12 rounded-2xl bg-amber-500 flex items-center justify-center text-slate-950 text-2xl font-black shadow-lg shadow-amber-500/20">
-          <i class="ph-bold ph-factory"></i>
-        </div>
-        <div>
-          <h2 class="text-xl font-black text-white tracking-tight">Planta Beneficio ZA</h2>
-          <p class="text-xs text-slate-400 font-medium">Sistema Integral de Operaciones & Control 24h</p>
-        </div>
-      </div>
-
-      <div id="login-error" class="hidden mb-4 p-3 rounded-xl bg-red-500/20 border border-red-500/30 text-red-300 text-xs font-semibold flex items-center gap-2">
-        <i class="ph-bold ph-warning-circle text-base"></i>
-        <span id="login-error-text">Credenciales inválidas</span>
-      </div>
-
-      <form id="login-form" class="space-y-4">
-        <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Usuario</label>
-          <div class="relative">
-            <i class="ph-bold ph-user absolute left-3.5 top-3.5 text-slate-500 text-base"></i>
-            <input type="text" id="login-username" required autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="username" class="w-full bg-slate-950 border border-slate-700 rounded-xl pl-11 pr-4 py-3 text-sm text-white focus:outline-none focus:border-amber-400 transition-colors font-mono" placeholder="wfigueroa o admin">
-          </div>
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Contraseña</label>
-          <div class="relative">
-            <i class="ph-bold ph-lock-key absolute left-3.5 top-3.5 text-slate-500 text-base"></i>
-            <input type="password" id="login-password" required autocomplete="current-password" class="w-full bg-slate-950 border border-slate-700 rounded-xl pl-11 pr-4 py-3 text-sm text-white focus:outline-none focus:border-amber-400 transition-colors" placeholder="••••••••">
-          </div>
-        </div>
-
-        <button type="submit" id="btn-login-submit" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-3.5 rounded-xl transition-all shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2 mt-3 text-sm active:scale-95 cursor-pointer">
-          <span>Ingresar a Planta</span>
-          <i class="ph-bold ph-arrow-right"></i>
-        </button>
-      </form>
-
-      <div class="mt-6 pt-4 border-t border-slate-800 text-center text-xs text-slate-500">
-        Acceso Administrador: <span class="text-amber-400 font-mono font-bold">wfigueroa / admin123</span>
-      </div>
+<body>
+  <header>
+    <div class="header-title">
+      <h1>⚡ Monitoreo Automatizado de Molinos (HMI Siemens)</h1>
+      <p>Captura desde WhatsApp con Visión Artificial | Planta Beneficio ZA</p>
     </div>
-  </div>
-
-  <!-- ================= TOP NAVIGATION BAR ================= -->
-  <header class="bg-slate-900 border-b border-slate-800 sticky top-0 z-40">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      
-      <!-- Top Bar: Logo, Date Selector, Live Sync, User -->
-      <div class="flex items-center justify-between h-16 gap-4">
-        
-        <!-- Logo -->
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center text-slate-950 font-black text-lg shadow-md shadow-amber-500/20">
-            ZA
-          </div>
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="font-black text-white text-base tracking-tight">Beneficio ZA</span>
-              <span class="text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded font-mono font-bold">
-                MATRIZ MULTI-TURNO
-              </span>
-            </div>
-            <p class="text-[11px] text-slate-400 leading-none mt-0.5 hidden sm:block">Control de Producción & Seguridad Trabajos Mantto.</p>
-          </div>
-        </div>
-
-        <!-- Master Date Selector with Quick Day Flipping -->
-        <div class="flex items-center gap-2 bg-slate-950 border border-slate-700/80 px-3 py-1.5 rounded-xl shadow-inner">
-          <button id="btn-prev-day" class="p-1 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition-colors" title="Día Anterior">
-            <i class="ph-bold ph-caret-left text-base"></i>
-          </button>
-          
-          <div class="flex items-center gap-1.5">
-            <i class="ph-bold ph-calendar text-amber-400 text-sm"></i>
-            <input type="date" id="global-date" class="bg-transparent border-0 text-white text-xs font-mono font-bold focus:outline-none cursor-pointer">
-          </div>
-          
-          <button id="btn-next-day" class="p-1 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition-colors" title="Día Siguiente">
-            <i class="ph-bold ph-caret-right text-base"></i>
-          </button>
-        </div>
-
-        <!-- Right Side: Excel Sincronizado + User Profile -->
-        <div class="flex items-center gap-2 sm:gap-3">
-          <button type="button" onclick="downloadExcelReport(event)" title="Descargar Reporte Excel (.xlsx)" class="flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white text-xs font-black px-3.5 py-2 rounded-xl transition-all shadow-md shadow-emerald-500/20 border border-emerald-400/30 cursor-pointer active:scale-95">
-            <i class="ph-bold ph-file-xls text-base"></i>
-            <span class="hidden md:inline">Descargar Excel (.xlsx)</span>
-          </button>
-
-          <div class="hidden xl:flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-1.5 rounded-xl text-emerald-400 text-xs font-bold">
-            <span class="w-2 h-2 rounded-full bg-emerald-400 pulse-emerald"></span>
-            <span>Excel Sincronizado</span>
-          </div>
-
-          <div class="flex items-center gap-2 bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-xl">
-            <div class="w-7 h-7 rounded-lg bg-amber-500 text-slate-950 flex items-center justify-center font-black text-xs" id="user-avatar">
-              W
-            </div>
-            <div class="text-left text-xs leading-tight hidden md:block">
-              <div class="font-bold text-white truncate max-w-[130px]" id="user-display-name">Ing. W. Figueroa</div>
-              <div class="text-[10px] text-amber-400 font-mono font-bold" id="user-role-badge">ADMIN</div>
-            </div>
-          </div>
-
-          <button id="btn-logout" title="Cerrar Sesión" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-400 hover:text-red-400 transition-colors">
-            <i class="ph-bold ph-sign-out text-lg"></i>
-          </button>
-        </div>
-      </div>
-
-      <!-- Navigation Tabs -->
-      <nav class="flex space-x-1.5 overflow-x-auto py-2 border-t border-slate-800 scrollbar-none text-xs font-bold">
-        <button data-tab="tab-dashboard" class="tab-btn active flex items-center gap-2 px-3.5 py-2 rounded-xl transition-all">
-          <i class="ph-bold ph-chart-line-up text-base"></i>
-          <span>Dashboard & KPIs</span>
-        </button>
-        <button data-tab="tab-rdo-matrix" class="tab-btn flex items-center gap-2 px-3.5 py-2 rounded-xl transition-all">
-          <i class="ph-bold ph-table text-base"></i>
-          <span>Matriz RDO (3 Guardias)</span>
-        </button>
-        <button data-tab="tab-concentrado-24h" class="tab-btn flex items-center gap-2 px-3.5 py-2 rounded-xl transition-all">
-          <i class="ph-bold ph-clock-clockwise text-base"></i>
-          <span>Producción 24 Horas</span>
-        </button>
-        <button data-tab="tab-controles-turnos" class="tab-btn flex items-center gap-2 px-3.5 py-2 rounded-xl transition-all">
-          <i class="ph-bold ph-check-square-offset text-base"></i>
-          <span>Controles de Planta (1°, 2°, 3° Turno)</span>
-        </button>
-        <button data-tab="tab-paradas" class="tab-btn flex items-center gap-2 px-3.5 py-2 rounded-xl transition-all">
-          <i class="ph-bold ph-warning-octagon text-base"></i>
-          <span>Fallas y Paradas</span>
-        </button>
-        <button data-tab="tab-mantto" class="tab-btn flex items-center gap-2 px-3.5 py-2 rounded-xl transition-all">
-          <i class="ph-bold ph-wrench text-base"></i>
-          <span>Mantenimiento</span>
-        </button>
-        <button data-tab="tab-balanzas" class="tab-btn flex items-center gap-2 px-3.5 py-2 rounded-xl transition-all">
-          <i class="ph-bold ph-scales text-base"></i>
-          <span>Balanzas</span>
-        </button>
-        <button data-tab="tab-users" class="tab-btn flex items-center gap-2 px-3.5 py-2 rounded-xl transition-all">
-          <i class="ph-bold ph-users-three text-base"></i>
-          <span>Usuarios</span>
-        </button>
-        <button data-tab="tab-auditoria" class="tab-btn flex items-center gap-2 px-3.5 py-2 rounded-xl transition-all">
-          <i class="ph-bold ph-shield-check text-base"></i>
-          <span>Auditoría</span>
-        </button>
-        <button data-tab="tab-exportar" class="tab-btn flex items-center gap-2 px-3.5 py-2 rounded-xl transition-all text-emerald-400 hover:text-emerald-300">
-          <i class="ph-bold ph-file-xls text-base"></i>
-          <span>Excel</span>
-        </button>
-      </nav>
+    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+      <button class="btn" onclick="cargarDashboard()">🔄 Actualizar</button>
+      <button class="btn" style="background: #8b5cf6; color: #fff;" onclick="mostrarModalSubida()">📷 Cargar Foto HMI</button>
+      <button class="btn" style="background: #10b981;" onclick="verReporteTurno()">📋 Reporte Turno</button>
+      <button class="btn" style="background: #ea4335; color: #fff;" onclick="enviarPorGmail()">📧 Enviar Gmail</button>
     </div>
   </header>
 
-  <!-- Notification Toast Container -->
-  <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
-
-  <!-- ================= MAIN CONTENT ================= -->
-  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
-
-    <!-- ================= TAB 1: DASHBOARD & KPIS ================= -->
-    <section id="tab-dashboard" class="tab-content active space-y-6">
-      
-      <!-- Top Bar -->
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-xl">
-        <div>
-          <div class="flex items-center gap-2 text-xs font-bold text-amber-400 uppercase tracking-widest">
-            <i class="ph-bold ph-gauge"></i>
-            <span>Centro de Monitoreo Diario</span>
-          </div>
-          <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight mt-1">Consolidado Operacional</h1>
-          <p class="text-xs text-slate-400 mt-1">Resumen integral de los 3 turnos para la fecha: <span id="dash-date-badge" class="font-mono font-bold text-amber-400"></span></p>
-        </div>
-
-        <div class="flex items-center gap-3">
-          <button id="btn-refresh-kpi" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all flex items-center gap-2">
-            <i class="ph-bold ph-arrows-clockwise text-base"></i>
-            <span>Actualizar</span>
-          </button>
-          <button type="button" onclick="downloadExcelReport(event)" class="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white text-xs font-black px-4 py-2.5 rounded-xl transition-all shadow-lg shadow-emerald-600/25 flex items-center gap-2 border border-emerald-400/30 cursor-pointer active:scale-95">
-            <i class="ph-bold ph-file-xls text-base"></i>
-            <span>Exportar Excel (.xlsx)</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Main Metric Cards -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        
-        <!-- Mineral Tratado -->
-        <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl relative overflow-hidden shadow-lg">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Mineral Tratado</span>
-            <div class="w-9 h-9 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center text-lg">
-              <i class="ph-bold ph-mountain"></i>
-            </div>
-          </div>
-          <div class="mt-4 flex items-baseline gap-2">
-            <span id="kpi-mineral" class="text-3xl font-black text-white font-mono tracking-tight">0.00</span>
-            <span class="text-xs text-slate-400 font-bold">TMS</span>
-          </div>
-          <div class="mt-2 text-[11px] text-slate-400">Total acumulado de las 24 horas</div>
-        </div>
-
-        <!-- Concentrado Producido -->
-        <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl relative overflow-hidden shadow-lg">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Concentrado</span>
-            <div class="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-lg">
-              <i class="ph-bold ph-cube"></i>
-            </div>
-          </div>
-          <div class="mt-4 flex items-baseline gap-2">
-            <span id="kpi-concentrado" class="text-3xl font-black text-white font-mono tracking-tight">0.00</span>
-            <span class="text-xs text-slate-400 font-bold">TMS</span>
-          </div>
-          <div class="mt-2 text-[11px] text-slate-400">Producción total reportada</div>
-        </div>
-
-        <!-- % Recuperación Metalúrgica -->
-        <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl relative overflow-hidden shadow-lg">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Recuperación</span>
-            <div class="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-lg">
-              <i class="ph-bold ph-chart-polar"></i>
-            </div>
-          </div>
-          <div class="mt-4 flex items-baseline gap-2">
-            <span id="kpi-recup" class="text-3xl font-black text-emerald-400 font-mono tracking-tight">0.0%</span>
-            <span class="text-xs text-slate-400 font-bold">Promedio</span>
-          </div>
-          <div class="mt-2 text-[11px] text-slate-400">Eficiencia metalúrgica global</div>
-        </div>
-
-        <!-- Paradas & Horas Perdidas -->
-        <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl relative overflow-hidden shadow-lg">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Horas Perdidas</span>
-            <div class="w-9 h-9 rounded-xl bg-red-500/10 text-red-400 flex items-center justify-center text-lg">
-              <i class="ph-bold ph-hourglass"></i>
-            </div>
-          </div>
-          <div class="mt-4 flex items-baseline gap-2">
-            <span id="kpi-horas-perdidas" class="text-3xl font-black text-red-400 font-mono tracking-tight">0.00</span>
-            <span class="text-xs text-slate-400 font-bold">Horas</span>
-          </div>
-          <div class="mt-2 text-[11px] text-slate-400 flex items-center gap-1">
-            <span id="kpi-paradas-count" class="font-bold text-slate-200">0</span>
-            <span>paradas registradas</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Comparison Cards of Guardias A, B, C side by side on Dashboard -->
-      <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl space-y-4 shadow-xl">
-        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-          <h2 class="text-sm font-black text-white uppercase tracking-wider flex items-center gap-2">
-            <i class="ph-bold ph-columns text-amber-400"></i>
-            <span>Comparativo Rápido de los 3 Turnos (Guardias A - B - C)</span>
-          </h2>
-          <span class="text-xs text-slate-500 font-mono">Consolidado 24h</span>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="guardias-summary-grid"></div>
-      </div>
-    </section>
-
-    <!-- ================= TAB 2: MATRIZ RDO MULTI-TURNO (3 GUARDIAS LADO A LADO) ================= -->
-    <section id="tab-rdo-matrix" class="tab-content space-y-6">
-      <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-xl space-y-6">
-        
-        <!-- Top Toolbar -->
-        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-800 pb-5">
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="w-3 h-3 rounded-full bg-amber-400 animate-pulse"></span>
-              <h2 class="text-xl font-black text-white tracking-tight">Matriz Operativa RDO - 3 Guardias en Paralelo</h2>
-            </div>
-            <p class="text-xs text-slate-400 mt-1">
-              Visualiza y edita las columnas de <span class="text-blue-400 font-bold">Guardia A</span>, <span class="text-amber-400 font-bold">Guardia B</span> y <span class="text-purple-400 font-bold">Guardia C</span> simultáneamente en una sola vista.
-            </p>
-          </div>
-
-          <div class="flex items-center gap-3">
-            <button type="button" id="btn-save-rdo-matrix" class="bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-black px-6 py-2.5 rounded-xl transition-all shadow-lg shadow-amber-500/20 flex items-center gap-2 text-xs active:scale-[0.98]">
-              <i class="ph-bold ph-floppy-disk text-base"></i>
-              <span>Guardar Matriz Completa</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Silos Visual Gauge Strip for 3 Shifts -->
-        <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl space-y-3">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-black text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
-              <i class="ph-bold ph-cylinder text-base"></i>
-              <span>Nivel de Silos de Fino 1 al 9 (Comparativo Visual)</span>
-            </span>
-            <span class="text-[11px] text-slate-500 font-mono">Niveles en metros (0 - 5 m)</span>
-          </div>
-
-          <div class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-9 gap-3" id="matrix-silos-container">
-            <!-- 9 visual gauges populated dynamically -->
-          </div>
-        </div>
-
-        <!-- The 3-Guardia Unified Table Matrix -->
-        <div class="overflow-x-auto rounded-2xl border border-slate-800 shadow-2xl">
-          <table class="w-full text-xs text-left" id="table-rdo-matrix">
-            <thead class="bg-slate-950 text-slate-200 font-black uppercase tracking-wider border-b border-slate-800">
-              <tr>
-                <th class="py-3.5 px-4 w-1/3">Parámetro Operativo de Planta</th>
-                <th class="py-3.5 px-3 w-1/5 text-center bg-blue-950/30 text-blue-300 border-x border-slate-800">
-                  <div class="flex items-center justify-center gap-1.5">
-                    <span class="w-2 h-2 rounded-full bg-blue-400"></span>
-                    <span>Guardia A (07:00 - 15:00)</span>
-                  </div>
-                </th>
-                <th class="py-3.5 px-3 w-1/5 text-center bg-amber-950/30 text-amber-300 border-r border-slate-800">
-                  <div class="flex items-center justify-center gap-1.5">
-                    <span class="w-2 h-2 rounded-full bg-amber-400"></span>
-                    <span>Guardia B (15:00 - 23:00)</span>
-                  </div>
-                </th>
-                <th class="py-3.5 px-3 w-1/5 text-center bg-purple-950/30 text-purple-300 border-r border-slate-800">
-                  <div class="flex items-center justify-center gap-1.5">
-                    <span class="w-2 h-2 rounded-full bg-purple-400"></span>
-                    <span>Guardia C (23:00 - 07:00)</span>
-                  </div>
-                </th>
-                <th class="py-3.5 px-3 text-right bg-slate-900 text-slate-400 font-bold">
-                  Total / Resumen Día
-                </th>
-              </tr>
-            </thead>
-            <tbody id="tbody-rdo-matrix" class="divide-y divide-slate-800 bg-slate-900/40">
-              <!-- Rendered dynamically by app.js with sections: Trituración, Filtros, Magnética, Relaves, Embarque -->
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Bitácoras de los 3 Turnos lado a lado -->
-        <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl space-y-4">
-          <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-            <h3 class="text-xs font-black text-amber-400 uppercase tracking-wider flex items-center gap-2">
-              <i class="ph-bold ph-notebook text-base"></i>
-              <span>Bitácora & Novedades de Turno (Las 3 Guardias)</span>
-            </h3>
-            <span class="text-[11px] text-slate-500">Entrega de guardia y novedades operativas</span>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-            <!-- Guardia A Bitacora -->
-            <div class="bg-slate-900 border border-blue-900/40 p-4 rounded-xl space-y-2.5">
-              <div class="flex items-center justify-between border-b border-slate-800 pb-2">
-                <span class="font-black text-blue-400 flex items-center gap-1.5">
-                  <span class="w-2 h-2 rounded-full bg-blue-400"></span>
-                  Guardia A
-                </span>
-                <span class="text-[10px] text-slate-500 font-mono">07:00 - 15:00</span>
-              </div>
-              <textarea id="bitacora-input-A" rows="3" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-white font-sans focus:border-blue-400" placeholder="Novedades Guardia A..."></textarea>
-              <div id="bitacora-history-A" class="space-y-1 text-[11px] text-slate-400"></div>
-            </div>
-
-            <!-- Guardia B Bitacora -->
-            <div class="bg-slate-900 border border-amber-900/40 p-4 rounded-xl space-y-2.5">
-              <div class="flex items-center justify-between border-b border-slate-800 pb-2">
-                <span class="font-black text-amber-400 flex items-center gap-1.5">
-                  <span class="w-2 h-2 rounded-full bg-amber-400"></span>
-                  Guardia B
-                </span>
-                <span class="text-[10px] text-slate-500 font-mono">15:00 - 23:00</span>
-              </div>
-              <textarea id="bitacora-input-B" rows="3" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-white font-sans focus:border-amber-400" placeholder="Novedades Guardia B..."></textarea>
-              <div id="bitacora-history-B" class="space-y-1 text-[11px] text-slate-400"></div>
-            </div>
-
-            <!-- Guardia C Bitacora -->
-            <div class="bg-slate-900 border border-purple-900/40 p-4 rounded-xl space-y-2.5">
-              <div class="flex items-center justify-between border-b border-slate-800 pb-2">
-                <span class="font-black text-purple-400 flex items-center gap-1.5">
-                  <span class="w-2 h-2 rounded-full bg-purple-400"></span>
-                  Guardia C
-                </span>
-                <span class="text-[10px] text-slate-500 font-mono">23:00 - 07:00</span>
-              </div>
-              <textarea id="bitacora-input-C" rows="3" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-white font-sans focus:border-purple-400" placeholder="Novedades Guardia C..."></textarea>
-              <div id="bitacora-history-C" class="space-y-1 text-[11px] text-slate-400"></div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- ================= TAB 3: PRODUCCIÓN 24H CON SUB-TOTALES POR TURNO ================= -->
-    <section id="tab-concentrado-24h" class="tab-content space-y-6">
-      <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-xl space-y-6">
-        
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
-          <div>
-            <h2 class="text-xl font-black text-white flex items-center gap-2.5">
-              <i class="ph-bold ph-clock-clockwise text-amber-400 text-2xl"></i>
-              <span>Producción de Concentrado 24 Horas (Con Subtotales por Turno)</span>
-            </h2>
-            <p class="text-xs text-slate-400 mt-1">Jornada oficial de 09:00 a 09:00 dividida en los 3 turnos operativos.</p>
-          </div>
-
-          <button id="btn-save-concentrado" class="bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-black px-6 py-2.5 rounded-xl transition-all shadow-lg shadow-amber-500/20 flex items-center gap-2 text-xs active:scale-[0.98]">
-            <i class="ph-bold ph-floppy-disk text-base"></i>
-            <span>Guardar Producción 24h</span>
-          </button>
-        </div>
-
-        <!-- Shift Totals Banner -->
-        <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 bg-slate-950 p-4 rounded-2xl border border-slate-800 text-xs">
-          <!-- Total Day -->
-          <div class="border-l-4 border-emerald-500 pl-3">
-            <span class="text-slate-400 block text-[10px] uppercase font-bold">TOTAL DÍA (24H)</span>
-            <span id="conc-total-day" class="font-mono text-base font-black text-white">0.00 TMS</span>
-            <span id="conc-recup-day" class="text-[11px] text-emerald-400 font-bold block">Recup: 0.0%</span>
-          </div>
-          <!-- Guardia A -->
-          <div class="border-l-4 border-blue-500 pl-3">
-            <span class="text-slate-400 block text-[10px] uppercase font-bold">GUARDIA A (09-17)</span>
-            <span id="conc-subtotal-A" class="font-mono text-base font-black text-blue-400">0.00 TMS</span>
-            <span id="conc-recup-A" class="text-[11px] text-slate-400 font-bold block">Recup: 0.0%</span>
-          </div>
-          <!-- Guardia B -->
-          <div class="border-l-4 border-amber-500 pl-3">
-            <span class="text-slate-400 block text-[10px] uppercase font-bold">GUARDIA B (17-01)</span>
-            <span id="conc-subtotal-B" class="font-mono text-base font-black text-amber-400">0.00 TMS</span>
-            <span id="conc-recup-B" class="text-[11px] text-slate-400 font-bold block">Recup: 0.0%</span>
-          </div>
-          <!-- Guardia C -->
-          <div class="border-l-4 border-purple-500 pl-3">
-            <span class="text-slate-400 block text-[10px] uppercase font-bold">GUARDIA C (01-09)</span>
-            <span id="conc-subtotal-C" class="font-mono text-base font-black text-purple-400">0.00 TMS</span>
-            <span id="conc-recup-C" class="text-[11px] text-slate-400 font-bold block">Recup: 0.0%</span>
-          </div>
-        </div>
-
-        <!-- 24h Table with Grouped Shifts -->
-        <div class="overflow-x-auto rounded-2xl border border-slate-800 shadow-2xl">
-          <table class="w-full text-xs text-left" id="table-concentrado">
-            <thead class="bg-slate-950 text-slate-300 font-bold uppercase tracking-wider text-[11px] border-b border-slate-800">
-              <tr>
-                <th class="py-3 px-3">Hora / Turno</th>
-                <th class="py-3 px-3 text-right">Mineral (TMS)</th>
-                <th class="py-3 px-3 text-right">Conc. (TMS)</th>
-                <th class="py-3 px-3 text-right">S (%)</th>
-                <th class="py-3 px-3 text-right">ESP.N Fe Sol</th>
-                <th class="py-3 px-3 text-right">ESP.N FeO</th>
-                <th class="py-3 px-3 text-right">H2O (%)</th>
-                <th class="py-3 px-3 text-right text-emerald-400 font-black">% Recup.</th>
-                <th class="py-3 px-3 text-right text-purple-400 font-black">Ratio</th>
-                <th class="py-3 px-3">Observaciones</th>
-              </tr>
-            </thead>
-            <tbody id="tbody-concentrado" class="divide-y divide-slate-800 bg-slate-900/40"></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- ================= TAB 4: CONTROLES DE PLANTA (1°, 2°, 3° TURNO LADO A LADO) ================= -->
-    <section id="tab-controles-turnos" class="tab-content space-y-6">
-      <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-xl space-y-6">
-        
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
-          <div>
-            <h2 class="text-xl font-black text-white flex items-center gap-2.5">
-              <i class="ph-bold ph-check-square-offset text-amber-400 text-2xl"></i>
-              <span>Controles de Planta por Turno (1°, 2° y 3° Turno)</span>
-            </h2>
-            <p class="text-xs text-slate-400 mt-1">Estructura idéntica al Excel: Filtros H2O, Purga TKs Aire y Separadores Cobber en paralelo.</p>
-          </div>
-
-          <button id="btn-save-controles" class="bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-black px-6 py-2.5 rounded-xl transition-all shadow-lg shadow-amber-500/20 flex items-center gap-2 text-xs active:scale-[0.98]">
-            <i class="ph-bold ph-floppy-disk text-base"></i>
-            <span>Guardar Controles</span>
-          </button>
-        </div>
-
-        <!-- 1. FILTROS H2O (3 Turnos lado a lado) -->
-        <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl space-y-4">
-          <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-            <h3 class="text-sm font-black text-amber-400 uppercase tracking-wider flex items-center gap-2">
-              <i class="ph-bold ph-funnel text-base"></i>
-              <span>1. Filtros de H2O (Filtro #1 al #9) - Los 3 Turnos</span>
-            </h3>
-            <span class="text-[11px] text-slate-400">Haz clic en cada turno para cambiar OK / FALLA</span>
-          </div>
-
-          <div class="overflow-x-auto rounded-xl border border-slate-800">
-            <table class="w-full text-xs text-left" id="table-filtros-turnos">
-              <thead class="bg-slate-900 text-slate-300 font-bold border-b border-slate-800">
-                <tr>
-                  <th class="py-3 px-4 w-1/4">Filtro</th>
-                  <th class="py-3 px-3 text-center bg-blue-950/20 text-blue-300">1° Turno (07-15)</th>
-                  <th class="py-3 px-3 text-center bg-amber-950/20 text-amber-300">2° Turno (15-23)</th>
-                  <th class="py-3 px-3 text-center bg-purple-950/20 text-purple-300">3° Turno (23-07)</th>
-                  <th class="py-3 px-3 text-center">Estado Diario</th>
-                  <th class="py-3 px-3">Observación</th>
-                </tr>
-              </thead>
-              <tbody id="tbody-filtros-turnos" class="divide-y divide-slate-800 bg-slate-900/40"></tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- 2. PURGA TANQUES DE AIRE -->
-        <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl space-y-4">
-          <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-            <h3 class="text-sm font-black text-amber-400 uppercase tracking-wider flex items-center gap-2">
-              <i class="ph-bold ph-wind text-base"></i>
-              <span>2. Purga Tanques de Aire (Principal & Auxiliares)</span>
-            </h3>
-            <span class="text-[11px] text-slate-500 font-mono">1er, 2do y 3er Turno</span>
-          </div>
-
-          <div class="overflow-x-auto rounded-xl border border-slate-800">
-            <table class="w-full text-xs text-left" id="table-purga-tks">
-              <thead class="bg-slate-900 text-slate-300 font-bold border-b border-slate-800">
-                <tr>
-                  <th class="py-3 px-4">Tanque</th>
-                  <th class="py-3 px-3">Ubicación</th>
-                  <th class="py-3 px-3 text-center bg-blue-950/20 text-blue-300">1er Turno</th>
-                  <th class="py-3 px-3 text-center bg-amber-950/20 text-amber-300">2do Turno</th>
-                  <th class="py-3 px-3 text-center bg-purple-950/20 text-purple-300">3er Turno</th>
-                  <th class="py-3 px-3">Observación</th>
-                </tr>
-              </thead>
-              <tbody id="tbody-purga-tks" class="divide-y divide-slate-800 bg-slate-900/40"></tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- 3. SEPARADORES COBBER -->
-        <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl space-y-4">
-          <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-            <h3 class="text-sm font-black text-amber-400 uppercase tracking-wider flex items-center gap-2">
-              <i class="ph-bold ph-magnet text-base"></i>
-              <span>3. Limpieza de Separadores Magnéticos Cobber</span>
-            </h3>
-            <span class="text-[11px] text-slate-500">Equipos 210-097 al 210-269</span>
-          </div>
-
-          <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-2.5" id="cobber-grid"></div>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- ================= TAB 5: FALLAS Y PARADAS ================= -->
-    <section id="tab-paradas" class="tab-content space-y-6">
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        <!-- Form -->
-        <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl space-y-4">
-          <h2 class="text-lg font-black text-white flex items-center gap-2 border-b border-slate-800 pb-3">
-            <i class="ph-bold ph-plus-circle text-amber-400"></i>
-            <span>Registrar Parada</span>
-          </h2>
-
-          <form id="form-parada" class="space-y-3.5 text-xs">
-            <div>
-              <label class="block text-slate-400 font-bold mb-1">Fecha</label>
-              <input type="date" id="parada-fecha" required class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white font-mono">
-            </div>
-
-            <div>
-              <label class="block text-slate-400 font-bold mb-1">Equipo</label>
-              <input type="text" id="parada-equipo" required list="equipos-datalist" placeholder="Escriba código o nombre..." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white font-mono">
-              <datalist id="equipos-datalist"></datalist>
-            </div>
-
-            <div class="grid grid-cols-2 gap-2">
-              <div>
-                <label class="block text-slate-400 font-bold mb-1">Inicio Parada</label>
-                <input type="time" id="parada-inicio" required class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white font-mono">
-              </div>
-              <div>
-                <label class="block text-slate-400 font-bold mb-1">Arranque</label>
-                <input type="time" id="parada-arranque" required class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white font-mono">
-              </div>
-            </div>
-
-            <div>
-              <label class="block text-slate-400 font-bold mb-1">TM/h no procesadas</label>
-              <input type="number" step="any" id="parada-tmh" placeholder="0.00" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white font-mono">
-            </div>
-
-            <div>
-              <label class="block text-slate-400 font-bold mb-1">Tipo de Falla</label>
-              <select id="parada-tipo" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white font-bold">
-                <option value="MECÁNICA">MECÁNICA</option>
-                <option value="ELÉCTRICA">ELÉCTRICA</option>
-                <option value="INSTRUMENTACIÓN">INSTRUMENTACIÓN</option>
-                <option value="OPERACIONAL">OPERACIONAL</option>
-                <option value="EXTERNA">EXTERNA / ENERGÍA</option>
-              </select>
-            </div>
-
-            <div>
-              <label class="block text-slate-400 font-bold mb-1">Motivo / Causa Raíz</label>
-              <textarea id="parada-motivo" rows="2" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white" placeholder="Descripción de la falla..."></textarea>
-            </div>
-
-            <button type="submit" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-3 rounded-xl transition-all shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2 text-xs">
-              <i class="ph-bold ph-plus"></i>
-              <span>Guardar Parada</span>
-            </button>
-          </form>
-        </div>
-
-        <!-- Paradas List -->
-        <div class="lg:col-span-2 bg-slate-900 border border-slate-800 p-6 rounded-3xl flex flex-col space-y-4">
-          <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-            <h2 class="text-sm font-black text-white uppercase tracking-wider flex items-center gap-2">
-              <i class="ph-bold ph-list-dashes text-amber-400"></i>
-              <span>Historial de Paradas Registradas</span>
-            </h2>
-            <span id="paradas-badge" class="text-xs bg-slate-800 text-slate-300 px-2.5 py-0.5 rounded-full font-mono">0 registradas</span>
-          </div>
-
-          <div class="overflow-x-auto flex-1 rounded-2xl border border-slate-800">
-            <table class="w-full text-xs text-left" id="table-paradas">
-              <thead class="bg-slate-950 text-slate-300 font-bold border-b border-slate-800">
-                <tr>
-                  <th class="py-3 px-3">Fecha</th>
-                  <th class="py-3 px-3">Equipo</th>
-                  <th class="py-3 px-3">Horario</th>
-                  <th class="py-3 px-3 text-right">Horas</th>
-                  <th class="py-3 px-3 text-right">TM Perdidas</th>
-                  <th class="py-3 px-3">Motivo</th>
-                  <th class="py-3 px-3 text-center">Acción</th>
-                </tr>
-              </thead>
-              <tbody id="tbody-paradas" class="divide-y divide-slate-800 bg-slate-900/40"></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ================= TAB 6: MANTENIMIENTO ================= -->
-    <section id="tab-mantto" class="tab-content space-y-6">
-      <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-xl space-y-6">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
-          <div>
-            <h2 class="text-xl font-black text-white flex items-center gap-2.5">
-              <i class="ph-bold ph-wrench text-amber-400 text-2xl"></i>
-              <span>Reporte de Mantenimiento & Trabajos</span>
-            </h2>
-            <p class="text-xs text-slate-400 mt-1">Órdenes de trabajo, avisos SAP e intervenciones.</p>
-          </div>
-        </div>
-
-        <div class="overflow-x-auto rounded-2xl border border-slate-800">
-          <table class="w-full text-xs text-left" id="table-mantto">
-            <thead class="bg-slate-950 text-slate-300 font-bold border-b border-slate-800">
-              <tr>
-                <th class="py-3 px-3">Fecha</th>
-                <th class="py-3 px-3">Guardia</th>
-                <th class="py-3 px-3">Área / Equipo</th>
-                <th class="py-3 px-3">Aviso SAP</th>
-                <th class="py-3 px-3">Especialidad</th>
-                <th class="py-3 px-3">Trabajo Realizado</th>
-                <th class="py-3 px-3 text-right">Horas</th>
-                <th class="py-3 px-3">Estado</th>
-                <th class="py-3 px-3">Responsable</th>
-              </tr>
-            </thead>
-            <tbody id="tbody-mantto" class="divide-y divide-slate-800 bg-slate-900/40"></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- ================= TAB 7: BALANZAS ================= -->
-    <section id="tab-balanzas" class="tab-content space-y-6">
-      <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-xl space-y-6">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
-          <div>
-            <h2 class="text-xl font-black text-white flex items-center gap-2.5">
-              <i class="ph-bold ph-scales text-amber-400 text-2xl"></i>
-              <span>Control y Calibración de Balanzas</span>
-            </h2>
-            <p class="text-xs text-slate-400 mt-1">Calibración de Zero y Span con cálculo porcentual de error.</p>
-          </div>
-        </div>
-
-        <div class="overflow-x-auto rounded-2xl border border-slate-800">
-          <table class="w-full text-xs text-left" id="table-balanzas">
-            <thead class="bg-slate-950 text-slate-300 font-bold border-b border-slate-800">
-              <tr>
-                <th class="py-3 px-3">Fecha</th>
-                <th class="py-3 px-3">Equipo</th>
-                <th class="py-3 px-3">Faja Transp</th>
-                <th class="py-3 px-3 text-right">Zero As Found</th>
-                <th class="py-3 px-3 text-right">Zero As Left</th>
-                <th class="py-3 px-3 text-right text-amber-400 font-bold">Error Zero (%)</th>
-                <th class="py-3 px-3 text-right">Span As Found</th>
-                <th class="py-3 px-3 text-right">Span As Left</th>
-                <th class="py-3 px-3 text-right text-amber-400 font-bold">Error Span (%)</th>
-                <th class="py-3 px-3">Observación</th>
-              </tr>
-            </thead>
-            <tbody id="tbody-balanzas" class="divide-y divide-slate-800 bg-slate-900/40"></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- ================= TAB 8: GESTIÓN DE USUARIOS ================= -->
-    <section id="tab-users" class="tab-content space-y-6">
-      <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-xl space-y-6">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
-          <div>
-            <h2 class="text-xl font-black text-white flex items-center gap-2.5">
-              <i class="ph-bold ph-users-three text-amber-400 text-2xl"></i>
-              <span>Gestión de Cuentas y Accesos de Operadores</span>
-            </h2>
-            <p class="text-xs text-slate-400 mt-1">Crea usuarios para cada operario con sus respectivos permisos.</p>
-          </div>
-          <button id="btn-new-user" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black px-5 py-2 rounded-xl transition-all shadow-lg shadow-amber-500/20 flex items-center gap-2 text-xs">
-            <i class="ph-bold ph-user-plus text-base"></i>
-            <span>Nuevo Usuario</span>
-          </button>
-        </div>
-
-        <div class="overflow-x-auto rounded-2xl border border-slate-800">
-          <table class="w-full text-xs text-left" id="table-users">
-            <thead class="bg-slate-950 text-slate-300 font-bold border-b border-slate-800">
-              <tr>
-                <th class="py-3 px-3">ID</th>
-                <th class="py-3 px-3">Usuario</th>
-                <th class="py-3 px-3">Nombre Completo</th>
-                <th class="py-3 px-3">Rol</th>
-                <th class="py-3 px-3">Área</th>
-                <th class="py-3 px-3">Estado</th>
-                <th class="py-3 px-3 text-center">Acciones</th>
-              </tr>
-            </thead>
-            <tbody id="tbody-users" class="divide-y divide-slate-800 bg-slate-900/40"></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- ================= TAB 9: AUDITORÍA ================= -->
-    <section id="tab-auditoria" class="tab-content space-y-6">
-      <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-xl space-y-6">
-        <div class="flex items-center justify-between border-b border-slate-800 pb-5">
-          <div>
-            <h2 class="text-xl font-black text-white flex items-center gap-2.5">
-              <i class="ph-bold ph-shield-check text-amber-400 text-2xl"></i>
-              <span>Auditoría & Trazabilidad Inmutable</span>
-            </h2>
-            <p class="text-xs text-slate-400 mt-1">Registro de quién modificó qué, cuándo y los valores previos.</p>
-          </div>
-          <button id="btn-refresh-auditoria" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all flex items-center gap-2">
-            <i class="ph-bold ph-arrows-clockwise"></i>
-            <span>Refrescar</span>
-          </button>
-        </div>
-
-        <div class="overflow-x-auto rounded-2xl border border-slate-800">
-          <table class="w-full text-xs text-left" id="table-auditoria">
-            <thead class="bg-slate-950 text-slate-300 font-bold border-b border-slate-800">
-              <tr>
-                <th class="py-3 px-3">Fecha y Hora</th>
-                <th class="py-3 px-3">Usuario</th>
-                <th class="py-3 px-3">Tabla</th>
-                <th class="py-3 px-3">Acción</th>
-                <th class="py-3 px-3">Valor Anterior</th>
-                <th class="py-3 px-3">Valor Nuevo</th>
-                <th class="py-3 px-3">Motivo</th>
-              </tr>
-            </thead>
-            <tbody id="tbody-auditoria" class="divide-y divide-slate-800 font-mono text-[11px] bg-slate-900/40"></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- ================= TAB 10: EXPORTAR A EXCEL ================= -->
-    <section id="tab-exportar" class="tab-content space-y-6">
-      <div class="bg-slate-900 border border-slate-800 p-8 rounded-3xl max-w-2xl mx-auto text-center space-y-6 shadow-2xl">
-        <div class="w-16 h-16 rounded-2xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center mx-auto text-3xl border border-emerald-500/30">
-          <i class="ph-bold ph-file-xls"></i>
-        </div>
-        <div>
-          <h2 class="text-2xl font-black text-white">Exportación al Formato Excel Maestro</h2>
-          <p class="text-xs text-slate-400 mt-2 max-w-md mx-auto">
-            Descarga en un clic el archivo <span class="font-mono text-emerald-400 font-bold">.xlsx</span> con las 10 hojas exactas formateadas profesionalmente.
-          </p>
-        </div>
-
-        <button type="button" onclick="downloadExcelReport(event)" class="inline-flex items-center gap-2.5 bg-gradient-to-r from-emerald-500 to-emerald-400 hover:from-emerald-400 hover:to-emerald-300 text-slate-950 font-black px-8 py-4 rounded-2xl transition-all shadow-xl shadow-emerald-500/25 text-sm cursor-pointer active:scale-95">
-          <i class="ph-bold ph-file-xls text-xl"></i>
-          <span>Descargar Archivo Excel (.xlsx)</span>
-        </button>
-
-        <div class="p-4 bg-slate-950 border border-slate-800 rounded-2xl text-left text-xs text-slate-400 space-y-1">
-          <div class="font-bold text-slate-300">Copia local continua en tu disco:</div>
-          <div class="font-mono text-emerald-300 text-[11px] break-all">E:\SHP PROJECT BASE DE DATOS\exports\DATOS_CONSOLIDADOS_PLANTA.xlsx</div>
-          <p class="text-[11px] text-slate-500 mt-1">Este archivo se mantiene actualizado automáticamente en segundo plano en tu computadora.</p>
-        </div>
-      </div>
-    </section>
-
-  </main>
-
-  <!-- USER MODAL (CREAR USUARIO) -->
-  <div id="user-modal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-    <div class="bg-slate-900 border border-slate-700 p-6 rounded-3xl shadow-2xl max-w-md w-full">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
-        <h3 class="text-base font-black text-white flex items-center gap-2">
-          <i class="ph-bold ph-user-plus text-amber-400"></i>
-          <span>Nuevo Usuario</span>
-        </h3>
-        <button id="btn-close-user-modal" class="text-slate-400 hover:text-white">
-          <i class="ph-bold ph-x text-lg"></i>
-        </button>
-      </div>
-
-      <form id="form-create-user" class="space-y-3.5 text-xs">
-        <div>
-          <label class="block text-slate-400 font-bold mb-1">Nombre de Usuario (Login)</label>
-          <input type="text" id="new-user-username" required class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white font-mono" placeholder="ej. juan.perez">
-        </div>
-        <div>
-          <label class="block text-slate-400 font-bold mb-1">Nombre Completo</label>
-          <input type="text" id="new-user-fullname" required class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white" placeholder="ej. Juan Pérez Mendoza">
-        </div>
-        <div>
-          <label class="block text-slate-400 font-bold mb-1">Contraseña</label>
-          <input type="password" id="new-user-password" required class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white font-mono" placeholder="••••••••">
-        </div>
-        <div>
-          <label class="block text-slate-400 font-bold mb-1">Rol en el Sistema</label>
-          <select id="new-user-role" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white font-bold">
-            <option value="operador_rdo">Operador RDO (Trituración / Filtros)</option>
-            <option value="operador_planta">Operador Planta (Controles)</option>
-            <option value="supervisor">Supervisor de Guardia</option>
-            <option value="mantto">Técnico Mantenimiento</option>
-            <option value="admin">Administrador General</option>
-          </select>
-        </div>
-        <div>
-          <label class="block text-slate-400 font-bold mb-1">Área Asignada</label>
-          <input type="text" id="new-user-area" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white" placeholder="ej. TRITURACIÓN / FILTROS">
-        </div>
-
-        <button type="submit" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-3 rounded-xl transition-all shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2 mt-4 text-xs">
-          <span>Crear Usuario</span>
-        </button>
-      </form>
+  <!-- Banner explicativo del origen de fotos -->
+  <div style="background: #1e293b; border-left: 4px solid #38bdf8; padding: 14px 18px; border-radius: 8px; margin-bottom: 24px; font-size: 0.88rem; color: #cbd5e1; display: flex; justify-content: space-between; align-items: center;">
+    <div>
+      <strong style="color: #38bdf8;">📲 Modo Automático (Producción):</strong> Las fotos se leen solas desde el <strong>Grupo de WhatsApp</strong> vía Green API.<br>
+      <strong style="color: #a78bfa;">🧪 Modo Manual (Pruebas):</strong> Puedes usar el botón <em>"📷 Cargar Foto HMI"</em> para probar cualquier imagen de tablero desde tu computadora.
     </div>
   </div>
 
-  <script src="app.js"></script>
+  <div class="stats-bar">
+    <div class="stat-card">
+      <span class="label">Total Molinos</span>
+      <span class="val" id="stat-total">19</span>
+    </div>
+    <div class="stat-card">
+      <span class="label">Operando Normal</span>
+      <span class="val" style="color: var(--success);" id="stat-normal">0</span>
+    </div>
+    <div class="stat-card">
+      <span class="label">En Preaviso (5%)</span>
+      <span class="val" style="color: var(--preaviso);" id="stat-preaviso">0</span>
+    </div>
+    <div class="stat-card">
+      <span class="label">En Alarma / Falla</span>
+      <span class="val" style="color: var(--danger);" id="stat-alertas">0</span>
+    </div>
+  </div>
+
+  <div class="grid-molinos" id="molinos-container">
+    <!-- Se llena dinámicamente -->
+  </div>
+
+  <!-- Modal Detalle -->
+  <div class="modal-overlay" id="modal-detalle" onclick="cerrarModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h2 id="modal-titulo" style="font-size: 1.3rem;">Detalle del Molino</h2>
+        <button style="background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer;" onclick="document.getElementById('modal-detalle').style.display = 'none'">&times;</button>
+      </div>
+      <p id="modal-subtitulo" style="color: var(--text-muted); margin-top: 4px; font-size: 0.9rem;"></p>
+      
+      <table>
+        <thead>
+          <tr>
+            <th>Sensor</th>
+            <th>Valor Actual</th>
+            <th>Alarma</th>
+            <th>Falla</th>
+            <th>Sentido</th>
+            <th>Condición</th>
+          </tr>
+        </thead>
+        <tbody id="modal-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Modal Cargar Fotos HMI (Múltiple / Por Lote) -->
+  <div class="modal-overlay" id="modal-subida" onclick="cerrarModalSubida(event)">
+    <div class="modal-content" onclick="event.stopPropagation()" style="max-width: 680px;">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h2 style="font-size: 1.3rem;">📷 Cargar Fotografías de Tableros HMI</h2>
+        <button style="background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer;" onclick="cerrarModalSubidaDirecto()">&times;</button>
+      </div>
+      <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 4px;">
+        Puedes seleccionar o arrastrar <strong>una o varias fotos juntas</strong>. La IA identificará automáticamente el molino de cada pantalla y registrará sus sensores.
+      </p>
+
+      <div id="drop-zone" style="border: 2px dashed #475569; border-radius: 10px; padding: 25px; text-align: center; margin: 16px 0; cursor: pointer; transition: border-color 0.2s;" onclick="document.getElementById('file-input').click()">
+        <div style="font-size: 2.2rem; margin-bottom: 6px;">🖼️ ➕</div>
+        <div style="font-weight: 600; color: #38bdf8; font-size: 1rem;">Haz clic para seleccionar fotos o arrástralas aquí</div>
+        <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 4px;">Puedes elegir múltiples archivos a la vez (JPG, PNG, WEBP)</div>
+        <input type="file" id="file-input" accept="image/*" multiple style="display: none;" onchange="handleFilesSelect(event)">
+      </div>
+
+      <!-- Galería de fotos seleccionadas -->
+      <div id="upload-preview-container" style="display: none; margin-bottom: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <span style="font-size: 0.85rem; font-weight: 600; color: #cbd5e1;" id="count-fotos-seleccionadas">0 fotos seleccionadas</span>
+          <button style="background: none; border: none; color: #ef4444; font-size: 0.75rem; cursor: pointer;" onclick="limpiarSeleccionFotos()">Limpiar todas</button>
+        </div>
+        <div id="preview-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; max-height: 180px; overflow-y: auto; padding: 4px;">
+          <!-- Miniaturas dinámicas -->
+        </div>
+      </div>
+
+      <!-- Barra de progreso de procesamiento -->
+      <div id="progress-container" style="display: none; margin-bottom: 16px;">
+        <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 4px;">
+          <span id="progress-label" style="color: #38bdf8;">Procesando fotos...</span>
+          <span id="progress-percent" style="font-weight: bold;">0%</span>
+        </div>
+        <div style="background: #334155; border-radius: 8px; height: 8px; overflow: hidden;">
+          <div id="progress-bar" style="background: #8b5cf6; width: 0%; height: 100%; transition: width 0.3s ease;"></div>
+        </div>
+      </div>
+
+      <!-- Log de resultados por foto -->
+      <div id="upload-log" style="display: none; max-height: 140px; overflow-y: auto; background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 10px; font-size: 0.78rem; font-family: 'JetBrains Mono', monospace; margin-bottom: 16px;">
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 10px;">
+        <button class="btn" style="background: #334155; color: #fff;" onclick="cerrarModalSubidaDirecto()">Cerrar</button>
+        <button class="btn" id="btn-procesar-lote" style="background: #8b5cf6; color: #fff;" onclick="procesarLoteFotos()" disabled>⚡ Procesar Fotos con IA</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let molinosDataCache = [];
+
+    async function cargarDashboard() {
+      try {
+        const res = await fetch('/api/telemetria/dashboard');
+        const json = await res.json();
+        if (!json.success) return;
+
+        molinosDataCache = json.data;
+        renderDashboard();
+      } catch (err) {
+        console.error('Error cargando telemetría:', err);
+      }
+    }
+
+    function renderDashboard() {
+      const container = document.getElementById('molinos-container');
+      container.innerHTML = '';
+
+      let normalCount = 0, preavisoCount = 0, alertasCount = 0;
+
+      molinosDataCache.forEach((item, index) => {
+        const m = item.molino;
+        const st = item.estado_general;
+
+        if (st === 'NORMAL') normalCount++;
+        else if (st === 'PREAVISO') preavisoCount++;
+        else if (st === 'ALARMA' || st === 'FALLA') alertasCount++;
+
+        const card = document.createElement('div');
+        card.className = 'molino-card';
+        card.onclick = () => abrirDetalle(index);
+
+        const fechaTxt = item.ultima_captura ? item.ultima_captura.timestamp_hmi : 'Sin lecturas';
+        const horasTxt = item.horas_sin_reporte !== null ? `${item.horas_sin_reporte}h transcurridas` : '';
+
+        // Vista previa de sensores críticos (hasta 3)
+        let previewSensores = '';
+        if (item.sensores && item.sensores.length > 0) {
+          const criticos = item.sensores.slice(0, 3);
+          criticos.forEach(s => {
+            previewSensores += `
+              <div class="sensor-item-preview">
+                <span>${s.acronimo_sensor}</span>
+                <span style="color: ${s.condicion === 'NORMAL' ? 'var(--text-main)' : s.condicion === 'PREAVISO' ? 'var(--preaviso)' : 'var(--danger)'}">${s.valor} ${s.unidad}</span>
+              </div>
+            `;
+          });
+        }
+
+        card.innerHTML = `
+          <div class="molino-header">
+            <div>
+              <div class="molino-codigo">${m.codigo_hmi}</div>
+              <div class="molino-tipo">${m.nombre} (${m.tipo})</div>
+            </div>
+            <span class="badge-status badge-${st}">${st}</span>
+          </div>
+          <div class="molino-body">
+            <div>🕒 ${fechaTxt}</div>
+            ${horasTxt ? `<div style="font-size: 0.75rem; color: #f59e0b;">⏳ ${horasTxt}</div>` : ''}
+            <div style="margin-top: 8px;">${previewSensores}</div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+
+      document.getElementById('stat-normal').innerText = normalCount;
+      document.getElementById('stat-preaviso').innerText = preavisoCount;
+      document.getElementById('stat-alertas').innerText = alertasCount;
+    }
+
+    function abrirDetalle(index) {
+      const item = molinosDataCache[index];
+      if (!item) return;
+
+      document.getElementById('modal-titulo').innerText = `${item.molino.codigo_hmi} - ${item.molino.nombre}`;
+      document.getElementById('modal-subtitulo').innerText = `Última telemetría HMI: ${item.ultima_captura ? item.ultima_captura.timestamp_hmi : 'Sin datos'} | Motor: ${item.ultima_captura ? item.ultima_captura.estado_motor : 'N/A'}`;
+
+      const tbody = document.getElementById('modal-tbody');
+      tbody.innerHTML = '';
+
+      if (!item.sensores || item.sensores.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #94a3b8;">No hay lecturas registradas para este molino aún.</td></tr>';
+      } else {
+        item.sensores.forEach(s => {
+          const tr = document.createElement('tr');
+          const color = s.condicion === 'NORMAL' ? '#22c55e' : s.condicion === 'PREAVISO' ? '#eab308' : '#ef4444';
+          tr.innerHTML = `
+            <td><strong>${s.acronimo_sensor}</strong> <span style="font-size:0.75rem; color:#94a3b8;">(${s.nombre_sensor})</span></td>
+            <td><strong>${s.valor}</strong> ${s.unidad}</td>
+            <td>${s.alarma !== null ? s.alarma : '-'}</td>
+            <td>${s.falla !== null ? s.falla : '-'}</td>
+            <td>${s.sentido}</td>
+            <td><span style="color: ${color}; font-weight: 600;">${s.condicion}</span></td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      document.getElementById('modal-detalle').style.display = 'flex';
+    }
+
+    function cerrarModal(e) {
+      if (e.target.id === 'modal-detalle') {
+        document.getElementById('modal-detalle').style.display = 'none';
+      }
+    }
+
+    async function verReporteTurno() {
+      try {
+        const res = await fetch('/api/telemetria/reporte-turno');
+        const json = await res.json();
+        alert(json.textoWhatsApp);
+      } catch (err) {
+        alert('Error obteniendo reporte de turno');
+      }
+    }
+
+    async function enviarPorGmail() {
+      const email = prompt('Ingrese el correo destinatario (o varios separados por coma):', 'supervisores.planta@ejemplo.com');
+      if (!email) return;
+
+      try {
+        const res = await fetch('/api/telemetria/enviar-correo-reporte', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ destinatarios: email })
+        });
+        const json = await res.json();
+        if (json.success) {
+          alert('✅ Reporte despachado exitosamente.\n' + (json.resultado.simulado ? 'ℹ️ ' + json.resultado.mensaje : 'ID Envío: ' + json.resultado.messageId));
+        } else {
+          alert('❌ Error: ' + json.error);
+        }
+      } catch (err) {
+        alert('Error enviando correo: ' + err.message);
+      }
+    }
+
+    // ==========================================
+    // SISTEMA DE CARGA MÚLTIPLE DE FOTOGRAFÍAS (POR LOTE)
+    // ==========================================
+    let colaFotos = []; // Array de { id, file, nombre, base64, previewUrl }
+    let procesandoEnCurso = false;
+
+    function mostrarModalSubida() {
+      document.getElementById('modal-subida').style.display = 'flex';
+      setupDragAndDrop();
+    }
+
+    function cerrarModalSubidaDirecto() {
+      if (procesandoEnCurso) {
+        if (!confirm('Hay fotos procesándose. ¿Deseas cerrar el modal de todas formas?')) return;
+      }
+      document.getElementById('modal-subida').style.display = 'none';
+    }
+
+    function cerrarModalSubida(e) {
+      if (e.target.id === 'modal-subida') {
+        cerrarModalSubidaDirecto();
+      }
+    }
+
+    function setupDragAndDrop() {
+      const dropZone = document.getElementById('drop-zone');
+      if (dropZone._dragSetup) return;
+      dropZone._dragSetup = true;
+
+      ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropZone.style.borderColor = '#38bdf8';
+          dropZone.style.background = 'rgba(56, 189, 248, 0.05)';
+        }, false);
+      });
+
+      ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropZone.style.borderColor = '#475569';
+          dropZone.style.background = 'transparent';
+        }, false);
+      });
+
+      dropZone.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        handleFiles(files);
+      }, false);
+    }
+
+    function handleFilesSelect(e) {
+      handleFiles(e.target.files);
+    }
+
+    function handleFiles(files) {
+      if (!files || files.length === 0) return;
+
+      const fileList = Array.from(files);
+      let cargadas = 0;
+
+      fileList.forEach(file => {
+        if (!file.type.startsWith('image/')) return;
+
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          const fullBase64 = evt.target.result;
+          const pureBase64 = fullBase64.split(',')[1];
+          const id = 'foto_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+
+          colaFotos.push({
+            id,
+            file,
+            nombre: file.name,
+            base64: pureBase64,
+            previewUrl: fullBase64,
+            estado: 'PENDIENTE'
+          });
+
+          cargadas++;
+          if (cargadas === fileList.length) {
+            renderPreviewFotos();
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function renderPreviewFotos() {
+      const container = document.getElementById('upload-preview-container');
+      const grid = document.getElementById('preview-grid');
+      const countLabel = document.getElementById('count-fotos-seleccionadas');
+      const btn = document.getElementById('btn-procesar-lote');
+
+      if (colaFotos.length === 0) {
+        container.style.display = 'none';
+        btn.disabled = true;
+        btn.innerText = '⚡ Procesar Fotos con IA';
+        return;
+      }
+
+      container.style.display = 'block';
+      countLabel.innerText = `${colaFotos.length} foto(s) seleccionada(s)`;
+      btn.disabled = false;
+      btn.innerText = `⚡ Procesar ${colaFotos.length} Foto(s) con IA`;
+
+      grid.innerHTML = '';
+      colaFotos.forEach((item, index) => {
+        const card = document.createElement('div');
+        card.style.position = 'relative';
+        card.style.borderRadius = '8px';
+        card.style.overflow = 'hidden';
+        card.style.border = '1px solid #334155';
+        card.style.background = '#0f172a';
+
+        card.innerHTML = `
+          <img src="${item.previewUrl}" style="width: 100%; height: 75px; object-fit: cover;">
+          <div style="font-size: 0.68rem; color: #94a3b8; padding: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${item.nombre}">${item.nombre}</div>
+          <button onclick="eliminarFoto(${index})" style="position: absolute; top: 2px; right: 2px; background: rgba(0,0,0,0.6); color: #ef4444; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center;">&times;</button>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function eliminarFoto(index) {
+      if (procesandoEnCurso) return;
+      colaFotos.splice(index, 1);
+      renderPreviewFotos();
+    }
+
+    function limpiarSeleccionFotos() {
+      if (procesandoEnCurso) return;
+      colaFotos = [];
+      renderPreviewFotos();
+      document.getElementById('upload-log').style.display = 'none';
+      document.getElementById('progress-container').style.display = 'none';
+    }
+
+    async function procesarLoteFotos() {
+      if (colaFotos.length === 0 || procesandoEnCurso) return;
+
+      procesandoEnCurso = true;
+      const btn = document.getElementById('btn-procesar-lote');
+      const progressContainer = document.getElementById('progress-container');
+      const progressBar = document.getElementById('progress-bar');
+      const progressLabel = document.getElementById('progress-label');
+      const progressPercent = document.getElementById('progress-percent');
+      const uploadLog = document.getElementById('upload-log');
+
+      btn.disabled = true;
+      progressContainer.style.display = 'block';
+      uploadLog.style.display = 'block';
+      uploadLog.innerHTML = `<div style="color: #94a3b8;">🚀 Iniciando lote de ${colaFotos.length} fotografía(s)...</div>`;
+
+      let exitosas = 0;
+      let duplicadas = 0;
+      let errores = 0;
+
+      for (let i = 0; i < colaFotos.length; i++) {
+        const item = colaFotos[i];
+        const num = i + 1;
+        const total = colaFotos.length;
+        const pct = Math.round((num / total) * 100);
+
+        progressBar.style.width = pct + '%';
+        progressPercent.innerText = pct + '%';
+        progressLabel.innerText = `Analizando imagen ${num} de ${total}: ${item.nombre}`;
+
+        try {
+          const res = await fetch('/api/telemetria/subir-foto', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              base64: item.base64,
+              nombreArchivo: item.nombre
+            })
+          });
+
+          const json = await res.json();
+
+          if (res.status === 201) {
+            exitosas++;
+            uploadLog.innerHTML += `<div style="color: #22c55e;">[${num}/${total}] ✅ <strong>${json.molino}:</strong> ${json.sensores_registrados} sensores leídos (${item.nombre})</div>`;
+          } else if (json.status === 'duplicado') {
+            duplicadas++;
+            uploadLog.innerHTML += `<div style="color: #eab308;">[${num}/${total}] ⚠️ <strong>Duplicado:</strong> Ya existía captura de esa hora (${item.nombre})</div>`;
+          } else {
+            errores++;
+            uploadLog.innerHTML += `<div style="color: #ef4444;">[${num}/${total}] ❌ <strong>Error:</strong> ${json.error || 'Lectura fallida'} (${item.nombre})</div>`;
+          }
+        } catch (err) {
+          errores++;
+          uploadLog.innerHTML += `<div style="color: #ef4444;">[${num}/${total}] ❌ <strong>Error red:</strong> ${err.message}</div>`;
+        }
+
+        uploadLog.scrollTop = uploadLog.scrollHeight;
+        // Breve pausa para estabilidad visual
+        await new Promise(r => setTimeout(r, 400));
+      }
+
+      progressLabel.innerText = '🎉 ¡Lote Completado!';
+      progressBar.style.background = '#22c55e';
+      uploadLog.innerHTML += `<div style="margin-top: 8px; padding-top: 6px; border-top: 1px dashed #334155; color: #38bdf8;">🏁 Resumen: ${exitosas} registradas | ${duplicadas} duplicadas | ${errores} errores.</div>`;
+      uploadLog.scrollTop = uploadLog.scrollHeight;
+
+      procesandoEnCurso = false;
+      btn.innerText = '✅ Lote Finalizado';
+      btn.disabled = false;
+      btn.onclick = () => {
+        limpiarSeleccionFotos();
+        document.getElementById('modal-subida').style.display = 'none';
+        btn.onclick = procesarLoteFotos;
+      };
+
+      cargarDashboard(); // Actualizar tablero con todos los molinos que recibieron datos
+    }
+
+    cargarDashboard();
+    setInterval(cargarDashboard, 15000); // Polling cada 15 segundos
+  </script>
 </body>
 </html>

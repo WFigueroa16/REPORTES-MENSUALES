@@ -1,7 +1,7 @@
 {
-  "name": "beneficio-za-web",
+  "name": "telemetria-molinos-hmi",
   "version": "1.0.0",
-  "description": "Sistema Web de Captura y Control Operacional - Planta Beneficio ZA",
+  "description": "Sistema de Telemetría Automatizada de 19 Molinos HMI Siemens - Planta Beneficio ZA",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Beneficio ZA - Matriz de Control Operacional Multi-Turno</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Phosphor Icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-amber-500 selection:text-slate-950">
+
+  <!-- ================= AUTH MODAL (LOGIN) ================= -->
+  <div id="login-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md flex items-center justify-center z-50 p-4">
+    <div class="bg-slate-900 border border-slate-800 p-8 rounded-3xl shadow-2xl max-w-md w-full relative">
+      <div class="flex items-center gap-3.5 mb-6">
+        <div class="w-12 h-12 rounded-2xl bg-amber-500 flex items-center justify-center text-slate-950 text-2xl font-black shadow-lg shadow-amber-500/20">
+          <i class="ph-bold ph-factory"></i>
+        </div>
+        <div>
+          <h2 class="text-xl font-black text-white tracking-tight">Planta Beneficio ZA</h2>
+          <p class="text-xs text-slate-400 font-medium">Sistema Integral de Operaciones & Control 24h</p>
+        </div>
+      </div>
+
+      <div id="login-error" class="hidden mb-4 p-3 rounded-xl bg-red-500/20 border border-red-500/30 text-red-300 text-xs font-semibold flex items-center gap-2">
+        <i class="ph-bold ph-warning-circle text-base"></i>
+        <span id="login-error-text">Credenciales inválidas</span>
+      </div>
+
+      <form id="login-form" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Usuario</label>
+          <div class="relative">
+            <i class="ph-bold ph-user absolute left-3.5 top-3.5 text-slate-500 text-base"></i>
+            <input type="text" id="login-username" required autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="username" class="w-full bg-slate-950 border border-slate-700 rounded-xl pl-11 pr-4 py-3 text-sm text-white focus:outline-none focus:border-amber-400 transition-colors font-mono" placeholder="wfigueroa o admin">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Contraseña</label>
+          <div class="relative">
+            <i class="ph-bold ph-lock-key absolute left-3.5 top-3.5 text-slate-500 text-base"></i>
+            <input type="password" id="login-password" required autocomplete="current-password" class="w-full bg-slate-950 border border-slate-700 rounded-xl pl-11 pr-4 py-3 text-sm text-white focus:outline-none focus:border-amber-400 transition-colors" placeholder="••••••••">
+          </div>
+        </div>
+
+        <button type="submit" id="btn-login-submit" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-3.5 rounded-xl transition-all shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2 mt-3 text-sm active:scale-95 cursor-pointer">
+          <span>Ingresar a Planta</span>
+          <i class="ph-bold ph-arrow-right"></i>
+        </button>
+      </form>
+
+      <div class="mt-6 pt-4 border-t border-slate-800 text-center text-xs text-slate-500">
+        Acceso Administrador: <span class="text-amber-400 font-mono font-bold">wfigueroa / admin123</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= TOP NAVIGATION BAR ================= -->
+  <header class="bg-slate-900 border-b border-slate-800 sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <!-- Top Bar: Logo, Date Selector, Live Sync, User -->
+      <div class="flex items-center justify-between h-16 gap-4">
+        
+        <!-- Logo -->
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center text-slate-950 font-black text-lg shadow-md shadow-amber-500/20">
+            ZA
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-black text-white text-base tracking-tight">Beneficio ZA</span>
+              <span class="text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded font-mono font-bold">
+                MATRIZ MULTI-TURNO
+              </span>
+            </div>
+            <p class="text-[11px] text-slate-400 leading-none mt-0.5 hidden sm:block">Control de Producción & Seguridad Trabajos Mantto.</p>
+          </div>
+        </div>
+
+        <!-- Master Date Selector with Quick Day Flipping -->
+        <div class="flex items-center gap-2 bg-slate-950 border border-slate-700/80 px-3 py-1.5 rounded-xl shadow-inner">
+          <button id="btn-prev-day" class="p-1 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition-colors" title="Día Anterior">
+            <i class="ph-bold ph-caret-left text-base"></i>
+          </button>
+          
+          <div class="flex items-center gap-1.5">
+            <i class="ph-bold ph-calendar text-amber-400 text-sm"></i>
+            <input type="date" id="global-date" class="bg-transparent border-0 text-white text-xs font-mono font-bold focus:outline-none cursor-pointer">
+          </div>
+          
+          <button id="btn-next-day" class="p-1 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition-colors" title="Día Siguiente">
+            <i class="ph-bold ph-caret-right text-base"></i>
+          </button>
+        </div>
+
+        <!-- Right Side: Excel Sincronizado + User Profile -->
+        <div class="flex items-center gap-2 sm:gap-3">
+          <button type="button" onclick="downloadExcelReport(event)" title="Descargar Reporte Excel (.xlsx)" class="flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white text-xs font-black px-3.5 py-2 rounded-xl transition-all shadow-md shadow-emerald-500/20 border border-emerald-400/30 cursor-pointer active:scale-95">
+            <i class="ph-bold ph-file-xls text-base"></i>
+            <span class="hidden md:inline">Descargar Excel (.xlsx)</span>
+          </button>
+
+          <div class="hidden xl:flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-1.5 rounded-xl text-emerald-400 text-xs font-bold">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 pulse-emerald"></span>
+            <span>Excel Sincronizado</span>
+          </div>
+
+          <div class="flex items-center gap-2 bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-xl">
+            <div class="w-7 h-7 rounded-lg bg-amber-500 text-slate-950 flex items-center justify-center font-black text-xs" id="user-avatar">
+              W
+            </div>
+            <div class="text-left text-xs leading-tight hidden md:block">
+              <div class="font-bold text-white truncate max-w-[130px]" id="user-display-name">Ing. W. Figueroa</div>
+              <div class="text-[10px] text-amber-400 font-mono font-bold" id="user-role-badge">ADMIN</div>
+            </div>
+          </div>
+
+          <button id="btn-logout" title="Cerrar Sesión" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-400 hover:text-red-400 transition-colors">
+            <i class="ph-bold ph-sign-out text-lg"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="flex space-x-1.5 overflow-x-auto py-2 border-t border-slate-800 scrollbar-none text-xs font-bold">
+        <button data-tab="tab-dashboard" class="tab-btn active flex items-center gap-2 px-3.5 py-2 rounded-xl transition-all">
+          <i class="ph-bold ph-chart-line-up text-base"></i>
+          <span>Dashboard & KPIs</span>
+        </button>
+        <button data-tab="tab-rdo-matrix" class="tab-btn flex items-center gap-2 px-3.5 py-2 rounded-xl transition-all">
+          <i class="ph-bold ph-table text-base"></i>
+          <span>Matriz RDO (3 Guardias)</span>
+        </button>
+        <button data-tab="tab-concentrado-24h" class="tab-btn flex items-center gap-2 px-3.5 py-2 rounded-xl transition-all">
+          <i class="ph-bold ph-clock-clockwise text-base"></i>
+          <span>Producción 24 Horas</span>
+        </button>
+        <button data-tab="tab-controles-turnos" class="tab-btn flex items-center gap-2 px-3.5 py-2 rounded-xl transition-all">
+          <i class="ph-bold ph-check-square-offset text-base"></i>
+          <span>Controles de Planta (1°, 2°, 3° Turno)</span>
+        </button>
+        <button data-tab="tab-paradas" class="tab-btn flex items-center gap-2 px-3.5 py-2 rounded-xl transition-all">
+          <i class="ph-bold ph-warning-octagon text-base"></i>
+          <span>Fallas y Paradas</span>
+        </button>
+        <button data-tab="tab-mantto" class="tab-btn flex items-center gap-2 px-3.5 py-2 rounded-xl transition-all">
+          <i class="ph-bold ph-wrench text-base"></i>
+          <span>Mantenimiento</span>
+        </button>
+        <button data-tab="tab-balanzas" class="tab-btn flex items-center gap-2 px-3.5 py-2 rounded-xl transition-all">
+          <i class="ph-bold ph-scales text-base"></i>
+          <span>Balanzas</span>
+        </button>
+        <button data-tab="tab-users" class="tab-btn flex items-center gap-2 px-3.5 py-2 rounded-xl transition-all">
+          <i class="ph-bold ph-users-three text-base"></i>
+          <span>Usuarios</span>
+        </button>
+        <button data-tab="tab-auditoria" class="tab-btn flex items-center gap-2 px-3.5 py-2 rounded-xl transition-all">
+          <i class="ph-bold ph-shield-check text-base"></i>
+          <span>Auditoría</span>
+        </button>
+        <button data-tab="tab-exportar" class="tab-btn flex items-center gap-2 px-3.5 py-2 rounded-xl transition-all text-emerald-400 hover:text-emerald-300">
+          <i class="ph-bold ph-file-xls text-base"></i>
+          <span>Excel</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Notification Toast Container -->
+  <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- ================= MAIN CONTENT ================= -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+
+    <!-- ================= TAB 1: DASHBOARD & KPIS ================= -->
+    <section id="tab-dashboard" class="tab-content active space-y-6">
+      
+      <!-- Top Bar -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-xl">
+        <div>
+          <div class="flex items-center gap-2 text-xs font-bold text-amber-400 uppercase tracking-widest">
+            <i class="ph-bold ph-gauge"></i>
+            <span>Centro de Monitoreo Diario</span>
+          </div>
+          <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight mt-1">Consolidado Operacional</h1>
+          <p class="text-xs text-slate-400 mt-1">Resumen integral de los 3 turnos para la fecha: <span id="dash-date-badge" class="font-mono font-bold text-amber-400"></span></p>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <button id="btn-refresh-kpi" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all flex items-center gap-2">
+            <i class="ph-bold ph-arrows-clockwise text-base"></i>
+            <span>Actualizar</span>
+          </button>
+          <button type="button" onclick="downloadExcelReport(event)" class="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white text-xs font-black px-4 py-2.5 rounded-xl transition-all shadow-lg shadow-emerald-600/25 flex items-center gap-2 border border-emerald-400/30 cursor-pointer active:scale-95">
+            <i class="ph-bold ph-file-xls text-base"></i>
+            <span>Exportar Excel (.xlsx)</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Main Metric Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        
+        <!-- Mineral Tratado -->
+        <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl relative overflow-hidden shadow-lg">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Mineral Tratado</span>
+            <div class="w-9 h-9 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center text-lg">
+              <i class="ph-bold ph-mountain"></i>
+            </div>
+          </div>
+          <div class="mt-4 flex items-baseline gap-2">
+            <span id="kpi-mineral" class="text-3xl font-black text-white font-mono tracking-tight">0.00</span>
+            <span class="text-xs text-slate-400 font-bold">TMS</span>
+          </div>
+          <div class="mt-2 text-[11px] text-slate-400">Total acumulado de las 24 horas</div>
+        </div>
+
+        <!-- Concentrado Producido -->
+        <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl relative overflow-hidden shadow-lg">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Concentrado</span>
+            <div class="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-lg">
+              <i class="ph-bold ph-cube"></i>
+            </div>
+          </div>
+          <div class="mt-4 flex items-baseline gap-2">
+            <span id="kpi-concentrado" class="text-3xl font-black text-white font-mono tracking-tight">0.00</span>
+            <span class="text-xs text-slate-400 font-bold">TMS</span>
+          </div>
+          <div class="mt-2 text-[11px] text-slate-400">Producción total reportada</div>
+        </div>
+
+        <!-- % Recuperación Metalúrgica -->
+        <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl relative overflow-hidden shadow-lg">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Recuperación</span>
+            <div class="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-lg">
+              <i class="ph-bold ph-chart-polar"></i>
+            </div>
+          </div>
+          <div class="mt-4 flex items-baseline gap-2">
+            <span id="kpi-recup" class="text-3xl font-black text-emerald-400 font-mono tracking-tight">0.0%</span>
+            <span class="text-xs text-slate-400 font-bold">Promedio</span>
+          </div>
+          <div class="mt-2 text-[11px] text-slate-400">Eficiencia metalúrgica global</div>
+        </div>
+
+        <!-- Paradas & Horas Perdidas -->
+        <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl relative overflow-hidden shadow-lg">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Horas Perdidas</span>
+            <div class="w-9 h-9 rounded-xl bg-red-500/10 text-red-400 flex items-center justify-center text-lg">
+              <i class="ph-bold ph-hourglass"></i>
+            </div>
+          </div>
+          <div class="mt-4 flex items-baseline gap-2">
+            <span id="kpi-horas-perdidas" class="text-3xl font-black text-red-400 font-mono tracking-tight">0.00</span>
+            <span class="text-xs text-slate-400 font-bold">Horas</span>
+          </div>
+          <div class="mt-2 text-[11px] text-slate-400 flex items-center gap-1">
+            <span id="kpi-paradas-count" class="font-bold text-slate-200">0</span>
+            <span>paradas registradas</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Comparison Cards of Guardias A, B, C side by side on Dashboard -->
+      <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl space-y-4 shadow-xl">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+          <h2 class="text-sm font-black text-white uppercase tracking-wider flex items-center gap-2">
+            <i class="ph-bold ph-columns text-amber-400"></i>
+            <span>Comparativo Rápido de los 3 Turnos (Guardias A - B - C)</span>
+          </h2>
+          <span class="text-xs text-slate-500 font-mono">Consolidado 24h</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="guardias-summary-grid"></div>
+      </div>
+    </section>
+
+    <!-- ================= TAB 2: MATRIZ RDO MULTI-TURNO (3 GUARDIAS LADO A LADO) ================= -->
+    <section id="tab-rdo-matrix" class="tab-content space-y-6">
+      <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-xl space-y-6">
+        
+        <!-- Top Toolbar -->
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full bg-amber-400 animate-pulse"></span>
+              <h2 class="text-xl font-black text-white tracking-tight">Matriz Operativa RDO - 3 Guardias en Paralelo</h2>
+            </div>
+            <p class="text-xs text-slate-400 mt-1">
+              Visualiza y edita las columnas de <span class="text-blue-400 font-bold">Guardia A</span>, <span class="text-amber-400 font-bold">Guardia B</span> y <span class="text-purple-400 font-bold">Guardia C</span> simultáneamente en una sola vista.
+            </p>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <button type="button" id="btn-save-rdo-matrix" class="bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-black px-6 py-2.5 rounded-xl transition-all shadow-lg shadow-amber-500/20 flex items-center gap-2 text-xs active:scale-[0.98]">
+              <i class="ph-bold ph-floppy-disk text-base"></i>
+              <span>Guardar Matriz Completa</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Silos Visual Gauge Strip for 3 Shifts -->
+        <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-black text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+              <i class="ph-bold ph-cylinder text-base"></i>
+              <span>Nivel de Silos de Fino 1 al 9 (Comparativo Visual)</span>
+            </span>
+            <span class="text-[11px] text-slate-500 font-mono">Niveles en metros (0 - 5 m)</span>
+          </div>
+
+          <div class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-9 gap-3" id="matrix-silos-container">
+            <!-- 9 visual gauges populated dynamically -->
+          </div>
+        </div>
+
+        <!-- The 3-Guardia Unified Table Matrix -->
+        <div class="overflow-x-auto rounded-2xl border border-slate-800 shadow-2xl">
+          <table class="w-full text-xs text-left" id="table-rdo-matrix">
+            <thead class="bg-slate-950 text-slate-200 font-black uppercase tracking-wider border-b border-slate-800">
+              <tr>
+                <th class="py-3.5 px-4 w-1/3">Parámetro Operativo de Planta</th>
+                <th class="py-3.5 px-3 w-1/5 text-center bg-blue-950/30 text-blue-300 border-x border-slate-800">
+                  <div class="flex items-center justify-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-blue-400"></span>
+                    <span>Guardia A (07:00 - 15:00)</span>
+                  </div>
+                </th>
+                <th class="py-3.5 px-3 w-1/5 text-center bg-amber-950/30 text-amber-300 border-r border-slate-800">
+                  <div class="flex items-center justify-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                    <span>Guardia B (15:00 - 23:00)</span>
+                  </div>
+                </th>
+                <th class="py-3.5 px-3 w-1/5 text-center bg-purple-950/30 text-purple-300 border-r border-slate-800">
+                  <div class="flex items-center justify-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-purple-400"></span>
+                    <span>Guardia C (23:00 - 07:00)</span>
+                  </div>
+                </th>
+                <th class="py-3.5 px-3 text-right bg-slate-900 text-slate-400 font-bold">
+                  Total / Resumen Día
+                </th>
+              </tr>
+            </thead>
+            <tbody id="tbody-rdo-matrix" class="divide-y divide-slate-800 bg-slate-900/40">
+              <!-- Rendered dynamically by app.js with sections: Trituración, Filtros, Magnética, Relaves, Embarque -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Bitácoras de los 3 Turnos lado a lado -->
+        <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+            <h3 class="text-xs font-black text-amber-400 uppercase tracking-wider flex items-center gap-2">
+              <i class="ph-bold ph-notebook text-base"></i>
+              <span>Bitácora & Novedades de Turno (Las 3 Guardias)</span>
+            </h3>
+            <span class="text-[11px] text-slate-500">Entrega de guardia y novedades operativas</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+            <!-- Guardia A Bitacora -->
+            <div class="bg-slate-900 border border-blue-900/40 p-4 rounded-xl space-y-2.5">
+              <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                <span class="font-black text-blue-400 flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-blue-400"></span>
+                  Guardia A
+                </span>
+                <span class="text-[10px] text-slate-500 font-mono">07:00 - 15:00</span>
+              </div>
+              <textarea id="bitacora-input-A" rows="3" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-white font-sans focus:border-blue-400" placeholder="Novedades Guardia A..."></textarea>
+              <div id="bitacora-history-A" class="space-y-1 text-[11px] text-slate-400"></div>
+            </div>
+
+            <!-- Guardia B Bitacora -->
+            <div class="bg-slate-900 border border-amber-900/40 p-4 rounded-xl space-y-2.5">
+              <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                <span class="font-black text-amber-400 flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                  Guardia B
+                </span>
+                <span class="text-[10px] text-slate-500 font-mono">15:00 - 23:00</span>
+              </div>
+              <textarea id="bitacora-input-B" rows="3" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-white font-sans focus:border-amber-400" placeholder="Novedades Guardia B..."></textarea>
+              <div id="bitacora-history-B" class="space-y-1 text-[11px] text-slate-400"></div>
+            </div>
+
+            <!-- Guardia C Bitacora -->
+            <div class="bg-slate-900 border border-purple-900/40 p-4 rounded-xl space-y-2.5">
+              <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                <span class="font-black text-purple-400 flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-purple-400"></span>
+                  Guardia C
+                </span>
+                <span class="text-[10px] text-slate-500 font-mono">23:00 - 07:00</span>
+              </div>
+              <textarea id="bitacora-input-C" rows="3" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-white font-sans focus:border-purple-400" placeholder="Novedades Guardia C..."></textarea>
+              <div id="bitacora-history-C" class="space-y-1 text-[11px] text-slate-400"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= TAB 3: PRODUCCIÓN 24H CON SUB-TOTALES POR TURNO ================= -->
+    <section id="tab-concentrado-24h" class="tab-content space-y-6">
+      <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-xl space-y-6">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+          <div>
+            <h2 class="text-xl font-black text-white flex items-center gap-2.5">
+              <i class="ph-bold ph-clock-clockwise text-amber-400 text-2xl"></i>
+              <span>Producción de Concentrado 24 Horas (Con Subtotales por Turno)</span>
+            </h2>
+            <p class="text-xs text-slate-400 mt-1">Jornada oficial de 09:00 a 09:00 dividida en los 3 turnos operativos.</p>
+          </div>
+
+          <button id="btn-save-concentrado" class="bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-black px-6 py-2.5 rounded-xl transition-all shadow-lg shadow-amber-500/20 flex items-center gap-2 text-xs active:scale-[0.98]">
+            <i class="ph-bold ph-floppy-disk text-base"></i>
+            <span>Guardar Producción 24h</span>
+          </button>
+        </div>
+
+        <!-- Shift Totals Banner -->
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 bg-slate-950 p-4 rounded-2xl border border-slate-800 text-xs">
+          <!-- Total Day -->
+          <div class="border-l-4 border-emerald-500 pl-3">
+            <span class="text-slate-400 block text-[10px] uppercase font-bold">TOTAL DÍA (24H)</span>
+            <span id="conc-total-day" class="font-mono text-base font-black text-white">0.00 TMS</span>
+            <span id="conc-recup-day" class="text-[11px] text-emerald-400 font-bold block">Recup: 0.0%</span>
+          </div>
+          <!-- Guardia A -->
+          <div class="border-l-4 border-blue-500 pl-3">
+            <span class="text-slate-400 block text-[10px] uppercase font-bold">GUARDIA A (09-17)</span>
+            <span id="conc-subtotal-A" class="font-mono text-base font-black text-blue-400">0.00 TMS</span>
+            <span id="conc-recup-A" class="text-[11px] text-slate-400 font-bold block">Recup: 0.0%</span>
+          </div>
+          <!-- Guardia B -->
+          <div class="border-l-4 border-amber-500 pl-3">
+            <span class="text-slate-400 block text-[10px] uppercase font-bold">GUARDIA B (17-01)</span>
+            <span id="conc-subtotal-B" class="font-mono text-base font-black text-amber-400">0.00 TMS</span>
+            <span id="conc-recup-B" class="text-[11px] text-slate-400 font-bold block">Recup: 0.0%</span>
+          </div>
+          <!-- Guardia C -->
+          <div class="border-l-4 border-purple-500 pl-3">
+            <span class="text-slate-400 block text-[10px] uppercase font-bold">GUARDIA C (01-09)</span>
+            <span id="conc-subtotal-C" class="font-mono text-base font-black text-purple-400">0.00 TMS</span>
+            <span id="conc-recup-C" class="text-[11px] text-slate-400 font-bold block">Recup: 0.0%</span>
+          </div>
+        </div>
+
+        <!-- 24h Table with Grouped Shifts -->
+        <div class="overflow-x-auto rounded-2xl border border-slate-800 shadow-2xl">
+          <table class="w-full text-xs text-left" id="table-concentrado">
+            <thead class="bg-slate-950 text-slate-300 font-bold uppercase tracking-wider text-[11px] border-b border-slate-800">
+              <tr>
+                <th class="py-3 px-3">Hora / Turno</th>
+                <th class="py-3 px-3 text-right">Mineral (TMS)</th>
+                <th class="py-3 px-3 text-right">Conc. (TMS)</th>
+                <th class="py-3 px-3 text-right">S (%)</th>
+                <th class="py-3 px-3 text-right">ESP.N Fe Sol</th>
+                <th class="py-3 px-3 text-right">ESP.N FeO</th>
+                <th class="py-3 px-3 text-right">H2O (%)</th>
+                <th class="py-3 px-3 text-right text-emerald-400 font-black">% Recup.</th>
+                <th class="py-3 px-3 text-right text-purple-400 font-black">Ratio</th>
+                <th class="py-3 px-3">Observaciones</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-concentrado" class="divide-y divide-slate-800 bg-slate-900/40"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TAB 4: CONTROLES DE PLANTA (1°, 2°, 3° TURNO LADO A LADO) ================= -->
+    <section id="tab-controles-turnos" class="tab-content space-y-6">
+      <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-xl space-y-6">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+          <div>
+            <h2 class="text-xl font-black text-white flex items-center gap-2.5">
+              <i class="ph-bold ph-check-square-offset text-amber-400 text-2xl"></i>
+              <span>Controles de Planta por Turno (1°, 2° y 3° Turno)</span>
+            </h2>
+            <p class="text-xs text-slate-400 mt-1">Estructura idéntica al Excel: Filtros H2O, Purga TKs Aire y Separadores Cobber en paralelo.</p>
+          </div>
+
+          <button id="btn-save-controles" class="bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-black px-6 py-2.5 rounded-xl transition-all shadow-lg shadow-amber-500/20 flex items-center gap-2 text-xs active:scale-[0.98]">
+            <i class="ph-bold ph-floppy-disk text-base"></i>
+            <span>Guardar Controles</span>
+          </button>
+        </div>
+
+        <!-- 1. FILTROS H2O (3 Turnos lado a lado) -->
+        <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+            <h3 class="text-sm font-black text-amber-400 uppercase tracking-wider flex items-center gap-2">
+              <i class="ph-bold ph-funnel text-base"></i>
+              <span>1. Filtros de H2O (Filtro #1 al #9) - Los 3 Turnos</span>
+            </h3>
+            <span class="text-[11px] text-slate-400">Haz clic en cada turno para cambiar OK / FALLA</span>
+          </div>
+
+          <div class="overflow-x-auto rounded-xl border border-slate-800">
+            <table class="w-full text-xs text-left" id="table-filtros-turnos">
+              <thead class="bg-slate-900 text-slate-300 font-bold border-b border-slate-800">
+                <tr>
+                  <th class="py-3 px-4 w-1/4">Filtro</th>
+                  <th class="py-3 px-3 text-center bg-blue-950/20 text-blue-300">1° Turno (07-15)</th>
+                  <th class="py-3 px-3 text-center bg-amber-950/20 text-amber-300">2° Turno (15-23)</th>
+                  <th class="py-3 px-3 text-center bg-purple-950/20 text-purple-300">3° Turno (23-07)</th>
+                  <th class="py-3 px-3 text-center">Estado Diario</th>
+                  <th class="py-3 px-3">Observación</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-filtros-turnos" class="divide-y divide-slate-800 bg-slate-900/40"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 2. PURGA TANQUES DE AIRE -->
+        <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+            <h3 class="text-sm font-black text-amber-400 uppercase tracking-wider flex items-center gap-2">
+              <i class="ph-bold ph-wind text-base"></i>
+              <span>2. Purga Tanques de Aire (Principal & Auxiliares)</span>
+            </h3>
+            <span class="text-[11px] text-slate-500 font-mono">1er, 2do y 3er Turno</span>
+          </div>
+
+          <div class="overflow-x-auto rounded-xl border border-slate-800">
+            <table class="w-full text-xs text-left" id="table-purga-tks">
+              <thead class="bg-slate-900 text-slate-300 font-bold border-b border-slate-800">
+                <tr>
+                  <th class="py-3 px-4">Tanque</th>
+                  <th class="py-3 px-3">Ubicación</th>
+                  <th class="py-3 px-3 text-center bg-blue-950/20 text-blue-300">1er Turno</th>
+                  <th class="py-3 px-3 text-center bg-amber-950/20 text-amber-300">2do Turno</th>
+                  <th class="py-3 px-3 text-center bg-purple-950/20 text-purple-300">3er Turno</th>
+                  <th class="py-3 px-3">Observación</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-purga-tks" class="divide-y divide-slate-800 bg-slate-900/40"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 3. SEPARADORES COBBER -->
+        <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+            <h3 class="text-sm font-black text-amber-400 uppercase tracking-wider flex items-center gap-2">
+              <i class="ph-bold ph-magnet text-base"></i>
+              <span>3. Limpieza de Separadores Magnéticos Cobber</span>
+            </h3>
+            <span class="text-[11px] text-slate-500">Equipos 210-097 al 210-269</span>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-2.5" id="cobber-grid"></div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= TAB 5: FALLAS Y PARADAS ================= -->
+    <section id="tab-paradas" class="tab-content space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Form -->
+        <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl space-y-4">
+          <h2 class="text-lg font-black text-white flex items-center gap-2 border-b border-slate-800 pb-3">
+            <i class="ph-bold ph-plus-circle text-amber-400"></i>
+            <span>Registrar Parada</span>
+          </h2>
+
+          <form id="form-parada" class="space-y-3.5 text-xs">
+            <div>
+              <label class="block text-slate-400 font-bold mb-1">Fecha</label>
+              <input type="date" id="parada-fecha" required class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white font-mono">
+            </div>
+
+            <div>
+              <label class="block text-slate-400 font-bold mb-1">Equipo</label>
+              <input type="text" id="parada-equipo" required list="equipos-datalist" placeholder="Escriba código o nombre..." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white font-mono">
+              <datalist id="equipos-datalist"></datalist>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-slate-400 font-bold mb-1">Inicio Parada</label>
+                <input type="time" id="parada-inicio" required class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white font-mono">
+              </div>
+              <div>
+                <label class="block text-slate-400 font-bold mb-1">Arranque</label>
+                <input type="time" id="parada-arranque" required class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white font-mono">
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-slate-400 font-bold mb-1">TM/h no procesadas</label>
+              <input type="number" step="any" id="parada-tmh" placeholder="0.00" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white font-mono">
+            </div>
+
+            <div>
+              <label class="block text-slate-400 font-bold mb-1">Tipo de Falla</label>
+              <select id="parada-tipo" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white font-bold">
+                <option value="MECÁNICA">MECÁNICA</option>
+                <option value="ELÉCTRICA">ELÉCTRICA</option>
+                <option value="INSTRUMENTACIÓN">INSTRUMENTACIÓN</option>
+                <option value="OPERACIONAL">OPERACIONAL</option>
+                <option value="EXTERNA">EXTERNA / ENERGÍA</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-slate-400 font-bold mb-1">Motivo / Causa Raíz</label>
+              <textarea id="parada-motivo" rows="2" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white" placeholder="Descripción de la falla..."></textarea>
+            </div>
+
+            <button type="submit" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-3 rounded-xl transition-all shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2 text-xs">
+              <i class="ph-bold ph-plus"></i>
+              <span>Guardar Parada</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- Paradas List -->
+        <div class="lg:col-span-2 bg-slate-900 border border-slate-800 p-6 rounded-3xl flex flex-col space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+            <h2 class="text-sm font-black text-white uppercase tracking-wider flex items-center gap-2">
+              <i class="ph-bold ph-list-dashes text-amber-400"></i>
+              <span>Historial de Paradas Registradas</span>
+            </h2>
+            <span id="paradas-badge" class="text-xs bg-slate-800 text-slate-300 px-2.5 py-0.5 rounded-full font-mono">0 registradas</span>
+          </div>
+
+          <div class="overflow-x-auto flex-1 rounded-2xl border border-slate-800">
+            <table class="w-full text-xs text-left" id="table-paradas">
+              <thead class="bg-slate-950 text-slate-300 font-bold border-b border-slate-800">
+                <tr>
+                  <th class="py-3 px-3">Fecha</th>
+                  <th class="py-3 px-3">Equipo</th>
+                  <th class="py-3 px-3">Horario</th>
+                  <th class="py-3 px-3 text-right">Horas</th>
+                  <th class="py-3 px-3 text-right">TM Perdidas</th>
+                  <th class="py-3 px-3">Motivo</th>
+                  <th class="py-3 px-3 text-center">Acción</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-paradas" class="divide-y divide-slate-800 bg-slate-900/40"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TAB 6: MANTENIMIENTO ================= -->
+    <section id="tab-mantto" class="tab-content space-y-6">
+      <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-xl space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+          <div>
+            <h2 class="text-xl font-black text-white flex items-center gap-2.5">
+              <i class="ph-bold ph-wrench text-amber-400 text-2xl"></i>
+              <span>Reporte de Mantenimiento & Trabajos</span>
+            </h2>
+            <p class="text-xs text-slate-400 mt-1">Órdenes de trabajo, avisos SAP e intervenciones.</p>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto rounded-2xl border border-slate-800">
+          <table class="w-full text-xs text-left" id="table-mantto">
+            <thead class="bg-slate-950 text-slate-300 font-bold border-b border-slate-800">
+              <tr>
+                <th class="py-3 px-3">Fecha</th>
+                <th class="py-3 px-3">Guardia</th>
+                <th class="py-3 px-3">Área / Equipo</th>
+                <th class="py-3 px-3">Aviso SAP</th>
+                <th class="py-3 px-3">Especialidad</th>
+                <th class="py-3 px-3">Trabajo Realizado</th>
+                <th class="py-3 px-3 text-right">Horas</th>
+                <th class="py-3 px-3">Estado</th>
+                <th class="py-3 px-3">Responsable</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-mantto" class="divide-y divide-slate-800 bg-slate-900/40"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TAB 7: BALANZAS ================= -->
+    <section id="tab-balanzas" class="tab-content space-y-6">
+      <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-xl space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+          <div>
+            <h2 class="text-xl font-black text-white flex items-center gap-2.5">
+              <i class="ph-bold ph-scales text-amber-400 text-2xl"></i>
+              <span>Control y Calibración de Balanzas</span>
+            </h2>
+            <p class="text-xs text-slate-400 mt-1">Calibración de Zero y Span con cálculo porcentual de error.</p>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto rounded-2xl border border-slate-800">
+          <table class="w-full text-xs text-left" id="table-balanzas">
+            <thead class="bg-slate-950 text-slate-300 font-bold border-b border-slate-800">
+              <tr>
+                <th class="py-3 px-3">Fecha</th>
+                <th class="py-3 px-3">Equipo</th>
+                <th class="py-3 px-3">Faja Transp</th>
+                <th class="py-3 px-3 text-right">Zero As Found</th>
+                <th class="py-3 px-3 text-right">Zero As Left</th>
+                <th class="py-3 px-3 text-right text-amber-400 font-bold">Error Zero (%)</th>
+                <th class="py-3 px-3 text-right">Span As Found</th>
+                <th class="py-3 px-3 text-right">Span As Left</th>
+                <th class="py-3 px-3 text-right text-amber-400 font-bold">Error Span (%)</th>
+                <th class="py-3 px-3">Observación</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-balanzas" class="divide-y divide-slate-800 bg-slate-900/40"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TAB 8: GESTIÓN DE USUARIOS ================= -->
+    <section id="tab-users" class="tab-content space-y-6">
+      <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-xl space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+          <div>
+            <h2 class="text-xl font-black text-white flex items-center gap-2.5">
+              <i class="ph-bold ph-users-three text-amber-400 text-2xl"></i>
+              <span>Gestión de Cuentas y Accesos de Operadores</span>
+            </h2>
+            <p class="text-xs text-slate-400 mt-1">Crea usuarios para cada operario con sus respectivos permisos.</p>
+          </div>
+          <button id="btn-new-user" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black px-5 py-2 rounded-xl transition-all shadow-lg shadow-amber-500/20 flex items-center gap-2 text-xs">
+            <i class="ph-bold ph-user-plus text-base"></i>
+            <span>Nuevo Usuario</span>
+          </button>
+        </div>
+
+        <div class="overflow-x-auto rounded-2xl border border-slate-800">
+          <table class="w-full text-xs text-left" id="table-users">
+            <thead class="bg-slate-950 text-slate-300 font-bold border-b border-slate-800">
+              <tr>
+                <th class="py-3 px-3">ID</th>
+                <th class="py-3 px-3">Usuario</th>
+                <th class="py-3 px-3">Nombre Completo</th>
+                <th class="py-3 px-3">Rol</th>
+                <th class="py-3 px-3">Área</th>
+                <th class="py-3 px-3">Estado</th>
+                <th class="py-3 px-3 text-center">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-users" class="divide-y divide-slate-800 bg-slate-900/40"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TAB 9: AUDITORÍA ================= -->
+    <section id="tab-auditoria" class="tab-content space-y-6">
+      <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-xl space-y-6">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-5">
+          <div>
+            <h2 class="text-xl font-black text-white flex items-center gap-2.5">
+              <i class="ph-bold ph-shield-check text-amber-400 text-2xl"></i>
+              <span>Auditoría & Trazabilidad Inmutable</span>
+            </h2>
+            <p class="text-xs text-slate-400 mt-1">Registro de quién modificó qué, cuándo y los valores previos.</p>
+          </div>
+          <button id="btn-refresh-auditoria" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all flex items-center gap-2">
+            <i class="ph-bold ph-arrows-clockwise"></i>
+            <span>Refrescar</span>
+          </button>
+        </div>
+
+        <div class="overflow-x-auto rounded-2xl border border-slate-800">
+          <table class="w-full text-xs text-left" id="table-auditoria">
+            <thead class="bg-slate-950 text-slate-300 font-bold border-b border-slate-800">
+              <tr>
+                <th class="py-3 px-3">Fecha y Hora</th>
+                <th class="py-3 px-3">Usuario</th>
+                <th class="py-3 px-3">Tabla</th>
+                <th class="py-3 px-3">Acción</th>
+                <th class="py-3 px-3">Valor Anterior</th>
+                <th class="py-3 px-3">Valor Nuevo</th>
+                <th class="py-3 px-3">Motivo</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-auditoria" class="divide-y divide-slate-800 font-mono text-[11px] bg-slate-900/40"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TAB 10: EXPORTAR A EXCEL ================= -->
+    <section id="tab-exportar" class="tab-content space-y-6">
+      <div class="bg-slate-900 border border-slate-800 p-8 rounded-3xl max-w-2xl mx-auto text-center space-y-6 shadow-2xl">
+        <div class="w-16 h-16 rounded-2xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center mx-auto text-3xl border border-emerald-500/30">
+          <i class="ph-bold ph-file-xls"></i>
+        </div>
+        <div>
+          <h2 class="text-2xl font-black text-white">Exportación al Formato Excel Maestro</h2>
+          <p class="text-xs text-slate-400 mt-2 max-w-md mx-auto">
+            Descarga en un clic el archivo <span class="font-mono text-emerald-400 font-bold">.xlsx</span> con las 10 hojas exactas formateadas profesionalmente.
+          </p>
+        </div>
+
+        <button type="button" onclick="downloadExcelReport(event)" class="inline-flex items-center gap-2.5 bg-gradient-to-r from-emerald-500 to-emerald-400 hover:from-emerald-400 hover:to-emerald-300 text-slate-950 font-black px-8 py-4 rounded-2xl transition-all shadow-xl shadow-emerald-500/25 text-sm cursor-pointer active:scale-95">
+          <i class="ph-bold ph-file-xls text-xl"></i>
+          <span>Descargar Archivo Excel (.xlsx)</span>
+        </button>
+
+        <div class="p-4 bg-slate-950 border border-slate-800 rounded-2xl text-left text-xs text-slate-400 space-y-1">
+          <div class="font-bold text-slate-300">Copia local continua en tu disco:</div>
+          <div class="font-mono text-emerald-300 text-[11px] break-all">E:\SHP PROJECT BASE DE DATOS\exports\DATOS_CONSOLIDADOS_PLANTA.xlsx</div>
+          <p class="text-[11px] text-slate-500 mt-1">Este archivo se mantiene actualizado automáticamente en segundo plano en tu computadora.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- USER MODAL (CREAR USUARIO) -->
+  <div id="user-modal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div class="bg-slate-900 border border-slate-700 p-6 rounded-3xl shadow-2xl max-w-md w-full">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
+        <h3 class="text-base font-black text-white flex items-center gap-2">
+          <i class="ph-bold ph-user-plus text-amber-400"></i>
+          <span>Nuevo Usuario</span>
+        </h3>
+        <button id="btn-close-user-modal" class="text-slate-400 hover:text-white">
+          <i class="ph-bold ph-x text-lg"></i>
+        </button>
+      </div>
+
+      <form id="form-create-user" class="space-y-3.5 text-xs">
+        <div>
+          <label class="block text-slate-400 font-bold mb-1">Nombre de Usuario (Login)</label>
+          <input type="text" id="new-user-username" required class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white font-mono" placeholder="ej. juan.perez">
+        </div>
+        <div>
+          <label class="block text-slate-400 font-bold mb-1">Nombre Completo</label>
+          <input type="text" id="new-user-fullname" required class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white" placeholder="ej. Juan Pérez Mendoza">
+        </div>
+        <div>
+          <label class="block text-slate-400 font-bold mb-1">Contraseña</label>
+          <input type="password" id="new-user-password" required class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white font-mono" placeholder="••••••••">
+        </div>
+        <div>
+          <label class="block text-slate-400 font-bold mb-1">Rol en el Sistema</label>
+          <select id="new-user-role" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white font-bold">
+            <option value="operador_rdo">Operador RDO (Trituración / Filtros)</option>
+            <option value="operador_planta">Operador Planta (Controles)</option>
+            <option value="supervisor">Supervisor de Guardia</option>
+            <option value="mantto">Técnico Mantenimiento</option>
+            <option value="admin">Administrador General</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-slate-400 font-bold mb-1">Área Asignada</label>
+          <input type="text" id="new-user-area" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white" placeholder="ej. TRITURACIÓN / FILTROS">
+        </div>
+
+        <button type="submit" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-3 rounded-xl transition-all shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2 mt-4 text-xs">
+          <span>Crear Usuario</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
