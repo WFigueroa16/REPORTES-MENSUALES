@@ -1,0 +1,253 @@
+{
+  "name": "Monitoreo Automatizado de Molinos - WhatsApp a Google Sheets",
+  "flow": [
+    {
+      "id": 1,
+      "module": "gateway:CustomWebHook",
+      "version": 1,
+      "parameters": {
+        "hook": null,
+        "maxResults": 1
+      },
+      "mapper": {},
+      "metadata": {
+        "designer": {
+          "x": -600,
+          "y": 0,
+          "name": "1. Webhook Green API (WhatsApp Ingest)"
+        },
+        "restore": {},
+        "parameters": [
+          {
+            "name": "hook",
+            "type": "hook:gateway-webhook",
+            "label": "Webhook",
+            "required": true
+          }
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "module": "builtin:BasicFilter",
+      "version": 1,
+      "filter": {
+        "name": "Filtrar: Solo imágenes de grupo de molinos",
+        "conditions": [
+          [
+            {
+              "a": "{{1.typeWebhook}}",
+              "o": "text:equal",
+              "b": "incomingMessageReceived"
+            },
+            {
+              "a": "{{1.messageData.typeMessage}}",
+              "o": "text:equal",
+              "b": "imageMessage"
+            }
+          ]
+        ]
+      },
+      "metadata": {
+        "designer": {
+          "x": -380,
+          "y": 0
+        }
+      }
+    },
+    {
+      "id": 3,
+      "module": "http:ActionGetFile",
+      "version": 1,
+      "parameters": {},
+      "mapper": {
+        "url": "{{1.messageData.fileMessageData.downloadUrl}}",
+        "headers": []
+      },
+      "metadata": {
+        "designer": {
+          "x": -200,
+          "y": 0,
+          "name": "2. Descargar Imagen del HMI"
+        }
+      }
+    },
+    {
+      "id": 4,
+      "module": "http:ActionSendArbitraryRequest",
+      "version": 3,
+      "parameters": {},
+      "mapper": {
+        "url": "https://api.anthropic.com/v1/messages",
+        "method": "POST",
+        "headers": [
+          {
+            "name": "x-api-key",
+            "value": "{{var.anthropic_api_key}}"
+          },
+          {
+            "name": "anthropic-version",
+            "value": "2023-06-01"
+          },
+          {
+            "name": "content-type",
+            "value": "application/json"
+          }
+        ],
+        "body": "{\n  \"model\": \"claude-3-5-sonnet-20241022\",\n  \"max_tokens\": 2500,\n  \"system\": \"Eres un asistente industrial experto en telemetría de molienda minera. Analiza la fotografía del tablero HMI Siemens (SIMATIC) y extrae las variables operativas en JSON estricto.\\n\\nREGLAS OBLIGATORIAS:\\n1. Extrae 'codigo_molino' exacto del banner (ej: '032-208', '032-207', '032-081').\\n2. Extrae 'timestamp_pantalla' visible en pantalla (formato YYYY-MM-DD HH:mm:ss).\\n3. Convierte comas a puntos decimales: '42,9' -> 42.9. NUNCA omitas el decimal.\\n4. Extrae lista 'sensores' con: acronimo, descripcion, valor_actual, unidad, alarma, falla, sentido ('MAX' para temp/vibracion, 'MIN' para presiones), condicion ('NORMAL', 'PREAVISO', 'ALARMA', 'FALLA').\\n5. Extrae objeto 'estados_discretos' (ON/OFF, Listo, Desactivado).\\n6. Responde ÚNICAMENTE el bloque JSON sin explicaciones adicionales.\",\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": [\n        {\n          \"type\": \"image\",\n          \"source\": {\n            \"type\": \"base64\",\n            \"media_type\": \"image/jpeg\",\n            \"data\": \"{{base64(3.data)}}\"\n          }\n        },\n        {\n          \"type\": \"text\",\n          \"text\": \"Extrae la telemetría de este tablero HMI Siemens en JSON estricto.\"\n        }\n      ]\n    }\n  ]\n}",
+        "parseResponse": true
+      },
+      "metadata": {
+        "designer": {
+          "x": 40,
+          "y": 0,
+          "name": "3. Claude 3.5 Sonnet Vision (OCR Inteligente)"
+        }
+      }
+    },
+    {
+      "id": 5,
+      "module": "json:ParseJSON",
+      "version": 1,
+      "parameters": {
+        "type": ""
+      },
+      "mapper": {
+        "json": "{{replace(replace(4.data.content[1].text; \"```json\"; \"\"); \"```\"; \"\")}}"
+      },
+      "metadata": {
+        "designer": {
+          "x": 260,
+          "y": 0,
+          "name": "4. Parsear JSON de Telemetría"
+        }
+      }
+    },
+    {
+      "id": 6,
+      "module": "builtin:Router",
+      "version": 1,
+      "parameters": {},
+      "mapper": {},
+      "metadata": {
+        "designer": {
+          "x": 460,
+          "y": 0,
+          "name": "5. Router: Calidad de Lectura"
+        }
+      }
+    },
+    {
+      "id": 7,
+      "module": "builtin:BasicFeeder",
+      "version": 1,
+      "parameters": {},
+      "mapper": {
+        "array": "{{5.sensores}}"
+      },
+      "metadata": {
+        "designer": {
+          "x": 680,
+          "y": -140,
+          "name": "6a. Iterador de Sensores"
+        }
+      }
+    },
+    {
+      "id": 8,
+      "module": "google-sheets:addRow",
+      "version": 2,
+      "parameters": {
+        "spreadsheetId": "{{var.google_spreadsheet_id}}",
+        "sheetId": "Lecturas"
+      },
+      "mapper": {
+        "values": [
+          "{{5.metadatos.timestamp_pantalla}}",
+          "{{now}}",
+          "{{5.metadatos.codigo_molino}}",
+          "{{5.metadatos.tipo_molino}}",
+          "{{7.acronimo}}",
+          "{{7.descripcion}}",
+          "{{7.valor_actual}}",
+          "{{7.unidad}}",
+          "{{7.alarma}}",
+          "{{7.falla}}",
+          "{{7.sentido}}",
+          "{{7.condicion}}",
+          "{{5.estados_discretos.motor_principal_trabajando}}",
+          "{{5.metadatos.calidad_lectura}}",
+          "{{1.messageData.fileMessageData.downloadUrl}}"
+        ]
+      },
+      "metadata": {
+        "designer": {
+          "x": 900,
+          "y": -140,
+          "name": "7a. Guardar en Hoja 'Lecturas'"
+        }
+      }
+    },
+    {
+      "id": 9,
+      "module": "google-sheets:addRow",
+      "version": 2,
+      "parameters": {
+        "spreadsheetId": "{{var.google_spreadsheet_id}}",
+        "sheetId": "Revision"
+      },
+      "mapper": {
+        "values": [
+          "{{now}}",
+          "{{5.metadatos.codigo_molino}}",
+          "Lectura dudosa o código desconocido",
+          "{{5.metadatos.observaciones_ia}}",
+          "{{1.messageData.fileMessageData.downloadUrl}}"
+        ]
+      },
+      "metadata": {
+        "designer": {
+          "x": 680,
+          "y": 140,
+          "name": "6b. Enviar a Hoja 'Revision' (Anomalías)"
+        }
+      }
+    },
+    {
+      "id": 10,
+      "module": "http:ActionSendArbitraryRequest",
+      "version": 3,
+      "parameters": {},
+      "mapper": {
+        "url": "https://api.green-api.com/waInstance{{var.green_instance_id}}/sendMessage/{{var.green_api_token}}",
+        "method": "POST",
+        "headers": [
+          {
+            "name": "content-type",
+            "value": "application/json"
+          }
+        ],
+        "body": "{\n  \"chatId\": \"{{1.senderData.chatId}}\",\n  \"message\": \"🚨 *ALERTA TELEMETRÍA MOLINOS* 🚨\\n\\nMolino: *{{5.metadatos.codigo_molino}}*\\nHora Tablero: {{5.metadatos.timestamp_pantalla}}\\nSensor en Falla: *{{7.acronimo}}* ({{7.valor_actual}} {{7.unidad}})\\nUmbral de Falla: {{7.falla}} {{7.unidad}}\\n\\nPor favor verificar en campo inmediatamente.\"\n}"
+      },
+      "metadata": {
+        "designer": {
+          "x": 1120,
+          "y": -140,
+          "name": "8a. Alerta Inmediata WhatsApp (Si Falla)"
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "version": 1,
+    "scenario": {
+      "roundtrips": 1,
+      "maxErrors": 3,
+      "autoCommit": true,
+      "autoCommitTriggerLast": true,
+      "sequential": false,
+      "confidential": false,
+      "freshVariables": false
+    }
+  }
+}
