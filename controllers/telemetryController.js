@@ -178,6 +178,23 @@ class TelemetryController {
       return res.status(500).json({ error: err.message });
     }
   }
+
+  /**
+   * Endpoint para despachar el reporte por correo vía Gmail
+   */
+  async enviarReporteCorreo(req, res) {
+    try {
+      const emailService = require('../services/emailService');
+      const destinatarios = req.body.destinatarios || process.env.REPORT_EMAILS || 'supervisores.planta@ejemplo.com';
+      const resumen = reportService.generarResumenTurno();
+
+      const resultadoEnvio = await emailService.enviarReporteTurnoGmail(destinatarios, resumen);
+      return res.json({ success: true, resultado: resultadoEnvio });
+    } catch (err) {
+      console.error('[Enviar Correo] Error:', err);
+      return res.status(500).json({ error: err.message });
+    }
+  }
 }
 
 module.exports = new TelemetryController();

@@ -742,6 +742,7 @@ app.post('/api/telemetria/webhook/greenapi', (req, res) => telemetryController.h
 app.post('/api/telemetria/subir-foto', (req, res) => telemetryController.procesarFotoManual(req, res));
 app.get('/api/telemetria/dashboard', (req, res) => telemetryController.obtenerDashboard(req, res));
 app.get('/api/telemetria/reporte-turno', (req, res) => telemetryController.obtenerReporteTurno(req, res));
+app.post('/api/telemetria/enviar-correo-reporte', (req, res) => telemetryController.enviarReporteCorreo(req, res));
 
 // Fallback to index.html for SPA routing
 app.use((req, res) => {

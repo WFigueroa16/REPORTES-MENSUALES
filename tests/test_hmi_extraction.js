@@ -27,6 +27,9 @@ async function runTests() {
     }
   }
 
+  // Limpiar capturas de ejecuciones previas de tests
+  dbService.db.exec('DELETE FROM telemetria_lecturas; DELETE FROM telemetria_capturas; DELETE FROM telemetria_revision;');
+
   // 1. Cargar catálogo desde Excel
   console.log('1. Verificando Carga de Catálogo desde Excel...');
   await millCatalog.cargarCatalogoDesdeExcel();
@@ -107,14 +110,24 @@ async function runTests() {
     assert(idCaptura3 > 0, `Captura de 032-206 guardada con ID: ${idCaptura3}`);
   }
 
-  // 5. Verificar Generación de Reportes de Turno
-  console.log('\n5. Verificando Generador de Reporte y Mensajería WhatsApp...');
+  // 5. Verificar Generación de Reportes de Turno y Correo Gmail
+  console.log('\n5. Verificando Generador de Reporte y Mensajería WhatsApp/Gmail...');
   const reporte = reportService.generarResumenTurno();
   assert(reporte.total_molinos === 19, `Total de molinos evaluados en reporte: ${reporte.total_molinos}`);
   assert(reporte.conteo_estados.preaviso >= 1, `Reporte detectó al menos 1 molino en preaviso (032-208)`);
 
   const msgWA = reportService.formatearMensajeWhatsApp(reporte);
   assert(msgWA.includes('REPORTE DE MOLIENDA') && msgWA.includes('032-208'), 'Mensaje formateado para WhatsApp contiene cabecera y alertas esperadas');
+
+  // 6. Verificar Servicio de Correo Gmail
+  console.log('\n6. Verificando Servicio de Correo Gmail (Plantilla HTML y Transporte)...');
+  const emailService = require('../services/emailService');
+  const htmlCorreo = emailService.generarHtmlReporte(reporte);
+  assert(htmlCorreo.includes('PLANTA BENEFICIO ZA') && htmlCorreo.includes('032-208'), 'Plantilla HTML de correo contiene título corporativo y datos de molinos');
+  assert(htmlCorreo.includes('PREAVISO'), 'Plantilla HTML incluye etiquetado de preaviso');
+
+  const envio = await emailService.enviarReporteTurnoGmail('supervisores.planta@ejemplo.com', reporte);
+  assert(envio.asunto && envio.destinatarios === 'supervisores.planta@ejemplo.com', 'Servicio de email procesó correctamente el destinatario y asunto');
 
   console.log('\n--------------------------------------------------------');
   console.log(`📊 RESULTADO DE LA SUITE: ${passed} / ${total} PRUEBAS EXITOSAS (${Math.round((passed/total)*100)}%)`);

@@ -217,6 +217,7 @@
     <div style="display: flex; gap: 12px;">
       <button class="btn" onclick="cargarDashboard()">🔄 Actualizar</button>
       <button class="btn" style="background: #10b981;" onclick="verReporteTurno()">📋 Reporte Turno</button>
+      <button class="btn" style="background: #ea4335; color: #fff;" onclick="enviarPorGmail()">📧 Enviar Gmail</button>
     </div>
   </header>
 
@@ -385,6 +386,27 @@
         alert(json.textoWhatsApp);
       } catch (err) {
         alert('Error obteniendo reporte de turno');
+      }
+    }
+
+    async function enviarPorGmail() {
+      const email = prompt('Ingrese el correo destinatario (o varios separados por coma):', 'supervisores.planta@ejemplo.com');
+      if (!email) return;
+
+      try {
+        const res = await fetch('/api/telemetria/enviar-correo-reporte', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ destinatarios: email })
+        });
+        const json = await res.json();
+        if (json.success) {
+          alert('✅ Reporte despachado exitosamente.\n' + (json.resultado.simulado ? 'ℹ️ ' + json.resultado.mensaje : 'ID Envío: ' + json.resultado.messageId));
+        } else {
+          alert('❌ Error: ' + json.error);
+        }
+      } catch (err) {
+        alert('Error enviando correo: ' + err.message);
       }
     }
 

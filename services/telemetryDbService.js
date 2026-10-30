@@ -139,9 +139,15 @@ module.exports = {
     const insertCaptura = db.prepare(`
       INSERT INTO telemetria_capturas (codigo_molino, timestamp_hmi, hash_imagen, url_imagen, estado_motor, calidad_ocr, observaciones)
       VALUES (?, ?, ?, ?, ?, ?, ?)
+      ON CONFLICT(codigo_molino, timestamp_hmi) DO UPDATE SET
+        hash_imagen = excluded.hash_imagen,
+        url_imagen = excluded.url_imagen,
+        estado_motor = excluded.estado_motor,
+        calidad_ocr = excluded.calidad_ocr,
+        observaciones = excluded.observaciones
     `);
 
-    const res = insertCaptura.run(
+    insertCaptura.run(
       captura.codigo_molino,
       captura.timestamp_hmi,
       captura.hash_imagen || null,
@@ -151,7 +157,11 @@ module.exports = {
       captura.observaciones || ''
     );
 
-    const capturaId = Number(res.lastInsertRowid);
+    const capturaRow = db.prepare('SELECT id FROM telemetria_capturas WHERE codigo_molino = ? AND timestamp_hmi = ?').get(captura.codigo_molino, captura.timestamp_hmi);
+    const capturaId = Number(capturaRow.id);
+
+    // Limpiar lecturas anteriores si se está actualizando la captura
+    db.prepare('DELETE FROM telemetria_lecturas WHERE captura_id = ?').run(capturaId);
 
     const insertLectura = db.prepare(`
       INSERT INTO telemetria_lecturas 
