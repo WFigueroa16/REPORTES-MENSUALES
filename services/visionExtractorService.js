@@ -140,6 +140,7 @@ class VisionExtractorService {
    * Parser inteligente de referencia para las muestras visuales del HMI Siemens en Planta ZA
    */
   _extractorLocalReferencia(buffer, nombreArchivo, hash) {
+    const size = buffer ? buffer.length : 0;
     const nameLower = (nombreArchivo || '').toLowerCase();
 
     // Detección por nombre de archivo de WhatsApp
