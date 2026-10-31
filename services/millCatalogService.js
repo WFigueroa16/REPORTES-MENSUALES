@@ -31,33 +31,33 @@ const MOLINOS_MAP = {
   '032-207': { nombre: 'BOLAS 7', tipo: 'Bolas', numero: 7, codigo_hmi: '032-207' },
   '032-208': { nombre: 'BOLAS 8', tipo: 'Bolas', numero: 8, codigo_hmi: '032-208' },
   '032-209': { nombre: 'BOLAS 9', tipo: 'Bolas', numero: 9, codigo_hmi: '032-209' },
-  '032-2010': { nombre: 'BOLAS 10', tipo: 'Bolas', numero: 10, codigo_hmi: '032-2010' }
+  '032-210': { nombre: 'BOLAS 10', tipo: 'Bolas', numero: 10, codigo_hmi: '032-210' }
 };
 
 /**
  * Normaliza cualquier variante de código o nombre de molino a su formato canónico '032-XXX'
  * Ejemplos: '201', 'MOLINO 201', 'Molino de bolas 201', 'Bolas 1', '032-201' -> '032-201'
- *           '2010', '032-210', 'Bolas 10' -> '032-2010'
+ *           '210', '2010', '032-210', '032-2010', 'Bolas 10' -> '032-210'
  *           '81', '081', 'Barras 1' -> '032-081'
  */
 function normalizarCodigoMolino(texto) {
   if (!texto) return null;
   const str = String(texto).toUpperCase().trim();
 
-  // 1. Formato canónico exacto o contenido ('032-201', '032-081', '032-2010')
-  const matchCanonico = str.match(/032-(2010|20[1-9]|08[1-9])/);
+  // 1. Formato canónico exacto o contenido ('032-201', '032-081', '032-210')
+  const matchCanonico = str.match(/032-(210|20[1-9]|08[1-9])/);
   if (matchCanonico) return matchCanonico[0];
 
-  // 2. Variantes de Bolas 10
-  if (str.includes('032-210') || str.includes('BOLAS 10') || str.includes('BOLA 10') || str.includes('2010') || str.includes('B-10')) {
-    return '032-2010';
+  // 2. Variantes de Bolas 10 ('032-210', '032-2010', 'BOLAS 10', 'BOLA 10', '2010', '210', 'B-10')
+  if (str.includes('032-210') || str.includes('032-2010') || str.includes('BOLAS 10') || str.includes('BOLA 10') || str.includes('2010') || str.includes('B-10')) {
+    return '032-210';
   }
 
-  // 3. Números directos de 3 o 4 dígitos de bolas: '201'..'209', '2010', '210'
+  // 3. Números directos de 3 o 4 dígitos de bolas: '201'..'209', '210', '2010'
   const matchNumBolas = str.match(/\b(20[1-9]|2010|210)\b/);
   if (matchNumBolas) {
     const val = matchNumBolas[1];
-    return (val === '2010' || val === '210') ? '032-2010' : `032-${val}`;
+    return (val === '2010' || val === '210') ? '032-210' : `032-${val}`;
   }
 
   // 4. Números directos de barras: '081'..'089', u '81'..'89'
@@ -66,11 +66,11 @@ function normalizarCodigoMolino(texto) {
     return `032-08${matchNumBarras[1]}`;
   }
 
-  // 5. Patrones "Bolas X" / "Molino de bolas X" (1 a 9)
+  // 5. Patrones "Bolas X" / "Molino de bolas X" (1 a 10)
   const matchBolas = str.match(/(?:BOLA[S]?|MOLINO DE BOLA[S]?)\s*#?\s*([1-9]|10)\b/);
   if (matchBolas) {
     const num = parseInt(matchBolas[1], 10);
-    return num === 10 ? '032-2010' : `032-20${num}`;
+    return num === 10 ? '032-210' : `032-20${num}`;
   }
 
   // 6. Patrones "Barras X" / "Molino de barras X" (1 a 9)
@@ -168,7 +168,7 @@ async function cargarCatalogoDesdeExcel() {
       if (tipoNormal.includes('barra')) {
         codigoMolino = `032-08${numMolino}`;
       } else {
-        codigoMolino = numMolino === 10 ? '032-2010' : `032-20${numMolino}`;
+        codigoMolino = numMolino === 10 ? '032-210' : `032-20${numMolino}`;
       }
 
       const acronimo = normalizarAcronimo(sensorNombre);

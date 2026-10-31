@@ -31,7 +31,9 @@ async function testMolino201() {
   assert(millCatalog.normalizarCodigoMolino('Molino de bolas 201') === '032-201', "Texto 'Molino de bolas 201' normalizado a '032-201'");
   assert(millCatalog.normalizarCodigoMolino('Bolas 1') === '032-201', "Texto 'Bolas 1' normalizado a '032-201'");
   assert(millCatalog.normalizarCodigoMolino('032-201') === '032-201', "Código '032-201' preservado");
-  assert(millCatalog.normalizarCodigoMolino('2010') === '032-2010', "Código '2010' normalizado a '032-2010'");
+  assert(millCatalog.normalizarCodigoMolino('2010') === '032-210', "Código '2010' normalizado a '032-210'");
+  assert(millCatalog.normalizarCodigoMolino('210') === '032-210', "Código '210' normalizado a '032-210'");
+  assert(millCatalog.normalizarCodigoMolino('032-210') === '032-210', "Código '032-210' preservado");
   assert(millCatalog.normalizarCodigoMolino('81') === '032-081', "Código '81' normalizado a '032-081'");
 
   // 2. Información en Catálogo
