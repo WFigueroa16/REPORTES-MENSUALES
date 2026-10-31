@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SHOUGANG HIERRO PERÚ S.A.A. - Monitoreo de Molinos HMI Siemens</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
@@ -35,9 +35,9 @@
       --header-bg: #ffffff;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif; font-feature-settings: 'tnum' on, 'lnum' on; }
     body {
-      font-family: 'Inter', sans-serif;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       background-color: var(--bg-dark);
       color: var(--text-main);
       padding: 20px 24px 60px 24px;
@@ -109,7 +109,7 @@
       display: inline-flex;
       align-items: center;
       gap: 5px;
-      font-family: monospace;
+      font-family: 'Plus Jakarta Sans', sans-serif;
     }
 
     .dot-live {
@@ -135,7 +135,7 @@
       padding: 2px 8px;
       font-size: 0.72rem;
       font-weight: 700;
-      font-family: monospace;
+      font-family: 'Plus Jakarta Sans', sans-serif;
     }
 
     .header-title p {
@@ -152,7 +152,7 @@
     }
 
     .btn {
-      font-family: 'Inter', sans-serif;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: 0.82rem;
       font-weight: 600;
       padding: 8px 14px;
@@ -212,7 +212,7 @@
     .scada-label {
       font-size: 0.72rem;
       color: var(--text-muted);
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       letter-spacing: 0.6px;
     }
 
@@ -293,7 +293,7 @@
     .stat-card-val {
       font-size: 1.9rem;
       font-weight: 800;
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       color: var(--text-main);
     }
 
@@ -306,7 +306,7 @@
       font-size: 0.72rem;
       color: var(--text-muted);
       margin-top: 6px;
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'Plus Jakarta Sans', sans-serif;
     }
 
     /* Barra de Búsqueda y Filtros de Tarjetas */
@@ -403,7 +403,7 @@
     }
 
     .molino-codigo {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       font-weight: 700;
       font-size: 1.05rem;
       color: var(--text-main);
@@ -421,7 +421,7 @@
       padding: 2px 8px;
       border-radius: 6px;
       text-transform: uppercase;
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'Plus Jakarta Sans', sans-serif;
     }
 
     .badge-NORMAL { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid var(--success); }
@@ -437,7 +437,7 @@
       display: flex;
       align-items: center;
       gap: 6px;
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'Plus Jakarta Sans', sans-serif;
     }
 
     .sensor-item-preview {
@@ -445,7 +445,7 @@
       justify-content: space-between;
       padding: 3px 0;
       border-top: 1px dashed var(--card-border);
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: 0.75rem;
     }
 
@@ -454,7 +454,7 @@
       text-align: center;
       color: var(--text-muted);
       font-size: 0.75rem;
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'Plus Jakarta Sans', sans-serif;
     }
 
     /* Banner Alerta Inferior */
@@ -555,7 +555,7 @@
     th {
       color: var(--text-muted);
       font-weight: 600;
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: 0.72rem;
       text-transform: uppercase;
     }
@@ -674,7 +674,7 @@
         <strong style="color: #c084fc;">🧪 Modo Manual (Pruebas):</strong> Puedes usar el botón <em>"📷 Cargar Foto HMI"</em> para probar cualquier imagen de tablero desde tu computadora.
       </div>
     </div>
-    <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; color: var(--success); font-family: monospace; font-size: 0.78rem;">
+    <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; color: var(--success); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.78rem;">
       <span class="dot-live"></span> AUTO_OCR: ONLINE ⚙️
     </div>
   </div>
@@ -758,7 +758,7 @@
         <div>
           <div style="font-size: 0.85rem; font-weight: 700; display: flex; align-items: center; gap: 8px;">
             Última Captura Procesada: WhatsApp Bot Green API
-            <span style="background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.4); border-radius: 4px; padding: 1px 6px; font-size: 0.72rem; font-family: monospace;" id="banner-tag-foto">IMG_HMI_LIVE.JPG</span>
+            <span style="background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.4); border-radius: 4px; padding: 1px 6px; font-size: 0.72rem; font-family: 'Plus Jakarta Sans', sans-serif;" id="banner-tag-foto">IMG_HMI_LIVE.JPG</span>
           </div>
           <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 3px;" id="banner-alerta-desc">
             Monitoreo en vivo de los 19 molinos en tiempo real. Todas las señales operativas registradas.
@@ -887,7 +887,7 @@
           <span>📑</span> Detalle de Última Captura Automática - Molienda HMI ZA
         </h3>
         <div style="display: flex; align-items: center; gap: 12px;">
-          <span style="font-size: 0.78rem; color: var(--text-muted); font-family: monospace;" id="txt-sync-tiempo">Sincronizado: Reciente</span>
+          <span style="font-size: 0.78rem; color: var(--text-muted); font-family: 'Plus Jakarta Sans', sans-serif;" id="txt-sync-tiempo">Sincronizado: Reciente</span>
           <button class="btn btn-outline" style="font-size: 0.75rem; padding: 5px 12px;" onclick="exportarCSV()">⬇ Exportar CSV</button>
         </div>
       </div>
@@ -919,7 +919,7 @@
     <div>
       <strong style="color: var(--text-main);">SHOUGANG HIERRO PERÚ S.A.A.</strong> © 2024 • Subgerencia de Mantenimiento y Beneficio ZA
     </div>
-    <div style="display: flex; gap: 16px; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; flex-wrap: wrap;">
+    <div style="display: flex; gap: 16px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.7rem; flex-wrap: wrap;">
       <span>TELEMETRÍA CRÍTICA TIEMPO REAL</span>
       <span>•</span>
       <span>PROTOCOLO SIEMENS S7-1500</span>
@@ -1013,7 +1013,7 @@
       </div>
 
       <!-- Log de resultados -->
-      <div id="upload-log" style="display: none; max-height: 140px; overflow-y: auto; background: #080d1a; border: 1px solid #334155; border-radius: 8px; padding: 10px; font-size: 0.75rem; font-family: 'JetBrains Mono', monospace; margin-bottom: 16px;">
+      <div id="upload-log" style="display: none; max-height: 140px; overflow-y: auto; background: #080d1a; border: 1px solid #334155; border-radius: 8px; padding: 10px; font-size: 0.75rem; font-family: 'Plus Jakarta Sans', sans-serif; margin-bottom: 16px;">
       </div>
 
       <div style="display: flex; justify-content: flex-end; gap: 10px;">
@@ -1447,7 +1447,7 @@
       if (typeof Chart === 'undefined') return;
 
       const isLight = document.body.classList.contains('light-mode');
-      const chartFont = { family: 'Inter', size: 11 };
+      const chartFont = { family: 'Plus Jakarta Sans', size: 11 };
       const gridColor = isLight ? 'rgba(203, 213, 225, 0.6)' : 'rgba(51, 65, 85, 0.35)';
       const tickColor = isLight ? '#64748b' : '#94a3b8';
 
@@ -1693,12 +1693,12 @@
         tr.innerHTML = `
           <td><strong>${cat.cod}</strong></td>
           <td>${cat.tipo}</td>
-          <td style="text-align: center;"><span style="color: ${colorSt}; font-weight: 700; font-family: monospace;">${st}</span></td>
-          <td style="text-align: center; font-family: monospace;">${tte !== null ? tte + ' °C' : '--'}</td>
-          <td style="text-align: center; font-family: monospace;">${tts !== null ? tts + ' °C' + (tts > 60 ? ' ⚠' : '') : '--'}</td>
-          <td style="text-align: center; font-family: monospace;">${vib !== null ? vib + ' mm/s' : '--'}</td>
-          <td style="text-align: center; font-family: monospace;">${rap !== null ? rap + ' psi' : '--'}</td>
-          <td style="text-align: center; font-family: monospace;">${cap !== null ? cap + ' psi' : '--'}</td>
+          <td style="text-align: center;"><span style="color: ${colorSt}; font-weight: 700; font-family: 'Plus Jakarta Sans', sans-serif;">${st}</span></td>
+          <td style="text-align: center; font-family: 'Plus Jakarta Sans', sans-serif;">${tte !== null ? tte + ' °C' : '--'}</td>
+          <td style="text-align: center; font-family: 'Plus Jakarta Sans', sans-serif;">${tts !== null ? tts + ' °C' + (tts > 60 ? ' ⚠' : '') : '--'}</td>
+          <td style="text-align: center; font-family: 'Plus Jakarta Sans', sans-serif;">${vib !== null ? vib + ' mm/s' : '--'}</td>
+          <td style="text-align: center; font-family: 'Plus Jakarta Sans', sans-serif;">${rap !== null ? rap + ' psi' : '--'}</td>
+          <td style="text-align: center; font-family: 'Plus Jakarta Sans', sans-serif;">${cap !== null ? cap + ' psi' : '--'}</td>
           <td style="font-size: 0.76rem; color: ${tieneCap ? 'var(--text-main)' : 'var(--text-muted)'};">${diagnostico}</td>
         `;
         tbody.appendChild(tr);
@@ -1992,7 +1992,7 @@
             uploadLog.innerHTML += `
               <div style="color: #22c55e; margin-bottom: 6px; padding: 6px; background: rgba(34, 197, 94, 0.08); border-radius: 6px;">
                 [${num}/${total}] ✅ <strong>${json.molino}:</strong> ${json.sensores_registrados} sensores extraídos (${json.timestamp_hmi})<br>
-                <span style="font-size: 0.72rem; color: #cbd5e1; font-family: monospace;">📊 ${json.sensores_resumen || ''}</span>
+                <span style="font-size: 0.72rem; color: #cbd5e1; font-family: 'Plus Jakarta Sans', sans-serif;">📊 ${json.sensores_resumen || ''}</span>
               </div>
             `;
           } else if (json.status === 'duplicado') {
