@@ -3,12 +3,23 @@ const dbService = require('./telemetryDbService');
 
 class EmailService {
   /**
-   * Crea el transporte de correo según variables de entorno o modo de simulación
+   * Crea el transporte de correo según variables de entorno (Gmail o SMTP corporativo)
    */
   obtenerTransporter() {
-    const user = process.env.GMAIL_USER;
-    const pass = process.env.GMAIL_APP_PASSWORD;
+    const user = process.env.GMAIL_USER || process.env.SMTP_USER;
+    const pass = process.env.GMAIL_APP_PASSWORD || process.env.SMTP_PASS || process.env.SMTP_PASSWORD;
 
+    // 1. Soporte para servidor SMTP corporativo / Office365 / Outlook
+    if (process.env.SMTP_HOST && user && pass) {
+      return nodemailer.createTransport({
+        host: process.env.SMTP_HOST,
+        port: parseInt(process.env.SMTP_PORT || '587', 10),
+        secure: process.env.SMTP_SECURE === 'true' || process.env.SMTP_PORT === '465',
+        auth: { user, pass }
+      });
+    }
+
+    // 2. Soporte para Gmail con contraseña de aplicación
     if (user && pass) {
       return nodemailer.createTransport({
         service: 'gmail',
@@ -175,8 +186,9 @@ class EmailService {
       };
     }
 
+    const remitente = process.env.GMAIL_USER || process.env.SMTP_USER || 'telemetria@planta-za.com';
     const info = await transporter.sendMail({
-      from: `"Telemetría Planta ZA" <${process.env.GMAIL_USER}>`,
+      from: `"Telemetría Planta ZA" <${remitente}>`,
       to: destinatarios,
       subject: asunto,
       html

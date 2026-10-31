@@ -2,6 +2,28 @@ const express = require('express');
 const path = require('node:path');
 const fs = require('node:fs');
 const crypto = require('node:crypto');
+
+// Cargar variables desde archivo .env local si existe
+const envFilePath = path.join(__dirname, '.env');
+if (fs.existsSync(envFilePath)) {
+  try {
+    const rawEnv = fs.readFileSync(envFilePath, 'utf8');
+    rawEnv.split(/\r?\n/).forEach(line => {
+      const trimmed = line.trim();
+      if (trimmed && !trimmed.startsWith('#') && trimmed.includes('=')) {
+        const eqIdx = trimmed.indexOf('=');
+        const k = trimmed.substring(0, eqIdx).trim();
+        const v = trimmed.substring(eqIdx + 1).trim().replace(/^['"](.*)['"]$/, '$1');
+        if (!process.env[k]) {
+          process.env[k] = v;
+        }
+      }
+    });
+  } catch (e) {
+    console.warn('[ENV] No se pudo leer .env:', e.message);
+  }
+}
+
 const { db, hashPassword, verifyPassword, logAudit } = require('./db');
 const { generateWorkbook, scheduleLiveSync, consolidatedFilePath } = require('./sync_excel');
 
