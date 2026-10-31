@@ -769,6 +769,41 @@ app.get('/api/telemetria/dashboard', (req, res) => telemetryController.obtenerDa
 app.get('/api/telemetria/reporte-turno', (req, res) => telemetryController.obtenerReporteTurno(req, res));
 app.post('/api/telemetria/enviar-correo-reporte', (req, res) => telemetryController.enviarReporteCorreo(req, res));
 
+// Endpoint para ejecución de Cron automático (Vercel Cron y monitoreo)
+app.get('/api/cron/reporte-turno', (req, res) => telemetryController.ejecutarCronReporte(req, res));
+app.post('/api/cron/reporte-turno', (req, res) => telemetryController.ejecutarCronReporte(req, res));
+
+// Rutina programadora en memoria para servidor continuo (Horarios: 08:00 AM, 04:00 PM y 12:00 AM hora Perú)
+function scheduleEmailReports() {
+  let ultimaHoraEnviada = -1;
+  setInterval(async () => {
+    try {
+      const ahora = new Date();
+      const fechaPeru = new Date(ahora.toLocaleString('en-US', { timeZone: 'America/Lima' }));
+      const hora = fechaPeru.getHours();
+      const minuto = fechaPeru.getMinutes();
+
+      // Disparar en minuto 0 de las 8am (8), 4pm (16) y medianoche (0)
+      const esHoraProgramada = (hora === 8 || hora === 16 || hora === 0) && minuto === 0;
+
+      if (esHoraProgramada && ultimaHoraEnviada !== hora) {
+        ultimaHoraEnviada = hora;
+        const emailService = require('./services/emailService');
+        const reportService = require('./services/reportService');
+        const destinatario = process.env.REPORT_EMAILS || 'saintjamil@gmail.com';
+        const resumen = reportService.generarResumenTurno();
+
+        console.log(`[SCHEDULER] ⏰ Disparando reporte automático programado (${hora}:00) a: ${destinatario}`);
+        await emailService.enviarReporteTurnoGmail(destinatario, resumen);
+      } else if (minuto !== 0) {
+        ultimaHoraEnviada = -1;
+      }
+    } catch (err) {
+      console.error('[SCHEDULER] Error en rutina de envío programado:', err.message);
+    }
+  }, 30000);
+}
+
 // Fallback to index.html for SPA routing
 app.use((req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
@@ -784,6 +819,7 @@ if (!process.env.VERCEL) {
     console.log(`👉 Archivo Excel local sincronizado: ${consolidatedFilePath}`);
     console.log(`======================================================\n`);
     scheduleLiveSync();
+    scheduleEmailReports();
 
     try {
       await millCatalog.cargarCatalogoDesdeExcel();

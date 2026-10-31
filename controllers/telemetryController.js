@@ -187,13 +187,43 @@ class TelemetryController {
   async enviarReporteCorreo(req, res) {
     try {
       const emailService = require('../services/emailService');
-      const destinatarios = req.body.destinatarios || process.env.REPORT_EMAILS || 'supervisores.planta@ejemplo.com';
+      const destinatarios = req.body.destinatarios || process.env.REPORT_EMAILS || 'saintjamil@gmail.com';
       const resumen = reportService.generarResumenTurno();
 
       const resultadoEnvio = await emailService.enviarReporteTurnoGmail(destinatarios, resumen);
       return res.json({ success: true, resultado: resultadoEnvio });
     } catch (err) {
       console.error('[Enviar Correo] Error:', err);
+      return res.status(500).json({ error: err.message });
+    }
+  }
+
+  /**
+   * Endpoint de despacho automático invocado por Vercel Cron o programador de tareas
+   */
+  async ejecutarCronReporte(req, res) {
+    try {
+      const cronSecret = process.env.CRON_SECRET;
+      if (cronSecret && req.headers['authorization'] !== `Bearer ${cronSecret}`) {
+        return res.status(401).json({ error: 'No autorizado para ejecutar cron' });
+      }
+
+      const emailService = require('../services/emailService');
+      const destinatario = process.env.REPORT_EMAILS || 'saintjamil@gmail.com';
+      const resumen = reportService.generarResumenTurno();
+
+      console.log(`[Cron Reporte] ⏰ Disparando envío automático programado a: ${destinatario}`);
+      const resultadoEnvio = await emailService.enviarReporteTurnoGmail(destinatario, resumen);
+
+      return res.json({
+        success: true,
+        tipo: 'cron_programado',
+        destinatario,
+        timestamp: new Date().toISOString(),
+        resultado: resultadoEnvio
+      });
+    } catch (err) {
+      console.error('[Cron Reporte] Error:', err);
       return res.status(500).json({ error: err.message });
     }
   }

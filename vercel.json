@@ -1,5 +1,15 @@
 {
   "version": 2,
+  "crons": [
+    {
+      "path": "/api/cron/reporte-turno",
+      "schedule": "0 13 * * *"
+    },
+    {
+      "path": "/api/cron/reporte-turno",
+      "schedule": "0 21 * * *"
+    }
+  ],
   "rewrites": [
     {
       "source": "/(.*)",
