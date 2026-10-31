@@ -3,21 +3,36 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Telemetría en Vivo de Molinos - Planta Beneficio ZA</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <title>SHOUGANG HIERRO PERÚ S.A.A. - Monitoreo de Molinos HMI Siemens</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
-      --bg-dark: #0f172a;
-      --card-bg: #1e293b;
-      --card-border: #334155;
+      --bg-dark: #080d1a;
+      --card-bg: #0f172a;
+      --card-bg-card: #131d35;
+      --card-border: #1e293b;
+      --card-border-subtle: #23324d;
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
-      --primary: #38bdf8;
-      --success: #22c55e;
+      --primary: #00e5ff;
+      --primary-hover: #38bdf8;
+      --success: #10b981;
       --warning: #f59e0b;
       --danger: #ef4444;
-      --preaviso: #eab308;
+      --preaviso: #f59e0b;
+      --header-bg: #0b1329;
+    }
+
+    body.light-mode {
+      --bg-dark: #f1f5f9;
+      --card-bg: #ffffff;
+      --card-bg-card: #f8fafc;
+      --card-border: #cbd5e1;
+      --card-border-subtle: #e2e8f0;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --header-bg: #ffffff;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -25,39 +40,201 @@
       font-family: 'Inter', sans-serif;
       background-color: var(--bg-dark);
       color: var(--text-main);
-      padding: 24px;
+      padding: 20px 24px 60px 24px;
       min-height: 100vh;
+      transition: background-color 0.25s ease, color 0.25s ease;
     }
 
+    /* Header Institucional */
     header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-bottom: 20px;
+      padding-bottom: 16px;
       border-bottom: 1px solid var(--card-border);
-      margin-bottom: 24px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .shp-logo-box {
+      background: linear-gradient(135deg, #00e5ff 0%, #0284c7 100%);
+      color: #080d1a;
+      font-weight: 800;
+      font-size: 1rem;
+      width: 42px;
+      height: 42px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      letter-spacing: -0.5px;
+      box-shadow: 0 0 12px rgba(0, 229, 255, 0.3);
     }
 
     .header-title h1 {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--primary);
+      font-size: 1.22rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .badge-live {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--success);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      border-radius: 12px;
+      padding: 2px 8px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-family: monospace;
+    }
+
+    .dot-live {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 8px var(--success);
+      animation: pulse 1.8s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    .badge-turno {
+      background: var(--card-bg-card);
+      color: var(--primary);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 2px 8px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: monospace;
     }
 
     .header-title p {
       color: var(--text-muted);
-      font-size: 0.9rem;
-      margin-top: 4px;
+      font-size: 0.78rem;
+      margin-top: 3px;
     }
 
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-cyan { background: var(--primary); color: #080d1a; font-weight: 700; }
+    .btn-outline { background: var(--card-bg); color: var(--text-main); border-color: var(--card-border); }
+    .btn-red { background: #ea4335; color: #fff; }
+
+    /* Barra Superior de Navegación de Vistas */
+    .top-view-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 0 14px 0;
+      border-bottom: 1px solid var(--card-border);
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .tab-pills {
+      display: inline-flex;
+      background: var(--card-bg);
+      padding: 3px;
+      border-radius: 8px;
+      border: 1px solid var(--card-border);
+      gap: 4px;
+    }
+
+    .tab-pill {
+      background: transparent;
+      color: var(--text-muted);
+      border: none;
+      padding: 7px 16px;
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    .tab-pill.active {
+      background: #0284c7;
+      color: #ffffff;
+      box-shadow: 0 2px 6px rgba(2, 132, 199, 0.35);
+    }
+
+    .scada-label {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 0.6px;
+    }
+
+    /* Ribbon / Banner de Modos */
+    .mode-ribbon {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 12px 18px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    /* 4 Tarjetas de Estadísticas Principales */
     .stats-bar {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      grid-template-columns: repeat(4, 1fr);
       gap: 16px;
-      margin-bottom: 28px;
+      margin-bottom: 22px;
+    }
+
+    @media (max-width: 900px) {
+      .stats-bar { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 520px) {
+      .stats-bar { grid-template-columns: 1fr; }
     }
 
     .stat-card {
@@ -67,33 +244,137 @@
       padding: 16px;
       display: flex;
       flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     }
 
-    .stat-card .label {
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--text-muted);
+    .stat-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
     }
 
-    .stat-card .val {
-      font-size: 1.8rem;
+    .stat-card.c-total::after { background: var(--primary); }
+    .stat-card.c-normal::after { background: var(--success); }
+    .stat-card.c-preaviso::after { background: var(--warning); }
+    .stat-card.c-alerta::after { background: var(--danger); }
+
+    .stat-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.72rem;
       font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+    }
+
+    .stat-card-val-row {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
       margin-top: 6px;
     }
 
+    .stat-card-val {
+      font-size: 1.9rem;
+      font-weight: 800;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-main);
+    }
+
+    .stat-card-subval {
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .stat-card-footer {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-top: 6px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Barra de Búsqueda y Filtros de Tarjetas */
+    .controls-sub-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 6px 12px;
+      width: 320px;
+      max-width: 100%;
+    }
+
+    .search-box input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text-main);
+      font-size: 0.82rem;
+      margin-left: 8px;
+      width: 100%;
+      font-family: inherit;
+    }
+
+    .filtro-pills {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .filtro-pill {
+      background: var(--card-bg);
+      color: var(--text-muted);
+      border: 1px solid var(--card-border);
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .filtro-pill.active {
+      background: #0284c7;
+      color: #fff;
+      border-color: #0284c7;
+    }
+
+    .filtro-pill.f-danger.active {
+      background: rgba(239, 68, 68, 0.2);
+      color: var(--danger);
+      border-color: var(--danger);
+    }
+
+    /* Grid de Molinos */
     .grid-molinos {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 18px;
-      margin-bottom: 30px;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 14px;
+      margin-bottom: 24px;
     }
 
     .molino-card {
-      background: var(--card-bg);
+      background: var(--card-bg-card);
       border: 1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 18px;
+      border-radius: 10px;
+      padding: 14px;
       transition: transform 0.15s ease, border-color 0.15s ease;
       cursor: pointer;
       position: relative;
@@ -108,56 +389,173 @@
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      margin-bottom: 12px;
+      margin-bottom: 8px;
     }
 
     .molino-codigo {
       font-family: 'JetBrains Mono', monospace;
       font-weight: 700;
-      font-size: 1.1rem;
+      font-size: 1.05rem;
+      color: var(--text-main);
     }
 
     .molino-tipo {
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       color: var(--text-muted);
+      margin-top: 1px;
     }
 
     .badge-status {
-      font-size: 0.75rem;
-      font-weight: 600;
-      padding: 4px 10px;
-      border-radius: 20px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 6px;
       text-transform: uppercase;
+      font-family: 'JetBrains Mono', monospace;
     }
 
-    .badge-NORMAL { background: rgba(34, 197, 94, 0.15); color: var(--success); border: 1px solid var(--success); }
-    .badge-PREAVISO { background: rgba(234, 179, 8, 0.15); color: var(--preaviso); border: 1px solid var(--preaviso); }
-    .badge-ALARMA { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid var(--warning); }
-    .badge-FALLA { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid var(--danger); }
-    .badge-SIN_DATOS { background: rgba(148, 163, 184, 0.15); color: var(--text-muted); border: 1px solid var(--card-border); }
+    .badge-NORMAL { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid var(--success); }
+    .badge-PREAVISO { background: rgba(245, 158, 11, 0.15); color: var(--preaviso); border: 1px solid var(--preaviso); }
+    .badge-ALARMA { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid var(--danger); }
+    .badge-FALLA { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid var(--danger); }
+    .badge-SIN_DATOS { background: rgba(148, 163, 184, 0.1); color: var(--text-muted); border: 1px solid var(--card-border); }
 
-    .molino-body {
-      font-size: 0.85rem;
+    .molino-time-row {
+      font-size: 0.72rem;
       color: var(--text-muted);
+      margin-bottom: 8px;
       display: flex;
-      flex-direction: column;
+      align-items: center;
       gap: 6px;
+      font-family: 'JetBrains Mono', monospace;
     }
 
     .sensor-item-preview {
       display: flex;
       justify-content: space-between;
-      padding: 4px 0;
+      padding: 3px 0;
       border-top: 1px dashed var(--card-border);
       font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+    }
+
+    .standby-msg {
+      padding: 16px 0;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Banner Alerta Inferior */
+    .bottom-alert-banner {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-left: 4px solid var(--primary);
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin-top: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    /* Gráficos Estadísticos */
+    .section-kpi-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .section-kpi-row { grid-template-columns: 1fr; }
+    }
+
+    .graficos-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 900px) {
+      .graficos-grid { grid-template-columns: 1fr; }
+    }
+
+    .chart-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 18px;
+      position: relative;
+    }
+
+    .chart-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .chart-card-header h3 {
+      font-size: 0.95rem;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .chart-card-header span {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .chart-wrapper {
+      position: relative;
+      height: 250px;
+      width: 100%;
+    }
+
+    /* Tabla Detalle Última Captura */
+    .tabla-captura-container {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 18px;
+      margin-top: 24px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
       font-size: 0.8rem;
     }
 
+    th, td {
+      padding: 9px 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    th {
+      color: var(--text-muted);
+      font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+    }
+
+    /* Modal */
     .modal-overlay {
       display: none;
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.7);
+      background: rgba(0,0,0,0.75);
       backdrop-filter: blur(4px);
       z-index: 100;
       align-items: center;
@@ -175,220 +573,192 @@
       padding: 24px;
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 16px;
-      font-size: 0.85rem;
+    /* Mobile Bottom Navigation Bar */
+    .mobile-bottom-nav {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--header-bg);
+      border-top: 1px solid var(--card-border);
+      padding: 8px 12px;
+      z-index: 90;
+      justify-content: space-around;
+      align-items: center;
     }
 
-    th, td {
-      padding: 10px 12px;
-      text-align: left;
-      border-bottom: 1px solid var(--card-border);
-    }
-
-    th {
+    .nav-item {
+      background: none;
+      border: none;
       color: var(--text-muted);
-      font-weight: 600;
-    }
-
-    .btn {
-      background: var(--primary);
-      color: #000;
-      font-weight: 600;
-      padding: 8px 16px;
-      border-radius: 8px;
-      border: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      font-size: 0.68rem;
+      font-weight: 700;
       cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
     }
 
-    .btn:hover { opacity: 0.9; }
-
-    /* Control de Vistas y Filtros */
-    .view-control-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    .tab-group {
-      display: inline-flex;
-      background: #1e293b;
-      padding: 4px;
-      border-radius: 8px;
-      border: 1px solid #334155;
-      gap: 4px;
-    }
-
-    .tab-btn {
-      background: transparent;
-      color: #94a3b8;
-      border: none;
-      padding: 8px 16px;
-      font-size: 0.88rem;
-      font-weight: 600;
-      cursor: pointer;
-      border-radius: 6px;
-      transition: all 0.2s;
-    }
-
-    .tab-btn.active {
-      background: #38bdf8;
-      color: #0f172a;
-    }
-
-    .filtro-group {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
-
-    .filtro-btn {
-      background: #1e293b;
-      color: #94a3b8;
-      border: 1px solid #334155;
-      padding: 6px 14px;
-      font-size: 0.82rem;
-      font-weight: 500;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .filtro-btn.active {
-      background: #334155;
-      color: #38bdf8;
-      border-color: #38bdf8;
-    }
-
-    /* Gráficos Estadísticos */
-    .graficos-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(460px, 1fr));
-      gap: 20px;
-      margin-bottom: 24px;
-    }
-
-    .chart-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 18px;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-      position: relative;
-    }
-
-    .chart-card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 14px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid #334155;
-    }
-
-    .chart-card-header h3 {
-      font-size: 1rem;
-      color: #f1f5f9;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .chart-card-header span {
-      font-size: 0.75rem;
-      color: #94a3b8;
-    }
-
-    .chart-wrapper {
-      position: relative;
-      height: 260px;
-      width: 100%;
-    }
-
-    .section-kpi-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-      margin-bottom: 20px;
+    .nav-item.active {
+      color: var(--primary);
     }
 
     @media (max-width: 768px) {
-      .graficos-grid {
-        grid-template-columns: 1fr;
-      }
-      .section-kpi-row {
-        grid-template-columns: 1fr;
-      }
+      .mobile-bottom-nav { display: flex; }
+      body { padding-bottom: 75px; }
+      .header-title h1 { font-size: 1rem; }
+      .scada-label { display: none; }
     }
   </style>
 </head>
 <body>
+
+  <!-- 1. Header Institucional Shougang Hierro Perú -->
   <header>
-    <div class="header-title">
-      <h1>⚡ Monitoreo Automatizado de Molinos (HMI Siemens)</h1>
-      <p>Captura desde WhatsApp con Visión Artificial | Planta Beneficio ZA</p>
+    <div class="header-left">
+      <div class="shp-logo-box">SHP</div>
+      <div class="header-title">
+        <h1>
+          <span>SHOUGANG HIERRO PERÚ S.A.A.</span>
+          <span style="color: var(--card-border); font-weight: 300;">|</span>
+          <span style="color: var(--text-muted); font-size: 0.85rem; font-weight: 500;">Planta Beneficio ZA</span>
+          <span class="badge-live"><span class="dot-live"></span> HMI SIEMENS LIVE</span>
+          <span class="badge-turno" id="hdr-turno-badge">TURNO A</span>
+        </h1>
+        <p>Monitoreo Automatizado de Molinos (HMI Siemens) • Control Operacional Tiempo Real</p>
+      </div>
     </div>
-    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-      <button class="btn" onclick="cargarDashboard()">🔄 Actualizar</button>
-      <button class="btn" style="background: #8b5cf6; color: #fff;" onclick="mostrarModalSubida()">📷 Cargar Foto HMI</button>
-      <button class="btn" style="background: #10b981;" onclick="verReporteTurno()">📋 Reporte Turno</button>
-      <button class="btn" style="background: #ea4335; color: #fff;" onclick="enviarPorGmail()">📧 Enviar Gmail</button>
+    <div class="header-actions">
+      <button class="btn btn-cyan" onclick="cargarDashboard()">🔄 Actualizar</button>
+      <button class="btn btn-outline" onclick="mostrarModalSubida()">📷 Cargar Foto HMI</button>
+      <button class="btn btn-outline" onclick="verReporteTurno()">📋 Reporte Turno</button>
+      <button class="btn btn-red" onclick="enviarPorGmail()">✉️ Enviar Gmail</button>
+      <button class="btn btn-outline" id="btn-theme-toggle" onclick="toggleModoClaro()">☀️ Modo Claro</button>
+      <div style="width: 34px; height: 34px; border-radius: 50%; background: var(--card-bg-card); border: 1px solid var(--primary); display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 0.95rem; cursor: pointer;" title="Operador Planta ZA">
+        👤
+      </div>
     </div>
   </header>
 
-  <!-- Banner explicativo del origen de fotos -->
-  <div style="background: #1e293b; border-left: 4px solid #38bdf8; padding: 14px 18px; border-radius: 8px; margin-bottom: 24px; font-size: 0.88rem; color: #cbd5e1; display: flex; justify-content: space-between; align-items: center;">
-    <div>
-      <strong style="color: #38bdf8;">📲 Modo Automático (Producción):</strong> Las fotos se leen solas desde el <strong>Grupo de WhatsApp</strong> vía Green API.<br>
-      <strong style="color: #a78bfa;">🧪 Modo Manual (Pruebas):</strong> Puedes usar el botón <em>"📷 Cargar Foto HMI"</em> para probar cualquier imagen de tablero desde tu computadora.
+  <!-- 2. Barra Superior de Control de Vistas -->
+  <div class="top-view-bar">
+    <div class="tab-pills">
+      <button id="btn-tab-tarjetas" class="tab-pill active" onclick="cambiarVista('tarjetas')">Vista Tarjetas (19 Molinos)</button>
+      <button id="btn-tab-graficos" class="tab-pill" onclick="cambiarVista('graficos')">Gráficos Estadísticos (Barras vs Bolas)</button>
+    </div>
+    <div class="scada-label">
+      SISTEMA SCADA ZA • SHP-AUT-2024
     </div>
   </div>
 
+  <!-- 3. Ribbon Informativo de Modos -->
+  <div class="mode-ribbon">
+    <div style="display: flex; gap: 24px; align-items: center; flex-wrap: wrap;">
+      <div>
+        <strong style="color: var(--primary);">⚡ Modo Automático (Producción):</strong> Las fotos se leen solas desde el <strong>Grupo de WhatsApp</strong> vía Green API.
+      </div>
+      <div>
+        <strong style="color: #c084fc;">🧪 Modo Manual (Pruebas):</strong> Puedes usar el botón <em>"📷 Cargar Foto HMI"</em> para probar cualquier imagen de tablero desde tu computadora.
+      </div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; color: var(--success); font-family: monospace; font-size: 0.78rem;">
+      <span class="dot-live"></span> AUTO_OCR: ONLINE ⚙️
+    </div>
+  </div>
+
+  <!-- 4. Barra de 4 Tarjetas de Estadísticas Principales -->
   <div class="stats-bar">
-    <div class="stat-card">
-      <span class="label">Total Molinos</span>
-      <span class="val" id="stat-total">19</span>
+    <div class="stat-card c-total">
+      <div class="stat-card-header">
+        <span>TOTAL MOLINOS</span>
+        <span>🏭</span>
+      </div>
+      <div class="stat-card-val-row">
+        <span class="stat-card-val" id="stat-total">19</span>
+        <span class="stat-card-subval" style="color: var(--text-muted);">UNIDADES</span>
+      </div>
+      <div class="stat-card-footer" style="color: var(--primary);">ZA BENEFICIO</div>
     </div>
-    <div class="stat-card">
-      <span class="label">Operando Normal</span>
-      <span class="val" style="color: var(--success);" id="stat-normal">0</span>
+
+    <div class="stat-card c-normal">
+      <div class="stat-card-header">
+        <span>OPERANDO NORMAL</span>
+        <span style="color: var(--success);">●</span>
+      </div>
+      <div class="stat-card-val-row">
+        <span class="stat-card-val" style="color: var(--success);" id="stat-normal">0</span>
+        <span class="stat-card-subval" style="color: var(--success);" id="stat-normal-pct">0.0%</span>
+      </div>
+      <div class="stat-card-footer">Presión & Temp en rango</div>
     </div>
-    <div class="stat-card">
-      <span class="label">En Preaviso (5%)</span>
-      <span class="val" style="color: var(--preaviso);" id="stat-preaviso">0</span>
+
+    <div class="stat-card c-preaviso">
+      <div class="stat-card-header">
+        <span>EN PREAVISO (5%)</span>
+        <span style="color: var(--preaviso);">▲</span>
+      </div>
+      <div class="stat-card-val-row">
+        <span class="stat-card-val" style="color: var(--preaviso);" id="stat-preaviso">0</span>
+        <span class="stat-card-subval" style="color: var(--preaviso);" id="stat-preaviso-pct">0.0%</span>
+      </div>
+      <div class="stat-card-footer">desviación leve</div>
     </div>
-    <div class="stat-card">
-      <span class="label">En Alarma / Falla</span>
-      <span class="val" style="color: var(--danger);" id="stat-alertas">0</span>
+
+    <div class="stat-card c-alerta">
+      <div class="stat-card-header">
+        <span>EN ALARMA / FALLA</span>
+        <span style="color: var(--danger);">⚠</span>
+      </div>
+      <div class="stat-card-val-row">
+        <span class="stat-card-val" style="color: var(--danger);" id="stat-alertas">0</span>
+        <span class="stat-card-subval" style="color: var(--danger);" id="stat-alertas-pct">0.0%</span>
+      </div>
+      <div class="stat-card-footer">intervención requerida</div>
     </div>
   </div>
 
-  <!-- Barra de Control de Vistas y Filtros -->
-  <div class="view-control-bar">
-    <div class="tab-group">
-      <button id="btn-vista-tarjetas" class="tab-btn active" onclick="cambiarVista('tarjetas')">🎴 Vista Tarjetas (19 Molinos)</button>
-      <button id="btn-vista-graficos" class="tab-btn" onclick="cambiarVista('graficos')">📊 Gráficos Estadísticos (Barras vs Bolas)</button>
+  <!-- Sub-barra de Búsqueda y Filtros de Tarjetas -->
+  <div class="controls-sub-bar" id="sub-bar-filtros">
+    <div class="search-box">
+      <span>🔍</span>
+      <input type="text" id="input-buscar-tag" placeholder="Filtrar por Tag (ej: 032-081, BOLAS 2)..." oninput="filtrarPorTexto(this.value)">
     </div>
-
-    <div class="filtro-group" id="barra-filtros">
-      <span style="font-size: 0.82rem; color: #94a3b8; font-weight: 500;">Filtrar equipos:</span>
-      <button class="filtro-btn active" id="filtro-todos" onclick="filtrarMolinos('TODOS')">Todos (19)</button>
-      <button class="filtro-btn" id="filtro-barras" onclick="filtrarMolinos('Barras')">🔩 Barras (9)</button>
-      <button class="filtro-btn" id="filtro-bolas" onclick="filtrarMolinos('Bolas')">⚪ Bolas (10)</button>
+    <div class="filtro-pills">
+      <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500; margin-right: 4px;">Filtrar equipos:</span>
+      <button class="filtro-pill active" id="f-todos" onclick="filtrarMolinos('TODOS')">Todos (19)</button>
+      <button class="filtro-pill" id="f-barras" onclick="filtrarMolinos('Barras')">🔩 Barras (9)</button>
+      <button class="filtro-pill" id="f-bolas" onclick="filtrarMolinos('Bolas')">⚪ Bolas (10)</button>
+      <button class="filtro-pill f-danger" id="f-fallas" onclick="filtrarMolinos('FALLAS')">🚨 Fallas</button>
     </div>
   </div>
 
   <!-- VISTA 1: GRID DE TARJETAS POR MOLINO -->
-  <div class="grid-molinos" id="molinos-container">
-    <!-- Se llena dinámicamente -->
+  <div id="vista-tarjetas-wrapper">
+    <div class="grid-molinos" id="molinos-container">
+      <!-- Tarjetas renderizadas dinámicamente -->
+    </div>
+
+    <!-- Banner Alerta Inferior de Última Captura -->
+    <div class="bottom-alert-banner">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div style="font-size: 1.5rem; color: var(--primary);">💬</div>
+        <div>
+          <div style="font-size: 0.85rem; font-weight: 700; display: flex; align-items: center; gap: 8px;">
+            Última Captura Procesada: WhatsApp Bot Green API
+            <span style="background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.4); border-radius: 4px; padding: 1px 6px; font-size: 0.72rem; font-family: monospace;" id="banner-tag-foto">IMG_HMI_LIVE.JPG</span>
+          </div>
+          <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 3px;" id="banner-alerta-desc">
+            Monitoreo en vivo de los 19 molinos en tiempo real. Todas las señales operativas registradas.
+          </div>
+        </div>
+      </div>
+      <div style="display: flex; gap: 8px;">
+        <button class="btn btn-outline" style="font-size: 0.75rem;" onclick="mostrarModalSubida()">👁️ Ver Recorte Original</button>
+        <button class="btn" style="background: #dc2626; color: #fff; font-size: 0.75rem;" onclick="enviarPorGmail()">🚨 Despachar Guardia</button>
+      </div>
+    </div>
   </div>
 
   <!-- VISTA 2: PANEL DE GRÁFICOS ESTADÍSTICOS GENERALES -->
@@ -396,56 +766,56 @@
     <!-- Resumen Comparativo de Secciones -->
     <div class="section-kpi-row">
       <!-- KPI Sección Barras -->
-      <div style="background: linear-gradient(135deg, rgba(56, 189, 248, 0.08) 0%, rgba(30, 41, 59, 0.9) 100%); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 12px; padding: 18px;">
+      <div style="background: linear-gradient(135deg, rgba(56, 189, 248, 0.08) 0%, var(--card-bg) 100%); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 12px; padding: 18px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-          <h3 style="font-size: 1.05rem; color: #38bdf8; display: flex; align-items: center; gap: 8px;">
+          <h3 style="font-size: 1rem; color: #38bdf8; display: flex; align-items: center; gap: 8px;">
             🔩 Sección Molienda de Barras (032-081 a 032-089)
           </h3>
-          <span style="background: rgba(56, 189, 248, 0.2); color: #38bdf8; padding: 3px 10px; border-radius: 12px; font-size: 0.78rem; font-weight: bold;">9 Molinos</span>
+          <span style="background: rgba(56, 189, 248, 0.2); color: #38bdf8; padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: bold;">9 Molinos</span>
         </div>
         <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; text-align: center;">
-          <div style="background: rgba(15, 23, 42, 0.6); padding: 10px 6px; border-radius: 8px; border: 1px solid #334155;">
-            <div style="font-size: 0.72rem; color: #94a3b8;">Normal</div>
+          <div style="background: var(--card-bg-card); padding: 10px 6px; border-radius: 8px; border: 1px solid var(--card-border);">
+            <div style="font-size: 0.72rem; color: var(--text-muted);">Normal</div>
             <div style="font-size: 1.3rem; font-weight: bold; color: var(--success);" id="kpi-barras-normal">0</div>
           </div>
-          <div style="background: rgba(15, 23, 42, 0.6); padding: 10px 6px; border-radius: 8px; border: 1px solid #334155;">
-            <div style="font-size: 0.72rem; color: #94a3b8;">Preaviso</div>
+          <div style="background: var(--card-bg-card); padding: 10px 6px; border-radius: 8px; border: 1px solid var(--card-border);">
+            <div style="font-size: 0.72rem; color: var(--text-muted);">Preaviso</div>
             <div style="font-size: 1.3rem; font-weight: bold; color: var(--preaviso);" id="kpi-barras-preaviso">0</div>
           </div>
-          <div style="background: rgba(15, 23, 42, 0.6); padding: 10px 6px; border-radius: 8px; border: 1px solid #334155;">
-            <div style="font-size: 0.72rem; color: #94a3b8;">Alerta/Falla</div>
+          <div style="background: var(--card-bg-card); padding: 10px 6px; border-radius: 8px; border: 1px solid var(--card-border);">
+            <div style="font-size: 0.72rem; color: var(--text-muted);">Alerta/Falla</div>
             <div style="font-size: 1.3rem; font-weight: bold; color: var(--danger);" id="kpi-barras-alerta">0</div>
           </div>
-          <div style="background: rgba(15, 23, 42, 0.6); padding: 10px 6px; border-radius: 8px; border: 1px solid #334155;">
-            <div style="font-size: 0.72rem; color: #94a3b8;">Sin Lectura</div>
+          <div style="background: var(--card-bg-card); padding: 10px 6px; border-radius: 8px; border: 1px solid var(--card-border);">
+            <div style="font-size: 0.72rem; color: var(--text-muted);">Sin Lectura</div>
             <div style="font-size: 1.3rem; font-weight: bold; color: #64748b;" id="kpi-barras-sindatos">9</div>
           </div>
         </div>
       </div>
 
       <!-- KPI Sección Bolas -->
-      <div style="background: linear-gradient(135deg, rgba(168, 85, 247, 0.08) 0%, rgba(30, 41, 59, 0.9) 100%); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 12px; padding: 18px;">
+      <div style="background: linear-gradient(135deg, rgba(168, 85, 247, 0.08) 0%, var(--card-bg) 100%); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 12px; padding: 18px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-          <h3 style="font-size: 1.05rem; color: #c084fc; display: flex; align-items: center; gap: 8px;">
+          <h3 style="font-size: 1rem; color: #c084fc; display: flex; align-items: center; gap: 8px;">
             ⚪ Sección Molienda de Bolas (032-201 a 032-210)
           </h3>
-          <span style="background: rgba(168, 85, 247, 0.2); color: #c084fc; padding: 3px 10px; border-radius: 12px; font-size: 0.78rem; font-weight: bold;">10 Molinos</span>
+          <span style="background: rgba(168, 85, 247, 0.2); color: #c084fc; padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: bold;">10 Molinos</span>
         </div>
         <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; text-align: center;">
-          <div style="background: rgba(15, 23, 42, 0.6); padding: 10px 6px; border-radius: 8px; border: 1px solid #334155;">
-            <div style="font-size: 0.72rem; color: #94a3b8;">Normal</div>
+          <div style="background: var(--card-bg-card); padding: 10px 6px; border-radius: 8px; border: 1px solid var(--card-border);">
+            <div style="font-size: 0.72rem; color: var(--text-muted);">Normal</div>
             <div style="font-size: 1.3rem; font-weight: bold; color: var(--success);" id="kpi-bolas-normal">0</div>
           </div>
-          <div style="background: rgba(15, 23, 42, 0.6); padding: 10px 6px; border-radius: 8px; border: 1px solid #334155;">
-            <div style="font-size: 0.72rem; color: #94a3b8;">Preaviso</div>
+          <div style="background: var(--card-bg-card); padding: 10px 6px; border-radius: 8px; border: 1px solid var(--card-border);">
+            <div style="font-size: 0.72rem; color: var(--text-muted);">Preaviso</div>
             <div style="font-size: 1.3rem; font-weight: bold; color: var(--preaviso);" id="kpi-bolas-preaviso">0</div>
           </div>
-          <div style="background: rgba(15, 23, 42, 0.6); padding: 10px 6px; border-radius: 8px; border: 1px solid #334155;">
-            <div style="font-size: 0.72rem; color: #94a3b8;">Alerta/Falla</div>
+          <div style="background: var(--card-bg-card); padding: 10px 6px; border-radius: 8px; border: 1px solid var(--card-border);">
+            <div style="font-size: 0.72rem; color: var(--text-muted);">Alerta/Falla</div>
             <div style="font-size: 1.3rem; font-weight: bold; color: var(--danger);" id="kpi-bolas-alerta">0</div>
           </div>
-          <div style="background: rgba(15, 23, 42, 0.6); padding: 10px 6px; border-radius: 8px; border: 1px solid #334155;">
-            <div style="font-size: 0.72rem; color: #94a3b8;">Sin Lectura</div>
+          <div style="background: var(--card-bg-card); padding: 10px 6px; border-radius: 8px; border: 1px solid var(--card-border);">
+            <div style="font-size: 0.72rem; color: var(--text-muted);">Sin Lectura</div>
             <div style="font-size: 1.3rem; font-weight: bold; color: #64748b;" id="kpi-bolas-sindatos">10</div>
           </div>
         </div>
@@ -498,16 +868,83 @@
         </div>
       </div>
     </div>
+
+    <!-- Tabla Detalle de Última Captura Automática -->
+    <div class="tabla-captura-container">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
+        <h3 style="font-size: 1rem; display: flex; align-items: center; gap: 8px;">
+          <span>📑</span> Detalle de Última Captura Automática - Molienda HMI ZA
+        </h3>
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <span style="font-size: 0.78rem; color: var(--text-muted); font-family: monospace;" id="txt-sync-tiempo">Sincronizado: Reciente</span>
+          <button class="btn btn-outline" style="font-size: 0.75rem; padding: 5px 12px;" onclick="exportarCSV()">⬇ Exportar CSV</button>
+        </div>
+      </div>
+      <div style="overflow-x: auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>MOLINO</th>
+              <th>TIPO</th>
+              <th style="text-align: center;">ESTADO HMI</th>
+              <th style="text-align: center;">TTE CARGA (°C)</th>
+              <th style="text-align: center;">TTS DESCARGA (°C)</th>
+              <th style="text-align: center;">VIBRACIÓN (MM/S)</th>
+              <th style="text-align: center;">RAP AIRE (PSI)</th>
+              <th style="text-align: center;">CAP EMBRAGUE (PSI)</th>
+              <th>DIAGNÓSTICO OCR</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-detalle-capturas">
+            <!-- Filas dinámicas -->
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 
-  <!-- Modal Detalle -->
+  <!-- Footer Institucional Shougang Hierro Perú -->
+  <footer style="margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--card-border); display: flex; justify-content: space-between; align-items: center; font-size: 0.74rem; color: var(--text-muted); flex-wrap: wrap; gap: 12px;">
+    <div>
+      <strong style="color: var(--text-main);">SHOUGANG HIERRO PERÚ S.A.A.</strong> © 2024 • Subgerencia de Mantenimiento y Beneficio ZA
+    </div>
+    <div style="display: flex; gap: 16px; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; flex-wrap: wrap;">
+      <span>TELEMETRÍA CRÍTICA TIEMPO REAL</span>
+      <span>•</span>
+      <span>PROTOCOLO SIEMENS S7-1500</span>
+      <span>•</span>
+      <span>INSPECCIÓN VISIÓN ARTIFICIAL ACTIVA</span>
+    </div>
+  </footer>
+
+  <!-- Navegación Móvil Inferior -->
+  <div class="mobile-bottom-nav">
+    <button class="nav-item active" id="mob-nav-molinos" onclick="cambiarVista('tarjetas')">
+      <span style="font-size: 1.1rem;">🎴</span>
+      <span>MOLINOS</span>
+    </button>
+    <button class="nav-item" id="mob-nav-telemetria" onclick="cambiarVista('graficos')">
+      <span style="font-size: 1.1rem;">📈</span>
+      <span>TELEMETRÍA</span>
+    </button>
+    <button class="nav-item" id="mob-nav-alarmas" onclick="filtrarMolinos('FALLAS')">
+      <span style="font-size: 1.1rem;">⚠️</span>
+      <span>ALARMAS</span>
+    </button>
+    <button class="nav-item" onclick="verReporteTurno()">
+      <span style="font-size: 1.1rem;">📑</span>
+      <span>REPORTES</span>
+    </button>
+  </div>
+
+  <!-- Modal Detalle del Molino -->
   <div class="modal-overlay" id="modal-detalle" onclick="cerrarModal(event)">
     <div class="modal-content" onclick="event.stopPropagation()">
       <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h2 id="modal-titulo" style="font-size: 1.3rem;">Detalle del Molino</h2>
-        <button style="background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer;" onclick="document.getElementById('modal-detalle').style.display = 'none'">&times;</button>
+        <h2 id="modal-titulo" style="font-size: 1.25rem;">Detalle del Molino</h2>
+        <button style="background: none; border: none; color: var(--text-main); font-size: 1.5rem; cursor: pointer;" onclick="document.getElementById('modal-detalle').style.display = 'none'">&times;</button>
       </div>
-      <p id="modal-subtitulo" style="color: var(--text-muted); margin-top: 4px; font-size: 0.9rem;"></p>
+      <p id="modal-subtitulo" style="color: var(--text-muted); margin-top: 4px; font-size: 0.85rem;"></p>
       
       <table>
         <thead>
@@ -529,32 +966,31 @@
   <div class="modal-overlay" id="modal-subida" onclick="cerrarModalSubida(event)">
     <div class="modal-content" onclick="event.stopPropagation()" style="max-width: 680px;">
       <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h2 style="font-size: 1.3rem;">📷 Cargar Fotografías de Tableros HMI</h2>
-        <button style="background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer;" onclick="cerrarModalSubidaDirecto()">&times;</button>
+        <h2 style="font-size: 1.25rem;">📷 Cargar Fotografías de Tableros HMI</h2>
+        <button style="background: none; border: none; color: var(--text-main); font-size: 1.5rem; cursor: pointer;" onclick="cerrarModalSubidaDirecto()">&times;</button>
       </div>
       <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 4px;">
-        Puedes seleccionar o arrastrar <strong>una o varias fotos juntas</strong>. La IA identificará automáticamente el molino de cada pantalla y registrará sus sensores.
+        Selecciona una o varias fotos. La IA identificará el molino de cada pantalla y registrará sus sensores en tiempo real.
       </p>
 
       <div id="drop-zone" style="border: 2px dashed #475569; border-radius: 10px; padding: 25px; text-align: center; margin: 16px 0; cursor: pointer; transition: border-color 0.2s;" onclick="document.getElementById('file-input').click()">
         <div style="font-size: 2.2rem; margin-bottom: 6px;">🖼️ ➕</div>
-        <div style="font-weight: 600; color: #38bdf8; font-size: 1rem;">Haz clic para seleccionar fotos o arrástralas aquí</div>
-        <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 4px;">Puedes elegir múltiples archivos a la vez (JPG, PNG, WEBP)</div>
+        <div style="font-weight: 600; color: #38bdf8; font-size: 0.95rem;">Haz clic para seleccionar fotos o arrástralas aquí</div>
+        <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 4px;">Formatos soportados: JPG, PNG, WEBP</div>
         <input type="file" id="file-input" accept="image/*" multiple style="display: none;" onchange="handleFilesSelect(event)">
       </div>
 
       <!-- Galería de fotos seleccionadas -->
       <div id="upload-preview-container" style="display: none; margin-bottom: 16px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-          <span style="font-size: 0.85rem; font-weight: 600; color: #cbd5e1;" id="count-fotos-seleccionadas">0 fotos seleccionadas</span>
+          <span style="font-size: 0.85rem; font-weight: 600;" id="count-fotos-seleccionadas">0 fotos seleccionadas</span>
           <button style="background: none; border: none; color: #ef4444; font-size: 0.75rem; cursor: pointer;" onclick="limpiarSeleccionFotos()">Limpiar todas</button>
         </div>
         <div id="preview-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; max-height: 180px; overflow-y: auto; padding: 4px;">
-          <!-- Miniaturas dinámicas -->
         </div>
       </div>
 
-      <!-- Barra de progreso de procesamiento -->
+      <!-- Barra de progreso -->
       <div id="progress-container" style="display: none; margin-bottom: 16px;">
         <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 4px;">
           <span id="progress-label" style="color: #38bdf8;">Procesando fotos...</span>
@@ -565,13 +1001,13 @@
         </div>
       </div>
 
-      <!-- Log de resultados por foto -->
-      <div id="upload-log" style="display: none; max-height: 140px; overflow-y: auto; background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 10px; font-size: 0.78rem; font-family: 'JetBrains Mono', monospace; margin-bottom: 16px;">
+      <!-- Log de resultados -->
+      <div id="upload-log" style="display: none; max-height: 140px; overflow-y: auto; background: #080d1a; border: 1px solid #334155; border-radius: 8px; padding: 10px; font-size: 0.75rem; font-family: 'JetBrains Mono', monospace; margin-bottom: 16px;">
       </div>
 
       <div style="display: flex; justify-content: flex-end; gap: 10px;">
-        <button class="btn" style="background: #334155; color: #fff;" onclick="cerrarModalSubidaDirecto()">Cerrar</button>
-        <button class="btn" id="btn-procesar-lote" style="background: #8b5cf6; color: #fff;" onclick="procesarLoteFotos()" disabled>⚡ Procesar Fotos con IA</button>
+        <button class="btn btn-outline" onclick="cerrarModalSubidaDirecto()">Cerrar</button>
+        <button class="btn btn-cyan" id="btn-procesar-lote" onclick="procesarLoteFotos()" disabled>⚡ Procesar Fotos con IA</button>
       </div>
     </div>
   </div>
@@ -580,7 +1016,9 @@
     const STORAGE_KEY = 'za_telemetria_cache_v2';
     let molinosDataCache = [];
     let vistaActual = 'tarjetas'; // 'tarjetas' | 'graficos'
-    let filtroActual = 'TODOS';   // 'TODOS' | 'Barras' | 'Bolas'
+    let filtroActual = 'TODOS';   // 'TODOS' | 'Barras' | 'Bolas' | 'FALLAS'
+    let textoBusqueda = '';
+
     let chartEstadosInst = null;
     let chartTemperaturasInst = null;
     let chartVibracionesInst = null;
@@ -608,322 +1046,69 @@
       { cod: '032-210', label: 'M-210', tipo: 'Bolas' }
     ];
 
+    function toggleModoClaro() {
+      const isLight = document.body.classList.toggle('light-mode');
+      const btn = document.getElementById('btn-theme-toggle');
+      if (btn) btn.innerText = isLight ? '🌙 Modo Oscuro' : '☀️ Modo Claro';
+      localStorage.setItem('za_theme', isLight ? 'light' : 'dark');
+      if (vistaActual === 'graficos') renderGraficosEstadisticos();
+    }
+
+    // Inicializar tema guardado
+    if (localStorage.getItem('za_theme') === 'light') {
+      document.body.classList.add('light-mode');
+      const b = document.getElementById('btn-theme-toggle');
+      if (b) b.innerText = '🌙 Modo Oscuro';
+    }
+
     function cambiarVista(vista) {
       vistaActual = vista;
-      const btnTarjetas = document.getElementById('btn-vista-tarjetas');
-      const btnGraficos = document.getElementById('btn-vista-graficos');
-      const molinosContainer = document.getElementById('molinos-container');
-      const graficosContainer = document.getElementById('graficos-container');
-      const barraFiltros = document.getElementById('barra-filtros');
+      const btnTarjetas = document.getElementById('btn-tab-tarjetas');
+      const btnGraficos = document.getElementById('btn-tab-graficos');
+      const wrapperTarjetas = document.getElementById('vista-tarjetas-wrapper');
+      const containerGraficos = document.getElementById('graficos-container');
+      const subBarFiltros = document.getElementById('sub-bar-filtros');
+
+      const mobMol = document.getElementById('mob-nav-molinos');
+      const mobTel = document.getElementById('mob-nav-telemetria');
 
       if (vista === 'tarjetas') {
         if (btnTarjetas) btnTarjetas.classList.add('active');
         if (btnGraficos) btnGraficos.classList.remove('active');
-        if (molinosContainer) molinosContainer.style.display = 'grid';
-        if (graficosContainer) graficosContainer.style.display = 'none';
-        if (barraFiltros) barraFiltros.style.display = 'flex';
+        if (wrapperTarjetas) wrapperTarjetas.style.display = 'block';
+        if (containerGraficos) containerGraficos.style.display = 'none';
+        if (subBarFiltros) subBarFiltros.style.display = 'flex';
+        if (mobMol) mobMol.classList.add('active');
+        if (mobTel) mobTel.classList.remove('active');
       } else {
         if (btnGraficos) btnGraficos.classList.add('active');
         if (btnTarjetas) btnTarjetas.classList.remove('active');
-        if (molinosContainer) molinosContainer.style.display = 'none';
-        if (graficosContainer) graficosContainer.style.display = 'block';
-        if (barraFiltros) barraFiltros.style.display = 'none';
+        if (wrapperTarjetas) wrapperTarjetas.style.display = 'none';
+        if (containerGraficos) containerGraficos.style.display = 'block';
+        if (subBarFiltros) subBarFiltros.style.display = 'none';
+        if (mobTel) mobTel.classList.add('active');
+        if (mobMol) mobMol.classList.remove('active');
         renderGraficosEstadisticos();
       }
     }
 
     function filtrarMolinos(filtro) {
       filtroActual = filtro;
-      const bTodos = document.getElementById('filtro-todos');
-      const bBarras = document.getElementById('filtro-barras');
-      const bBolas = document.getElementById('filtro-bolas');
-      if (bTodos) bTodos.classList.toggle('active', filtro === 'TODOS');
-      if (bBarras) bBarras.classList.toggle('active', filtro === 'Barras');
-      if (bBolas) bBolas.classList.toggle('active', filtro === 'Bolas');
+      document.getElementById('f-todos')?.classList.toggle('active', filtro === 'TODOS');
+      document.getElementById('f-barras')?.classList.toggle('active', filtro === 'Barras');
+      document.getElementById('f-bolas')?.classList.toggle('active', filtro === 'Bolas');
+      document.getElementById('f-fallas')?.classList.toggle('active', filtro === 'FALLAS');
+
+      // Si se hizo clic desde la barra móvil en ALARMAS, asegurarse de estar en vista tarjetas
+      if (filtro === 'FALLAS' && vistaActual !== 'tarjetas') {
+        cambiarVista('tarjetas');
+      }
       renderDashboard();
     }
 
-    function buscarMolinoEnCache(cod) {
-      const cNorm = normalizarCodigo(cod);
-      return molinosDataCache.find(m => m.molino && (normalizarCodigo(m.molino.codigo_hmi) === cNorm || m.molino.codigo_hmi === cNorm));
-    }
-
-    function extraerSensorValor(molinoItem, regex) {
-      if (!molinoItem || !molinoItem.sensores || molinoItem.sensores.length === 0) return null;
-      const s = molinoItem.sensores.find(sens => {
-        const acr = (sens.acronimo_sensor || sens.acronimo || '').toUpperCase();
-        const nom = (sens.nombre_sensor || '').toUpperCase();
-        return regex.test(acr) || regex.test(nom);
-      });
-      if (!s || s.valor === null || s.valor === undefined || isNaN(parseFloat(s.valor))) return null;
-      return parseFloat(s.valor);
-    }
-
-    function extraerMaxVibracion(molinoItem) {
-      if (!molinoItem || !molinoItem.sensores || molinoItem.sensores.length === 0) return null;
-      const vibSensores = molinoItem.sensores.filter(sens => {
-        const acr = (sens.acronimo_sensor || sens.acronimo || '').toUpperCase();
-        const nom = (sens.nombre_sensor || '').toUpperCase();
-        const uni = (sens.unidad || '').toLowerCase();
-        return acr.startsWith('VR') || nom.includes('VIBRA') || uni.includes('mm/s');
-      });
-      if (vibSensores.length === 0) return null;
-      const vals = vibSensores.map(s => parseFloat(s.valor)).filter(v => !isNaN(v));
-      return vals.length > 0 ? Math.max(...vals) : null;
-    }
-
-    function renderGraficosEstadisticos() {
-      // 1. Resumen Estadístico Barras vs Bolas
-      let bNormal = 0, bPreaviso = 0, bAlerta = 0, bSinDatos = 0;
-      let boNormal = 0, boPreaviso = 0, boAlerta = 0, boSinDatos = 0;
-
-      CATALOGO_19_MOLINOS.forEach(item => {
-        const mData = buscarMolinoEnCache(item.cod);
-        const tieneCaptura = mData && mData.ultima_captura && mData.ultima_captura.timestamp_hmi;
-        const st = tieneCaptura ? mData.estado_general : 'SIN_DATOS';
-
-        if (item.tipo === 'Barras') {
-          if (st === 'NORMAL') bNormal++;
-          else if (st === 'PREAVISO') bPreaviso++;
-          else if (st === 'ALARMA' || st === 'FALLA') bAlerta++;
-          else bSinDatos++;
-        } else {
-          if (st === 'NORMAL') boNormal++;
-          else if (st === 'PREAVISO') boPreaviso++;
-          else if (st === 'ALARMA' || st === 'FALLA') boAlerta++;
-          else boSinDatos++;
-        }
-      });
-
-      // Actualizar KPIs de sección
-      const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.innerText = val; };
-      setTxt('kpi-barras-normal', bNormal);
-      setTxt('kpi-barras-preaviso', bPreaviso);
-      setTxt('kpi-barras-alerta', bAlerta);
-      setTxt('kpi-barras-sindatos', bSinDatos);
-
-      setTxt('kpi-bolas-normal', boNormal);
-      setTxt('kpi-bolas-preaviso', boPreaviso);
-      setTxt('kpi-bolas-alerta', boAlerta);
-      setTxt('kpi-bolas-sindatos', boSinDatos);
-
-      if (typeof Chart === 'undefined') return;
-
-      const chartFont = { family: 'Inter', size: 11 };
-      const gridColor = 'rgba(51, 65, 85, 0.4)';
-      const tickColor = '#94a3b8';
-
-      // Gráfico 1: Conteo por condición Barras vs Bolas
-      const ctx1 = document.getElementById('chart-estados');
-      if (ctx1) {
-        if (chartEstadosInst) chartEstadosInst.destroy();
-        chartEstadosInst = new Chart(ctx1, {
-          type: 'bar',
-          data: {
-            labels: ['Normal', 'Preaviso', 'Alarma / Falla', 'Sin Lectura'],
-            datasets: [
-              {
-                label: 'Barras (032-081 a 032-089)',
-                data: [bNormal, bPreaviso, bAlerta, bSinDatos],
-                backgroundColor: 'rgba(56, 189, 248, 0.8)',
-                borderColor: '#38bdf8',
-                borderWidth: 1,
-                borderRadius: 5
-              },
-              {
-                label: 'Bolas (032-201 a 032-210)',
-                data: [boNormal, boPreaviso, boAlerta, boSinDatos],
-                backgroundColor: 'rgba(168, 85, 247, 0.8)',
-                borderColor: '#a855f7',
-                borderWidth: 1,
-                borderRadius: 5
-              }
-            ]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: { labels: { color: '#cbd5e1', font: chartFont } }
-            },
-            scales: {
-              x: { ticks: { color: tickColor, font: chartFont }, grid: { color: gridColor } },
-              y: { beginAtZero: true, ticks: { color: tickColor, font: chartFont, stepSize: 1 }, grid: { color: gridColor } }
-            }
-          }
-        });
-      }
-
-      // Preparar datos para los 19 molinos
-      const labelsMolinos = CATALOGO_19_MOLINOS.map(m => m.label);
-
-      // Gráfico 2: Temperaturas TTE y TTS
-      const dataTTE = CATALOGO_19_MOLINOS.map(m => extraerSensorValor(buscarMolinoEnCache(m.cod), /^TTE$|TRUN.*CARGA/));
-      const dataTTS = CATALOGO_19_MOLINOS.map(m => extraerSensorValor(buscarMolinoEnCache(m.cod), /^TTS$|TRUN.*DESC/));
-
-      const ctx2 = document.getElementById('chart-temperaturas');
-      if (ctx2) {
-        if (chartTemperaturasInst) chartTemperaturasInst.destroy();
-        chartTemperaturasInst = new Chart(ctx2, {
-          type: 'bar',
-          data: {
-            labels: labelsMolinos,
-            datasets: [
-              {
-                label: 'TTE - Trunnion Carga (°C)',
-                data: dataTTE,
-                backgroundColor: 'rgba(56, 189, 248, 0.85)',
-                borderColor: '#38bdf8',
-                borderWidth: 1,
-                borderRadius: 4
-              },
-              {
-                label: 'TTS - Trunnion Descarga (°C)',
-                data: dataTTS,
-                backgroundColor: 'rgba(251, 146, 60, 0.85)',
-                borderColor: '#fb923c',
-                borderWidth: 1,
-                borderRadius: 4
-              },
-              {
-                type: 'line',
-                label: 'Umbral Alarma (60°C)',
-                data: Array(labelsMolinos.length).fill(60),
-                borderColor: '#eab308',
-                borderWidth: 2,
-                borderDash: [5, 4],
-                pointRadius: 0,
-                fill: false
-              }
-            ]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: { labels: { color: '#cbd5e1', font: chartFont } }
-            },
-            scales: {
-              x: { ticks: { color: tickColor, font: chartFont }, grid: { color: gridColor } },
-              y: { beginAtZero: true, suggestedMax: 70, ticks: { color: tickColor, font: chartFont }, grid: { color: gridColor } }
-            }
-          }
-        });
-      }
-
-      // Gráfico 3: Vibraciones Máximas por Molino
-      const dataVib = CATALOGO_19_MOLINOS.map(m => extraerMaxVibracion(buscarMolinoEnCache(m.cod)));
-      const bgColorsVib = dataVib.map(v => {
-        if (v === null) return 'rgba(51, 65, 85, 0.3)';
-        if (v >= 8.0) return 'rgba(239, 68, 68, 0.85)';
-        if (v >= 6.0) return 'rgba(234, 179, 8, 0.85)';
-        return 'rgba(34, 197, 94, 0.85)';
-      });
-
-      const ctx3 = document.getElementById('chart-vibraciones');
-      if (ctx3) {
-        if (chartVibracionesInst) chartVibracionesInst.destroy();
-        chartVibracionesInst = new Chart(ctx3, {
-          type: 'bar',
-          data: {
-            labels: labelsMolinos,
-            datasets: [
-              {
-                label: 'Vibración Máx (mm/s)',
-                data: dataVib,
-                backgroundColor: bgColorsVib,
-                borderWidth: 1,
-                borderRadius: 4
-              },
-              {
-                type: 'line',
-                label: 'Alarma (6.0 mm/s)',
-                data: Array(labelsMolinos.length).fill(6.0),
-                borderColor: '#eab308',
-                borderWidth: 2,
-                borderDash: [5, 4],
-                pointRadius: 0,
-                fill: false
-              },
-              {
-                type: 'line',
-                label: 'Falla / Parada (8.0 mm/s)',
-                data: Array(labelsMolinos.length).fill(8.0),
-                borderColor: '#ef4444',
-                borderWidth: 2,
-                borderDash: [5, 4],
-                pointRadius: 0,
-                fill: false
-              }
-            ]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: { labels: { color: '#cbd5e1', font: chartFont } }
-            },
-            scales: {
-              x: { ticks: { color: tickColor, font: chartFont }, grid: { color: gridColor } },
-              y: { beginAtZero: true, suggestedMax: 10, ticks: { color: tickColor, font: chartFont }, grid: { color: gridColor } }
-            }
-          }
-        });
-      }
-
-      // Gráfico 4: Presiones RAP y CAP
-      const dataRAP = CATALOGO_19_MOLINOS.map(m => extraerSensorValor(buscarMolinoEnCache(m.cod), /^RAP$|RECEPCION|RECEPECION/));
-      const dataCAP = CATALOGO_19_MOLINOS.map(m => extraerSensorValor(buscarMolinoEnCache(m.cod), /^CAP$|EMBRAGUE/));
-
-      const ctx4 = document.getElementById('chart-presiones');
-      if (ctx4) {
-        if (chartPresionesInst) chartPresionesInst.destroy();
-        chartPresionesInst = new Chart(ctx4, {
-          type: 'bar',
-          data: {
-            labels: labelsMolinos,
-            datasets: [
-              {
-                label: 'RAP - Recepción Aire (psi)',
-                data: dataRAP,
-                backgroundColor: 'rgba(6, 182, 212, 0.85)',
-                borderColor: '#06b6d4',
-                borderWidth: 1,
-                borderRadius: 4
-              },
-              {
-                label: 'CAP - Embrague Aire (psi)',
-                data: dataCAP,
-                backgroundColor: 'rgba(168, 85, 247, 0.85)',
-                borderColor: '#a855f7',
-                borderWidth: 1,
-                borderRadius: 4
-              },
-              {
-                type: 'line',
-                label: 'Mínimo Requerido (90 psi)',
-                data: Array(labelsMolinos.length).fill(90),
-                borderColor: '#eab308',
-                borderWidth: 2,
-                borderDash: [5, 4],
-                pointRadius: 0,
-                fill: false
-              }
-            ]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: { labels: { color: '#cbd5e1', font: chartFont } }
-            },
-            scales: {
-              x: { ticks: { color: tickColor, font: chartFont }, grid: { color: gridColor } },
-              y: { beginAtZero: true, suggestedMax: 120, ticks: { color: tickColor, font: chartFont }, grid: { color: gridColor } }
-            }
-          }
-        });
-      }
+    function filtrarPorTexto(txt) {
+      textoBusqueda = (txt || '').toLowerCase().trim();
+      renderDashboard();
     }
 
     function cargarCacheLocal() {
@@ -966,6 +1151,35 @@
       const mBarras = str.match(/(?:BARRA[S]?|MOLINO DE BARRA[S]?)\s*#?\s*([1-9])\b/);
       if (mBarras) return `032-08${mBarras[1]}`;
       return str;
+    }
+
+    function buscarMolinoEnCache(cod) {
+      const cNorm = normalizarCodigo(cod);
+      return molinosDataCache.find(m => m.molino && (normalizarCodigo(m.molino.codigo_hmi) === cNorm || m.molino.codigo_hmi === cNorm));
+    }
+
+    function extraerSensorValor(molinoItem, regex) {
+      if (!molinoItem || !molinoItem.sensores || molinoItem.sensores.length === 0) return null;
+      const s = molinoItem.sensores.find(sens => {
+        const acr = (sens.acronimo_sensor || sens.acronimo || '').toUpperCase();
+        const nom = (sens.nombre_sensor || '').toUpperCase();
+        return regex.test(acr) || regex.test(nom);
+      });
+      if (!s || s.valor === null || s.valor === undefined || isNaN(parseFloat(s.valor))) return null;
+      return parseFloat(s.valor);
+    }
+
+    function extraerMaxVibracion(molinoItem) {
+      if (!molinoItem || !molinoItem.sensores || molinoItem.sensores.length === 0) return null;
+      const vibSensores = molinoItem.sensores.filter(sens => {
+        const acr = (sens.acronimo_sensor || sens.acronimo || '').toUpperCase();
+        const nom = (sens.nombre_sensor || '').toUpperCase();
+        const uni = (sens.unidad || '').toLowerCase();
+        return acr.startsWith('VR') || nom.includes('VIBRA') || uni.includes('mm/s');
+      });
+      if (vibSensores.length === 0) return null;
+      const vals = vibSensores.map(s => parseFloat(s.valor)).filter(v => !isNaN(v));
+      return vals.length > 0 ? Math.max(...vals) : null;
     }
 
     function actualizarMolinoEnMemoria(json) {
@@ -1011,10 +1225,13 @@
       item.horas_sin_reporte = 0.0;
       item._updatedAt = Date.now();
 
+      // Actualizar banner de última captura
+      document.getElementById('banner-tag-foto').innerText = (json.nombreArchivo || 'IMG_HMI_' + codNorm + '.JPG').toUpperCase();
+      document.getElementById('banner-alerta-desc').innerHTML = `Molino <strong>${codNorm}</strong> registró ${json.sensores_registrados || (json.sensores || []).length} sensores HMI. Estado: <strong style="color: ${item.estado_general === 'NORMAL' ? 'var(--success)' : item.estado_general === 'PREAVISO' ? 'var(--preaviso)' : 'var(--danger)'}">${item.estado_general}</strong>.`;
+
       guardarCacheLocal();
       renderDashboard();
 
-      // Sincronizar en segundo plano con el servidor para persistencia total
       fetch('/api/telemetria/sync-state', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1047,7 +1264,6 @@
               if (!localTieneLectura && srvTieneLectura) {
                 molinosDataCache[localIdx] = srvItem;
               } else if (localTieneLectura && !srvTieneLectura) {
-                // El cliente tiene una lectura local que el servidor no tiene (ej. reinicio serverless)
                 servidorNecesitaSync = true;
               } else if (localTieneLectura && srvTieneLectura) {
                 if (srvItem.ultima_captura.timestamp_hmi > localItem.ultima_captura.timestamp_hmi) {
@@ -1066,6 +1282,12 @@
           }).catch(() => {});
         }
 
+        // Determinar turno dinámico
+        const horaActual = new Date().getHours();
+        const turnoTexto = (horaActual >= 7 && horaActual < 15) ? 'TURNO A (DÍA)' : (horaActual >= 15 && horaActual < 23) ? 'TURNO B (TARDE)' : 'TURNO C (NOCHE)';
+        const bTurno = document.getElementById('hdr-turno-badge');
+        if (bTurno) bTurno.innerText = turnoTexto;
+
         guardarCacheLocal();
         renderDashboard();
       } catch (err) {
@@ -1075,45 +1297,70 @@
 
     function renderDashboard() {
       const container = document.getElementById('molinos-container');
+      if (!container) return;
       container.innerHTML = '';
 
       let normalCount = 0, preavisoCount = 0, alertasCount = 0;
+      const totalEquipos = CATALOGO_19_MOLINOS.length;
 
-      molinosDataCache.forEach((item, index) => {
+      // Ordenar y mapear los 19 molinos en orden estricto
+      CATALOGO_19_MOLINOS.forEach(catItem => {
+        const item = buscarMolinoEnCache(catItem.cod) || {
+          molino: { codigo_hmi: catItem.cod, nombre: catItem.label, tipo: catItem.tipo },
+          ultima_captura: null,
+          horas_sin_reporte: null,
+          sensores: [],
+          estado_general: 'SIN_DATOS',
+          resumen: { normal: 0, preaviso: 0, alarma: 0, falla: 0 }
+        };
+
         const m = item.molino;
-        const st = item.estado_general;
+        const st = (item.ultima_captura) ? item.estado_general : 'SIN_DATOS';
 
         if (st === 'NORMAL') normalCount++;
         else if (st === 'PREAVISO') preavisoCount++;
         else if (st === 'ALARMA' || st === 'FALLA') alertasCount++;
 
-        // Filtro por sección (Barras vs Bolas)
+        // Filtro de sección
         const codNorm = normalizarCodigo(m.codigo_hmi);
         const esBarras = codNorm.startsWith('032-08') || (m.tipo && m.tipo.toLowerCase().includes('barra'));
         const esBolas = codNorm.startsWith('032-2') || (m.tipo && m.tipo.toLowerCase().includes('bola'));
 
         if (filtroActual === 'Barras' && !esBarras) return;
         if (filtroActual === 'Bolas' && !esBolas) return;
+        if (filtroActual === 'FALLAS' && st !== 'FALLA' && st !== 'ALARMA') return;
+
+        // Filtro por texto / tag
+        if (textoBusqueda) {
+          const haystack = `${m.codigo_hmi} ${m.nombre} ${m.tipo} ${st}`.toLowerCase();
+          if (!haystack.includes(textoBusqueda)) return;
+        }
 
         const card = document.createElement('div');
         card.className = 'molino-card';
-        card.onclick = () => abrirDetalle(index);
+        card.onclick = () => abrirDetallePorCodigo(codNorm);
 
         const fechaTxt = item.ultima_captura ? item.ultima_captura.timestamp_hmi : 'Sin lecturas';
         const horasTxt = item.horas_sin_reporte !== null ? `${item.horas_sin_reporte}h transcurridas` : '';
 
-        // Vista previa de sensores críticos (hasta 3)
         let previewSensores = '';
         if (item.sensores && item.sensores.length > 0) {
           const criticos = item.sensores.slice(0, 3);
           criticos.forEach(s => {
+            const color = s.condicion === 'NORMAL' ? 'var(--text-main)' : s.condicion === 'PREAVISO' ? 'var(--preaviso)' : 'var(--danger)';
             previewSensores += `
               <div class="sensor-item-preview">
-                <span>${s.acronimo_sensor}</span>
-                <span style="color: ${s.condicion === 'NORMAL' ? 'var(--text-main)' : s.condicion === 'PREAVISO' ? 'var(--preaviso)' : 'var(--danger)'}">${s.valor} ${s.unidad}</span>
+                <span title="${s.nombre_sensor || s.acronimo_sensor}">${s.acronimo_sensor}</span>
+                <span style="color: ${color}; font-weight: 600;">${s.valor} ${s.unidad}</span>
               </div>
             `;
           });
+        } else {
+          previewSensores = `
+            <div class="standby-msg">
+              STANDBY / SIN OCR
+            </div>
+          `;
         }
 
         card.innerHTML = `
@@ -1124,21 +1371,360 @@
             </div>
             <span class="badge-status badge-${st}">${st}</span>
           </div>
-          <div class="molino-body">
-            <div>🕒 ${fechaTxt}</div>
-            ${horasTxt ? `<div style="font-size: 0.75rem; color: #f59e0b;">⏳ ${horasTxt}</div>` : ''}
-            <div style="margin-top: 8px;">${previewSensores}</div>
+          <div class="molino-time-row">
+            <span>🕒 ${fechaTxt}</span>
+            ${horasTxt ? `<span>⏳ ${horasTxt}</span>` : ''}
           </div>
+          <div style="margin-top: 4px;">${previewSensores}</div>
         `;
         container.appendChild(card);
       });
 
-      document.getElementById('stat-normal').innerText = normalCount;
-      document.getElementById('stat-preaviso').innerText = preavisoCount;
-      document.getElementById('stat-alertas').innerText = alertasCount;
+      // Actualizar contadores principales
+      document.getElementById('stat-total').innerText = totalEquipos;
+      document.getElementById('stat-normal').innerText = String(normalCount).padStart(2, '0');
+      document.getElementById('stat-preaviso').innerText = String(preavisoCount).padStart(2, '0');
+      document.getElementById('stat-alertas').innerText = String(alertasCount).padStart(2, '0');
+
+      document.getElementById('stat-normal-pct').innerText = `${((normalCount / totalEquipos) * 100).toFixed(1)}% OPERATIVO`;
+      document.getElementById('stat-preaviso-pct').innerText = `${((preavisoCount / totalEquipos) * 100).toFixed(1)}% PRECAUCIÓN`;
+      document.getElementById('stat-alertas-pct').innerText = `${((alertasCount / totalEquipos) * 100).toFixed(1)}% CRÍTICO`;
+
+      const fFallasBtn = document.getElementById('f-fallas');
+      if (fFallasBtn) fFallasBtn.innerText = `🚨 Fallas (${alertasCount})`;
 
       if (vistaActual === 'graficos') {
         renderGraficosEstadisticos();
+      }
+    }
+
+    function renderGraficosEstadisticos() {
+      let bNormal = 0, bPreaviso = 0, bAlerta = 0, bSinDatos = 0;
+      let boNormal = 0, boPreaviso = 0, boAlerta = 0, boSinDatos = 0;
+
+      CATALOGO_19_MOLINOS.forEach(item => {
+        const mData = buscarMolinoEnCache(item.cod);
+        const tieneCaptura = mData && mData.ultima_captura && mData.ultima_captura.timestamp_hmi;
+        const st = tieneCaptura ? mData.estado_general : 'SIN_DATOS';
+
+        if (item.tipo === 'Barras') {
+          if (st === 'NORMAL') bNormal++;
+          else if (st === 'PREAVISO') bPreaviso++;
+          else if (st === 'ALARMA' || st === 'FALLA') bAlerta++;
+          else bSinDatos++;
+        } else {
+          if (st === 'NORMAL') boNormal++;
+          else if (st === 'PREAVISO') boPreaviso++;
+          else if (st === 'ALARMA' || st === 'FALLA') boAlerta++;
+          else boSinDatos++;
+        }
+      });
+
+      const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.innerText = val; };
+      setTxt('kpi-barras-normal', bNormal);
+      setTxt('kpi-barras-preaviso', bPreaviso);
+      setTxt('kpi-barras-alerta', bAlerta);
+      setTxt('kpi-barras-sindatos', bSinDatos);
+
+      setTxt('kpi-bolas-normal', boNormal);
+      setTxt('kpi-bolas-preaviso', boPreaviso);
+      setTxt('kpi-bolas-alerta', boAlerta);
+      setTxt('kpi-bolas-sindatos', boSinDatos);
+
+      renderTablaDetalleCapturas();
+
+      if (typeof Chart === 'undefined') return;
+
+      const isLight = document.body.classList.contains('light-mode');
+      const chartFont = { family: 'Inter', size: 11 };
+      const gridColor = isLight ? 'rgba(203, 213, 225, 0.6)' : 'rgba(51, 65, 85, 0.35)';
+      const tickColor = isLight ? '#64748b' : '#94a3b8';
+
+      // Gráfico 1: Conteo por condición Barras vs Bolas
+      const ctx1 = document.getElementById('chart-estados');
+      if (ctx1) {
+        if (chartEstadosInst) chartEstadosInst.destroy();
+        chartEstadosInst = new Chart(ctx1, {
+          type: 'bar',
+          data: {
+            labels: ['Normal', 'Preaviso', 'Alarma / Falla', 'Sin Lectura'],
+            datasets: [
+              {
+                label: 'Barras (032-081 a 032-089)',
+                data: [bNormal, bPreaviso, bAlerta, bSinDatos],
+                backgroundColor: 'rgba(0, 229, 255, 0.85)',
+                borderColor: '#00e5ff',
+                borderWidth: 1,
+                borderRadius: 5
+              },
+              {
+                label: 'Bolas (032-201 a 032-210)',
+                data: [boNormal, boPreaviso, boAlerta, boSinDatos],
+                backgroundColor: 'rgba(168, 85, 247, 0.85)',
+                borderColor: '#a855f7',
+                borderWidth: 1,
+                borderRadius: 5
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { labels: { color: tickColor, font: chartFont } }
+            },
+            scales: {
+              x: { ticks: { color: tickColor, font: chartFont }, grid: { color: gridColor } },
+              y: { beginAtZero: true, ticks: { color: tickColor, font: chartFont, stepSize: 1 }, grid: { color: gridColor } }
+            }
+          }
+        });
+      }
+
+      const labelsMolinos = CATALOGO_19_MOLINOS.map(m => m.label);
+
+      // Gráfico 2: Temperaturas TTE y TTS
+      const dataTTE = CATALOGO_19_MOLINOS.map(m => extraerSensorValor(buscarMolinoEnCache(m.cod), /^TTE$|TRUN.*CARGA/));
+      const dataTTS = CATALOGO_19_MOLINOS.map(m => extraerSensorValor(buscarMolinoEnCache(m.cod), /^TTS$|TRUN.*DESC/));
+
+      const ctx2 = document.getElementById('chart-temperaturas');
+      if (ctx2) {
+        if (chartTemperaturasInst) chartTemperaturasInst.destroy();
+        chartTemperaturasInst = new Chart(ctx2, {
+          type: 'bar',
+          data: {
+            labels: labelsMolinos,
+            datasets: [
+              {
+                label: 'TTE - Trunnion Carga (°C)',
+                data: dataTTE,
+                backgroundColor: 'rgba(0, 229, 255, 0.85)',
+                borderColor: '#00e5ff',
+                borderWidth: 1,
+                borderRadius: 4
+              },
+              {
+                label: 'TTS - Trunnion Descarga (°C)',
+                data: dataTTS,
+                backgroundColor: 'rgba(251, 146, 60, 0.85)',
+                borderColor: '#fb923c',
+                borderWidth: 1,
+                borderRadius: 4
+              },
+              {
+                type: 'line',
+                label: '--- Umbral Alarma (60°C)',
+                data: Array(labelsMolinos.length).fill(60),
+                borderColor: '#eab308',
+                borderWidth: 2,
+                borderDash: [5, 4],
+                pointRadius: 0,
+                fill: false
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { labels: { color: tickColor, font: chartFont } }
+            },
+            scales: {
+              x: { ticks: { color: tickColor, font: chartFont }, grid: { color: gridColor } },
+              y: { beginAtZero: true, suggestedMax: 70, ticks: { color: tickColor, font: chartFont }, grid: { color: gridColor } }
+            }
+          }
+        });
+      }
+
+      // Gráfico 3: Vibraciones Máximas por Molino
+      const dataVib = CATALOGO_19_MOLINOS.map(m => extraerMaxVibracion(buscarMolinoEnCache(m.cod)));
+      const bgColorsVib = dataVib.map(v => {
+        if (v === null) return 'rgba(51, 65, 85, 0.3)';
+        if (v >= 8.0) return 'rgba(239, 68, 68, 0.85)';
+        if (v >= 6.0) return 'rgba(234, 179, 8, 0.85)';
+        return 'rgba(16, 185, 129, 0.85)';
+      });
+
+      const ctx3 = document.getElementById('chart-vibraciones');
+      if (ctx3) {
+        if (chartVibracionesInst) chartVibracionesInst.destroy();
+        chartVibracionesInst = new Chart(ctx3, {
+          type: 'bar',
+          data: {
+            labels: labelsMolinos,
+            datasets: [
+              {
+                label: 'Vibración Máx (mm/s)',
+                data: dataVib,
+                backgroundColor: bgColorsVib,
+                borderWidth: 1,
+                borderRadius: 4
+              },
+              {
+                type: 'line',
+                label: '--- Alarma (6.0 mm/s)',
+                data: Array(labelsMolinos.length).fill(6.0),
+                borderColor: '#eab308',
+                borderWidth: 2,
+                borderDash: [5, 4],
+                pointRadius: 0,
+                fill: false
+              },
+              {
+                type: 'line',
+                label: '--- Falla / Parada (8.0 mm/s)',
+                data: Array(labelsMolinos.length).fill(8.0),
+                borderColor: '#ef4444',
+                borderWidth: 2,
+                borderDash: [5, 4],
+                pointRadius: 0,
+                fill: false
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { labels: { color: tickColor, font: chartFont } }
+            },
+            scales: {
+              x: { ticks: { color: tickColor, font: chartFont }, grid: { color: gridColor } },
+              y: { beginAtZero: true, suggestedMax: 10, ticks: { color: tickColor, font: chartFont }, grid: { color: gridColor } }
+            }
+          }
+        });
+      }
+
+      // Gráfico 4: Presiones RAP y CAP
+      const dataRAP = CATALOGO_19_MOLINOS.map(m => extraerSensorValor(buscarMolinoEnCache(m.cod), /^RAP$|RECEPCION|RECEPECION/));
+      const dataCAP = CATALOGO_19_MOLINOS.map(m => extraerSensorValor(buscarMolinoEnCache(m.cod), /^CAP$|EMBRAGUE/));
+
+      const ctx4 = document.getElementById('chart-presiones');
+      if (ctx4) {
+        if (chartPresionesInst) chartPresionesInst.destroy();
+        chartPresionesInst = new Chart(ctx4, {
+          type: 'bar',
+          data: {
+            labels: labelsMolinos,
+            datasets: [
+              {
+                label: 'RAP - Recepción Aire (psi)',
+                data: dataRAP,
+                backgroundColor: 'rgba(6, 182, 212, 0.85)',
+                borderColor: '#06b6d4',
+                borderWidth: 1,
+                borderRadius: 4
+              },
+              {
+                label: 'CAP - Embrague Aire (psi)',
+                data: dataCAP,
+                backgroundColor: 'rgba(168, 85, 247, 0.85)',
+                borderColor: '#a855f7',
+                borderWidth: 1,
+                borderRadius: 4
+              },
+              {
+                type: 'line',
+                label: '--- Mínimo Requerido (90 psi)',
+                data: Array(labelsMolinos.length).fill(90),
+                borderColor: '#eab308',
+                borderWidth: 2,
+                borderDash: [5, 4],
+                pointRadius: 0,
+                fill: false
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { labels: { color: tickColor, font: chartFont } }
+            },
+            scales: {
+              x: { ticks: { color: tickColor, font: chartFont }, grid: { color: gridColor } },
+              y: { beginAtZero: true, suggestedMax: 120, ticks: { color: tickColor, font: chartFont }, grid: { color: gridColor } }
+            }
+          }
+        });
+      }
+    }
+
+    function renderTablaDetalleCapturas() {
+      const tbody = document.getElementById('tbody-detalle-capturas');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      CATALOGO_19_MOLINOS.forEach(cat => {
+        const item = buscarMolinoEnCache(cat.cod);
+        const tieneCap = item && item.ultima_captura;
+        const st = tieneCap ? item.estado_general : 'SIN_DATOS';
+
+        const tte = tieneCap ? extraerSensorValor(item, /^TTE$|TRUN.*CARGA/) : null;
+        const tts = tieneCap ? extraerSensorValor(item, /^TTS$|TRUN.*DESC/) : null;
+        const vib = tieneCap ? extraerMaxVibracion(item) : null;
+        const rap = tieneCap ? extraerSensorValor(item, /^RAP$|RECEPCION/) : null;
+        const cap = tieneCap ? extraerSensorValor(item, /^CAP$|EMBRAGUE/) : null;
+
+        let diagnostico = 'Panel HMI Apagado';
+        if (tieneCap) {
+          if (st === 'NORMAL') diagnostico = 'Operación Óptima';
+          else if (st === 'PREAVISO') diagnostico = 'Precaución Operacional';
+          else if (st === 'ALARMA') diagnostico = 'Superó Umbral Alarma';
+          else if (st === 'FALLA') diagnostico = 'Condición Crítica / Trip';
+        }
+
+        const colorSt = st === 'NORMAL' ? 'var(--success)' : st === 'PREAVISO' ? 'var(--preaviso)' : st === 'SIN_DATOS' ? 'var(--text-muted)' : 'var(--danger)';
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${cat.cod}</strong></td>
+          <td>${cat.tipo}</td>
+          <td style="text-align: center;"><span style="color: ${colorSt}; font-weight: 700; font-family: monospace;">${st}</span></td>
+          <td style="text-align: center; font-family: monospace;">${tte !== null ? tte + ' °C' : '--'}</td>
+          <td style="text-align: center; font-family: monospace;">${tts !== null ? tts + ' °C' + (tts > 60 ? ' ⚠' : '') : '--'}</td>
+          <td style="text-align: center; font-family: monospace;">${vib !== null ? vib + ' mm/s' : '--'}</td>
+          <td style="text-align: center; font-family: monospace;">${rap !== null ? rap + ' psi' : '--'}</td>
+          <td style="text-align: center; font-family: monospace;">${cap !== null ? cap + ' psi' : '--'}</td>
+          <td style="font-size: 0.76rem; color: ${tieneCap ? 'var(--text-main)' : 'var(--text-muted)'};">${diagnostico}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function exportarCSV() {
+      let csv = 'MOLINO,TIPO,ESTADO,TTE_CARGA_C,TTS_DESCARGA_C,VIBRACION_MAX_MMS,RAP_PSI,CAP_PSI,DIAGNOSTICO\n';
+      CATALOGO_19_MOLINOS.forEach(cat => {
+        const item = buscarMolinoEnCache(cat.cod);
+        const tieneCap = item && item.ultima_captura;
+        const st = tieneCap ? item.estado_general : 'SIN_DATOS';
+        const tte = tieneCap ? (extraerSensorValor(item, /^TTE$|TRUN.*CARGA/) || '') : '';
+        const tts = tieneCap ? (extraerSensorValor(item, /^TTS$|TRUN.*DESC/) || '') : '';
+        const vib = tieneCap ? (extraerMaxVibracion(item) || '') : '';
+        const rap = tieneCap ? (extraerSensorValor(item, /^RAP$|RECEPCION/) || '') : '';
+        const cap = tieneCap ? (extraerSensorValor(item, /^CAP$|EMBRAGUE/) || '') : '';
+        const diag = tieneCap ? (st === 'NORMAL' ? 'Optimo' : st) : 'Sin_Datos';
+        csv += `${cat.cod},${cat.tipo},${st},${tte},${tts},${vib},${rap},${cap},${diag}\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `TELEMETRIA_MOLINOS_ZA_${new Date().toISOString().slice(0, 10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function abrirDetallePorCodigo(cod) {
+      const idx = molinosDataCache.findIndex(m => m.molino && (normalizarCodigo(m.molino.codigo_hmi) === cod || m.molino.codigo_hmi === cod));
+      if (idx !== -1) {
+        abrirDetalle(idx);
+      } else {
+        alert('Molino en Standby. No cuenta con lecturas HMI registradas actualmente.');
       }
     }
 
@@ -1153,13 +1739,13 @@
       tbody.innerHTML = '';
 
       if (!item.sensores || item.sensores.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #94a3b8;">No hay lecturas registradas para este molino aún.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">No hay lecturas registradas para este molino aún.</td></tr>';
       } else {
         item.sensores.forEach(s => {
           const tr = document.createElement('tr');
-          const color = s.condicion === 'NORMAL' ? '#22c55e' : s.condicion === 'PREAVISO' ? '#eab308' : '#ef4444';
+          const color = s.condicion === 'NORMAL' ? 'var(--success)' : s.condicion === 'PREAVISO' ? 'var(--preaviso)' : 'var(--danger)';
           tr.innerHTML = `
-            <td><strong>${s.acronimo_sensor}</strong> <span style="font-size:0.75rem; color:#94a3b8;">(${s.nombre_sensor})</span></td>
+            <td><strong>${s.acronimo_sensor}</strong> <span style="font-size:0.75rem; color:var(--text-muted);">(${s.nombre_sensor})</span></td>
             <td><strong>${s.valor}</strong> ${s.unidad}</td>
             <td>${s.alarma !== null ? s.alarma : '-'}</td>
             <td>${s.falla !== null ? s.falla : '-'}</td>
@@ -1190,7 +1776,7 @@
     }
 
     async function enviarPorGmail() {
-      const email = prompt('Ingrese el correo destinatario (o varios separados por coma):', 'saintjamil@gmail.com');
+      const email = prompt('Ingrese el correo destinatario:', 'saintjamil@gmail.com');
       if (!email) return;
 
       try {
@@ -1213,7 +1799,7 @@
     // ==========================================
     // SISTEMA DE CARGA MÚLTIPLE DE FOTOGRAFÍAS (POR LOTE)
     // ==========================================
-    let colaFotos = []; // Array de { id, file, nombre, base64, previewUrl }
+    let colaFotos = [];
     let procesandoEnCurso = false;
 
     function mostrarModalSubida() {
@@ -1243,8 +1829,8 @@
         dropZone.addEventListener(eventName, (e) => {
           e.preventDefault();
           e.stopPropagation();
-          dropZone.style.borderColor = '#38bdf8';
-          dropZone.style.background = 'rgba(56, 189, 248, 0.05)';
+          dropZone.style.borderColor = '#00e5ff';
+          dropZone.style.background = 'rgba(0, 229, 255, 0.05)';
         }, false);
       });
 
@@ -1259,8 +1845,7 @@
 
       dropZone.addEventListener('drop', (e) => {
         const dt = e.dataTransfer;
-        const files = dt.files;
-        handleFiles(files);
+        handleFiles(dt.files);
       }, false);
     }
 
@@ -1270,13 +1855,11 @@
 
     function handleFiles(files) {
       if (!files || files.length === 0) return;
-
       const fileList = Array.from(files);
       let cargadas = 0;
 
       fileList.forEach(file => {
         if (!file.type.startsWith('image/')) return;
-
         const reader = new FileReader();
         reader.onload = function(evt) {
           const fullBase64 = evt.target.result;
@@ -1326,7 +1909,7 @@
         card.style.borderRadius = '8px';
         card.style.overflow = 'hidden';
         card.style.border = '1px solid #334155';
-        card.style.background = '#0f172a';
+        card.style.background = '#080d1a';
 
         card.innerHTML = `
           <img src="${item.previewUrl}" style="width: 100%; height: 75px; object-fit: cover;">
@@ -1367,9 +1950,7 @@
       uploadLog.style.display = 'block';
       uploadLog.innerHTML = `<div style="color: #94a3b8;">🚀 Iniciando lote de ${colaFotos.length} fotografía(s)...</div>`;
 
-      let exitosas = 0;
-      let duplicadas = 0;
-      let errores = 0;
+      let exitosas = 0, duplicadas = 0, errores = 0;
 
       for (let i = 0; i < colaFotos.length; i++) {
         const item = colaFotos[i];
@@ -1395,6 +1976,7 @@
 
           if (res.status === 201 || (json && json.status === 'procesado_exitosamente')) {
             exitosas++;
+            json.nombreArchivo = item.nombre;
             actualizarMolinoEnMemoria(json);
             uploadLog.innerHTML += `
               <div style="color: #22c55e; margin-bottom: 6px; padding: 6px; background: rgba(34, 197, 94, 0.08); border-radius: 6px;">
@@ -1419,7 +2001,6 @@
         }
 
         uploadLog.scrollTop = uploadLog.scrollHeight;
-        // Breve pausa para estabilidad visual
         await new Promise(r => setTimeout(r, 400));
       }
 
@@ -1437,12 +2018,12 @@
         btn.onclick = procesarLoteFotos;
       };
 
-      renderDashboard(); // Renderizar inmediatamente los datos procesados en memoria
+      renderDashboard();
     }
 
-    cargarCacheLocal(); // 1. Cargar datos instantáneamente de localStorage para que nunca se pierdan al refrescar
-    cargarDashboard();  // 2. Sincronizar en segundo plano con el servidor
-    setInterval(cargarDashboard, 15000); // Polling cada 15 segundos
+    cargarCacheLocal();
+    cargarDashboard();
+    setInterval(cargarDashboard, 15000);
   </script>
 </body>
 </html>
